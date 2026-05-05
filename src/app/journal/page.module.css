@@ -1,0 +1,226 @@
+.hero {
+  position: relative;
+  height: 55vh;
+  min-height: 360px;
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 40px;
+  overflow: hidden;
+}
+
+.heroImg { position: absolute; inset: 0; }
+
+.heroBg {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--forest-dark) 0%, #1e4a44 100%);
+}
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 60%, transparent 100%);
+  z-index: 1;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 2;
+  color: var(--white);
+}
+
+.heroTitle {
+  text-transform: uppercase;
+  font-size: clamp(2.2rem, 6vw, 5rem);
+  color: var(--white);
+}
+
+/* Filters */
+.filters {
+  border-bottom: 1px solid var(--gray-light);
+  background: var(--white);
+  position: sticky;
+  top: 72px;
+  z-index: 10;
+}
+
+.filterInner {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.filterInner::-webkit-scrollbar { display: none; }
+
+.filterBtn {
+  padding: 14px 22px;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  color: var(--gray);
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: color var(--dur-fast), border-color var(--dur-fast);
+}
+
+.filterBtn:hover { color: var(--forest); }
+
+.filterActive {
+  color: var(--forest);
+  border-bottom-color: var(--forest);
+  font-weight: 500;
+}
+
+/* Posts */
+.postsSection {
+  padding: 60px 0;
+  background: var(--white);
+}
+
+/* Featured */
+.featuredCard {
+  display: grid;
+  grid-template-columns: 1fr;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  min-height: 460px;
+  margin-bottom: 24px;
+  cursor: pointer;
+}
+
+.featuredImg {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.85s var(--ease);
+}
+
+.featuredCard:hover .featuredImg { transform: scale(1.04); }
+
+.imgPlaceholder {
+  width: 100%;
+  height: 100%;
+  min-height: 460px;
+  background: linear-gradient(135deg, #1e4035 0%, #2c6055 100%);
+  display: flex;
+  align-items: flex-end;
+  padding: 24px;
+  color: rgba(255,255,255,0.25);
+  font-family: var(--font-serif);
+  font-size: 0.9rem;
+}
+
+.imgOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.1) 55%, transparent 100%);
+}
+
+.featuredBody {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 36px;
+  color: var(--white);
+  z-index: 1;
+}
+
+.category {
+  color: var(--gold-light);
+  font-size: 0.62rem;
+  margin-bottom: 10px;
+}
+
+.featuredTitle {
+  color: var(--white);
+  margin-bottom: 20px;
+  max-width: 600px;
+}
+
+.readBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 24px;
+  border-radius: 100px;
+  border: 1.5px solid rgba(255,255,255,0.5);
+  color: var(--white);
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: background var(--dur-fast), border-color var(--dur-fast);
+}
+
+.featuredCard:hover .readBtn {
+  background: rgba(255,255,255,0.12);
+  border-color: var(--white);
+}
+
+/* Grid */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.card {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  min-height: 280px;
+}
+
+.cardImg {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.8s var(--ease);
+}
+
+.card:hover .cardImg { transform: scale(1.05); }
+
+.cardBody {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  color: var(--white);
+  z-index: 1;
+}
+
+.cardTitle {
+  color: var(--white);
+  font-size: clamp(1rem, 1.8vw, 1.4rem);
+  margin-bottom: 10px;
+}
+
+.readMore {
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+  border-bottom: 1px solid rgba(255,255,255,0.3);
+  padding-bottom: 2px;
+  transition: color var(--dur-fast), border-color var(--dur-fast);
+}
+
+.card:hover .readMore {
+  color: var(--gold-light);
+  border-color: var(--gold-light);
+}
+
+.loadMore { text-align: center; }
+
+@media (max-width: 580px) {
+  .grid { grid-template-columns: 1fr; }
+  .featuredCard { min-height: 340px; }
+}
