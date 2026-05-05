@@ -16,7 +16,8 @@ export default function ScrollReveal() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    let ctx: import('gsap').Context | null = null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let ctx: any = null;
 
     const init = async () => {
       const { gsap } = await import('gsap');
