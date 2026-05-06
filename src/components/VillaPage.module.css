@@ -23,6 +23,16 @@
   /* REPLACE: will be covered by real next/image */
 }
 
+.heroVideo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .heroOverlay {
   position: absolute;
   inset: 0;
@@ -39,189 +49,85 @@
   position: relative;
   z-index: 2;
   color: var(--white);
-  max-width: 780px;
-}
-
-.heroEyebrow {
-  color: var(--gold-light);
-  font-size: 0.65rem;
-  margin-bottom: 14px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-bottom: 20px;
 }
 
 .heroTitle {
   color: var(--white);
-  margin-bottom: 18px;
-  text-transform: uppercase;
-  font-size: clamp(2rem, 5.5vw, 5rem);
+  margin-bottom: 24px;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
 }
 
-.heroDesc {
-  font-family: var(--font-sans);
-  font-size: clamp(0.88rem, 1.3vw, 1rem);
-  color: rgba(255,255,255,0.75);
-  line-height: 1.75;
-  max-width: 520px;
+.heroDivider {
+  width: 50%;
+  max-width: 500px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.4);
   margin-bottom: 32px;
 }
 
-.heroCtas {
+.heroAmenities {
   display: flex;
-  gap: 14px;
   flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px 40px;
+  max-width: 1000px;
 }
 
-/* ==========================================
-   AMENITY BAR
-   ========================================== */
-.amenityBar {
-  background: var(--cream);
-  border-bottom: 1px solid var(--cream-dark);
-  overflow: hidden;
-}
-
-.amenityScroll {
+.heroAmenityItem {
   display: flex;
-  gap: 0;
-  overflow-x: auto;
-  scrollbar-width: none;
-  padding: 0 clamp(20px, 5vw, 60px);
-}
-
-.amenityScroll::-webkit-scrollbar { display: none; }
-
-.amenityTag {
-  display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 14px 20px;
+  gap: 10px;
   font-family: var(--font-sans);
-  font-size: 0.72rem;
-  font-weight: 400;
-  letter-spacing: 0.06em;
-  color: var(--dark);
-  border-right: 1px solid var(--gray-light);
-  white-space: nowrap;
-  cursor: default;
-  transition: background var(--dur-fast), color var(--dur-fast);
-}
-
-.amenityTag:hover {
-  background: var(--forest);
+  font-size: 0.85rem;
   color: var(--white);
+  opacity: 0.9;
 }
 
 /* ==========================================
    VILLA DESCRIPTION
    ========================================== */
-.descSection { background: var(--white); }
-
-.descGrid {
-  display: grid;
-  grid-template-columns: 1fr 1.6fr;
-  gap: 60px;
-  align-items: start;
+.descSection { 
+  background: var(--cream-dark);
+  padding: clamp(60px, 10vw, 120px) 0;
 }
 
-.descLabel {
-  color: var(--forest);
-  margin-bottom: 10px;
+.descCenterWrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
-.descName {
-  color: var(--forest);
-  font-size: clamp(1.8rem, 3.5vw, 3rem);
+.descTitle {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  color: #333;
+  line-height: 1.25;
+  margin-bottom: 8px;
 }
 
 .descText {
-  color: #444;
-  font-size: 0.95rem;
-}
-
-/* ==========================================
-   ROOMS
-   ========================================== */
-.roomsSection {
-  background: var(--cream);
-  padding: var(--section-pad) 0;
-}
-
-.roomsTitle {
-  margin-bottom: 28px;
-}
-
-.roomTabs {
-  display: flex;
-  gap: 0;
-  border-bottom: 1px solid var(--gray-light);
-  overflow-x: auto;
-  scrollbar-width: none;
-  margin-bottom: 36px;
-}
-
-.roomTabs::-webkit-scrollbar { display: none; }
-
-.roomTab {
-  padding: 12px 20px;
-  font-family: var(--font-sans);
-  font-size: 0.75rem;
-  font-weight: 400;
-  letter-spacing: 0.05em;
-  color: var(--gray);
-  border-bottom: 2px solid transparent;
-  white-space: nowrap;
-  transition: color var(--dur-fast), border-color var(--dur-fast);
-}
-
-.roomTab:hover { color: var(--forest); }
-
-.tabActive {
-  color: var(--forest);
-  border-bottom-color: var(--forest);
-  font-weight: 500;
-}
-
-.roomDisplay {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  gap: 40px;
-  align-items: center;
-}
-
-.roomImgWrap {
-  aspect-ratio: 4/3;
-  overflow: hidden;
-  border-radius: 8px;
-}
-
-.roomImgPlaceholder {
-  width: 100%;
-  height: 100%;
-  min-height: 300px;
-  background: linear-gradient(135deg, #2c5f5a 0%, #1e4540 100%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  color: rgba(255,255,255,0.5);
-  font-family: var(--font-serif);
-  font-size: 1.4rem;
-  text-align: center;
-  padding: 20px;
-}
-
-.roomName {
-  color: var(--forest);
-  margin-bottom: 16px;
-}
-
-.roomDesc {
   color: #555;
-  font-size: 0.92rem;
+  font-size: clamp(0.9rem, 2vw, 1.05rem);
+  line-height: 1.6;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 /* ==========================================
-   FACILITIES
+   FACILITIES & SERVICES
    ========================================== */
 .facilitiesSection {
   background: var(--white);
@@ -365,7 +271,6 @@
    RESPONSIVE
    ========================================== */
 @media (max-width: 900px) {
-  .descGrid { grid-template-columns: 1fr; gap: 24px; }
   .roomDisplay { grid-template-columns: 1fr; }
   .facilitiesGrid { grid-template-columns: repeat(2, 1fr); }
 }

@@ -20,6 +20,7 @@ const santaiData: VillaData = {
   longDescription:
     'Forever Santai is newly renovated, blending contemporary design with authentic Balinese craftsmanship. Every detail has been considered — from the hand-carved stone statues to the infinity-edge pool that appears to merge with the ocean horizon.',
   heroImage: '/images/villas/forever-santai/hero/hero.jpg',
+  heroVideo: '/videos/villas/forever-santai/forever-santai-video.mp4',
   amenityTags: [
     '🌊 À la Carte',
     '💆 Spa',
@@ -34,39 +35,72 @@ const santaiData: VillaData = {
   ],
   rooms: [
     {
-      id: 'ocean-suite',
-      label: 'Ocean Suite',
-      description:
-        'Wake up to panoramic ocean views from your private balcony. The Ocean Suite features a king-size bed, open-plan bathroom with soaking tub, and direct pool access.',
-      imagePath: '/images/villas/forever-santai/rooms/ocean-suite/main.jpg',
+      id: 'garden-view-studio',
+      label: 'Garden View Studio',
+      description: 'A beautifully appointed studio surrounded by lush tropical greenery, offering complete privacy and peace.',
+      images: [
+        '/images/villas/forever-santai/rooms/garden-view-studio/1.jpg',
+        '/images/villas/forever-santai/rooms/garden-view-studio/2.jpg',
+        '/images/villas/forever-santai/rooms/garden-view-studio/3.jpg',
+        '/images/villas/forever-santai/rooms/garden-view-studio/4.jpg',
+        '/images/villas/forever-santai/rooms/garden-view-studio/5.jpg',
+        '/images/villas/forever-santai/rooms/garden-view-studio/6.jpg',
+        '/images/villas/forever-santai/rooms/garden-view-studio/7.jpg',
+        '/images/villas/forever-santai/rooms/garden-view-studio/8.jpg'
+      ],
     },
     {
-      id: 'garden-suite',
-      label: 'Garden Suite',
-      description:
-        'Nestled among lush tropical gardens, the Garden Suite is a serene retreat. Natural materials, ambient lighting, and garden-facing floor-to-ceiling windows.',
-      imagePath: '/images/villas/forever-santai/rooms/garden-suite/main.jpg',
+      id: 'ocean-lookout-master',
+      label: 'Ocean Lookout Master',
+      description: 'An elevated master suite offering sweeping, uninterrupted views of the ocean from a private balcony.',
+      images: [
+        '/images/villas/forever-santai/rooms/ocean-lookout-master/1.jpg',
+        '/images/villas/forever-santai/rooms/ocean-lookout-master/2.jpg',
+        '/images/villas/forever-santai/rooms/ocean-lookout-master/3.jpg',
+        '/images/villas/forever-santai/rooms/ocean-lookout-master/4.jpg',
+        '/images/villas/forever-santai/rooms/ocean-lookout-master/5.jpg',
+        '/images/villas/forever-santai/rooms/ocean-lookout-master/6.jpg'
+      ],
     },
     {
-      id: 'pool-suite',
-      label: 'Pool Suite',
-      description:
-        'Step directly from your room into the private pool. The Pool Suite offers seamless indoor-outdoor living with a private plunge pool and sun deck.',
-      imagePath: '/images/villas/forever-santai/rooms/pool-suite/main.jpg',
+      id: 'santai-childrens',
+      label: "Santai Children's",
+      description: 'A thoughtfully designed room crafted specially for our younger guests to rest and play.',
+      images: [
+        '/images/villas/forever-santai/rooms/santai-childrens/1.jpg',
+        '/images/villas/forever-santai/rooms/santai-childrens/2.jpg',
+        '/images/villas/forever-santai/rooms/santai-childrens/3.jpg'
+      ],
     },
     {
-      id: 'family-suite',
-      label: 'Family Suite',
-      description:
-        'Thoughtfully designed for families, with connecting rooms, children\'s amenities, and a dedicated family living area overlooking the garden.',
-      imagePath: '/images/villas/forever-santai/rooms/family-suite/main.jpg',
+      id: 'santai-garden-view',
+      label: 'Santai Garden View',
+      description: 'Immersed in nature, this spacious room features natural materials and floor-to-ceiling garden views.',
+      images: [
+        '/images/villas/forever-santai/rooms/santai-garden-view-guest/1.jpg',
+        '/images/villas/forever-santai/rooms/santai-garden-view-guest/2.jpg'
+      ],
     },
     {
-      id: 'villa-suite',
-      label: 'Villa Suite',
-      description:
-        'The crown jewel of Forever Santai. A full-floor suite with private terrace, butler service, and sweeping 270-degree views of the Balinese landscape.',
-      imagePath: '/images/villas/forever-santai/rooms/villa-suite/main.jpg',
+      id: 'santai-guest',
+      label: 'Santai Guest',
+      description: 'A luxurious and welcoming space designed to provide the ultimate comfort for visiting guests.',
+      images: [
+        '/images/villas/forever-santai/rooms/santai-guest/1.jpg',
+        '/images/villas/forever-santai/rooms/santai-guest/2.jpg',
+        '/images/villas/forever-santai/rooms/santai-guest/3.jpg'
+      ],
+    },
+    {
+      id: 'santai-master',
+      label: 'Santai Master',
+      description: 'Our signature master suite featuring premium amenities, an open-plan bathroom, and unparalleled luxury.',
+      images: [
+        '/images/villas/forever-santai/rooms/santai-master/1.jpg',
+        '/images/villas/forever-santai/rooms/santai-master/2.jpg',
+        '/images/villas/forever-santai/rooms/santai-master/3.jpg',
+        '/images/villas/forever-santai/rooms/santai-master/4.jpg'
+      ],
     },
   ],
   facilities: [

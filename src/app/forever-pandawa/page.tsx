@@ -20,6 +20,7 @@ const pandawaData: VillaData = {
   longDescription:
     'Forever Pandawa draws from the rich mythology of Bali, where five brothers — Yudhistira, Bima, Arjuna, Nakula, and Sahadeva — each represent a virtue. Each bedroom is a tribute: wisdom, strength, grace, harmony, and beauty manifest in extraordinary design.',
   heroImage: '/images/villas/forever-pandawa/hero/hero.jpg',
+  heroVideo: '/videos/villas/forever-pandawa/forever-pandawa-video.mp4',
   amenityTags: [
     '🌊 À la Carte',
     '💆 Spa',
@@ -34,39 +35,89 @@ const pandawaData: VillaData = {
   ],
   rooms: [
     {
-      id: 'yudhistira',
-      label: 'Yudhistira Suite',
-      description:
-        'Named for the eldest Pandawa — the embodiment of wisdom and justice. A regal master suite with panoramic ocean views, hand-carved four-poster bed, and private meditation pavilion.',
-      imagePath: '/images/villas/forever-pandawa/rooms/ocean-suite/main.jpg',
+      id: 'garden-view-room',
+      label: 'Garden View Room',
+      description: 'A serene retreat surrounded by lush tropical gardens, offering a peaceful escape.',
+      images: [
+        '/images/villas/forever-pandawa/rooms/garden-view-room/garden-view-room-1.jpg',
+        '/images/villas/forever-pandawa/rooms/garden-view-room/garden-view-room-2.jpg',
+        '/images/villas/forever-pandawa/rooms/garden-view-room/garden-view-room-3.jpg',
+        '/images/villas/forever-pandawa/rooms/garden-view-room/garden-view-room-4.jpg',
+        '/images/villas/forever-pandawa/rooms/garden-view-room/garden-view-room-5.jpg'
+      ],
     },
     {
-      id: 'bima',
-      label: 'Bima Suite',
-      description:
-        'For the bold and the strong. Bima Suite features dramatic double-height ceilings, private gym access, and a plunge pool framed by volcanic stone walls.',
-      imagePath: '/images/villas/forever-pandawa/rooms/garden-suite/main.jpg',
+      id: 'living-and-dinning',
+      label: 'Living and Dinning',
+      description: 'Spacious open-plan living areas designed for relaxation and entertaining with ocean views.',
+      images: [
+        '/images/villas/forever-pandawa/rooms/living-and-dinning/living-and-dinning-1.jpg',
+        '/images/villas/forever-pandawa/rooms/living-and-dinning/living-and-dinning-2.jpg',
+        '/images/villas/forever-pandawa/rooms/living-and-dinning/living-and-dinning-3.jpg',
+        '/images/villas/forever-pandawa/rooms/living-and-dinning/living-and-dinning-4.jpg',
+        '/images/villas/forever-pandawa/rooms/living-and-dinning/living-and-dinning-5.jpg'
+      ],
     },
     {
-      id: 'arjuna',
-      label: 'Arjuna Suite',
-      description:
-        'Grace and precision define this suite. Arjuna overlooks the tropical garden, with a four-poster king bed, carved timber accents, and private ensuite with rainfall shower.',
-      imagePath: '/images/villas/forever-pandawa/rooms/pool-suite/main.jpg',
+      id: 'ocean-suite-1',
+      label: 'Ocean Suite 1',
+      description: 'Wake up to panoramic views of the ocean in this luxuriously appointed suite.',
+      images: [
+        '/images/villas/forever-pandawa/rooms/ocean-suite-1/ocean-suite-1-a.jpg',
+        '/images/villas/forever-pandawa/rooms/ocean-suite-1/ocean-suite-1-b.jpg',
+        '/images/villas/forever-pandawa/rooms/ocean-suite-1/ocean-suite-1-c.jpg',
+        '/images/villas/forever-pandawa/rooms/ocean-suite-1/ocean-suite-1-d.jpg',
+        '/images/villas/forever-pandawa/rooms/ocean-suite-1/ocean-suite-1-e.jpg'
+      ],
     },
     {
-      id: 'nakula',
-      label: 'Nakula Suite',
-      description:
-        'Twin to Sahadeva, the Nakula Suite is a symphony of harmony — balanced proportions, soft natural light, and a shared internal courtyard garden.',
-      imagePath: '/images/villas/forever-pandawa/rooms/family-suite/main.jpg',
+      id: 'ocean-suite-2',
+      label: 'Ocean Suite 2',
+      description: 'Elegant design meets sweeping coastal views in our second master ocean suite.',
+      images: [
+        '/images/villas/forever-pandawa/rooms/ocean-suite-2/ocean-suite-2-a.jpg',
+        '/images/villas/forever-pandawa/rooms/ocean-suite-2/ocean-suite-2-b.jpg',
+        '/images/villas/forever-pandawa/rooms/ocean-suite-2/ocean-suite-2-c.jpg',
+        '/images/villas/forever-pandawa/rooms/ocean-suite-2/ocean-suite-2-d.jpg',
+        '/images/villas/forever-pandawa/rooms/ocean-suite-2/ocean-suite-2-e.jpg'
+      ],
     },
     {
-      id: 'sahadeva',
-      label: 'Sahadeva Suite',
-      description:
-        'Beauty in every detail. Sahadeva Suite features hand-woven textiles, a sunken bath carved from a single volcanic stone, and floor-to-ceiling garden views.',
-      imagePath: '/images/villas/forever-pandawa/rooms/villa-suite/main.jpg',
+      id: 'pandawa-room',
+      label: 'Pandawa Room',
+      description: 'A beautifully crafted room featuring authentic Balinese touches and modern comfort.',
+      images: [
+        '/images/villas/forever-pandawa/rooms/pandawa-room/pandawa-room-1.jpg',
+        '/images/villas/forever-pandawa/rooms/pandawa-room/pandawa-room-2.jpg',
+        '/images/villas/forever-pandawa/rooms/pandawa-room/pandawa-room-3.jpg',
+        '/images/villas/forever-pandawa/rooms/pandawa-room/pandawa-room-4.jpg',
+        '/images/villas/forever-pandawa/rooms/pandawa-room/pandawa-room-5.jpg',
+        '/images/villas/forever-pandawa/rooms/pandawa-room/pandawa-room-6.jpg',
+        '/images/villas/forever-pandawa/rooms/pandawa-room/pandawa-room-7.jpg'
+        
+      ],
+    },
+    {
+      id: 'pandawa-studio',
+      label: 'Pandawa Studio',
+      description: 'A private and intimate space, perfect for quiet moments and ultimate relaxation.',
+      images: [
+        '/images/villas/forever-pandawa/rooms/pandawa-studio/pandawa-studio-1.jpg',
+        '/images/villas/forever-pandawa/rooms/pandawa-studio/pandawa-studio-2.jpg',
+        '/images/villas/forever-pandawa/rooms/pandawa-studio/pandawa-studio-3.jpg',
+        '/images/villas/forever-pandawa/rooms/pandawa-studio/pandawa-studio-4.jpg',
+        '/images/villas/forever-pandawa/rooms/pandawa-studio/pandawa-studio-5.jpg'
+      ],
+    },
+    {
+      id: 'pool-view-room',
+      label: 'Pool View Room',
+      description: 'With the infinity pool just steps from the bed, offering an effortless indoor-outdoor living experience.',
+      images: [
+        '/images/villas/forever-pandawa/rooms/pool-view-room/pool-view-room-1.jpg',
+        '/images/villas/forever-pandawa/rooms/pool-view-room/pool-view-room-2.jpg',
+        '/images/villas/forever-pandawa/rooms/pool-view-room/pool-view-room-3.jpg'
+      ],
     },
   ],
   facilities: [
