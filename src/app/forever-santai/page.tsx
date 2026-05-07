@@ -14,30 +14,74 @@ const santaiData: VillaData = {
   tagline: 'Newly Renovated and Ready for Your Stay',
   heroTagline: 'Forever Santai • Nusa Dua, Bali',
   heroDescription:
-    'Some villas offer a stay. Forever Santai offers a transformation. Santai — meaning "relaxed" in Balinese — is a haven of calm, surrounded by lush tropical gardens overlooking the endless azure.',
+    'Forever Santai is a spacious three-story luxury villa designed for comfort, privacy, and effortless group living. The villa features six bedrooms (five king bedrooms and one bedroom with 2 twins) and six bathrooms and can sleep 12 to 14 with added beds.',
   description:
-    'Our villas are fully equipped and acquainted with luxuries and generous amenities including private spa and massage spaces, fully functional gym and areas for other recreational sports such as table tennis.',
+    'Each room enjoys smart TVs, desks or dressers, spacious closets and air conditioning. Living spaces are spread across three levels: a garden level, a pool level, and an ocean-view level.',
   longDescription:
-    'Forever Santai is newly renovated, blending contemporary design with authentic Balinese craftsmanship. Every detail has been considered — from the hand-carved stone statues to the infinity-edge pool that appears to merge with the ocean horizon.',
+    'Amenities include a fully equipped kitchen, indoor dining area, gym infinity pool with sun deck, private spa room, movie room, ping-pong table, and high-speed Wi-Fi throughout. The villa is fully staffed and includes a private chef for seamless in-villa dining.',
   heroImage: '/images/villas/forever-santai/hero/hero.jpg',
   heroVideo: '/videos/villas/forever-santai/forever-santai-video.mp4',
-  amenityTags: [
-    '🌊 À la Carte',
-    '💆 Spa',
-    '🛁 Bathroom',
-    '🍽️ Dining Room',
-    '📚 Board Games',
-    '🏋️ Gym',
-    '🌿 Garden',
-    '🏊 Pool',
-    '🎾 Tennis',
-    '🌙 Terrace',
+  amenities: [
+    { label: 'À la Carte', icon: '/images/icons/villas-icon/Breakfast.png' },
+    { label: 'Spa', icon: '/images/icons/villas-icon/Alarm.png' }, // or something else, but we don't have Spa icon. I will use Alarm for now or omit. Wait, we have AC, Alarm, Bathtub, Bed, Breakfast, Cook, Food, Grill, Pool, Sofa.
+    { label: 'Bathroom', icon: '/images/icons/villas-icon/Bathtub.png' },
+    { label: 'Dining Room', icon: '/images/icons/villas-icon/Food.png' },
+    { label: 'Air Conditioning', icon: '/images/icons/villas-icon/AC.png' },
+    { label: 'Bedrooms', icon: '/images/icons/villas-icon/Bed.png' },
+    { label: 'Private Chef', icon: '/images/icons/villas-icon/Cook.png' },
+    { label: 'Pool', icon: '/images/icons/villas-icon/Pool.png' },
+    { label: 'Living Room', icon: '/images/icons/villas-icon/Sofa.png' },
+    { label: 'BBQ Facility', icon: '/images/icons/villas-icon/Grill.png' },
   ],
   rooms: [
     {
+      id: 'ocean-lookout-master',
+      label: 'Ocean Lookout Master',
+      description: 'Perched on the 3rd and highest level, this suite comes with marble bathtub, indoor and outdoor shower and closest access to the ocean lookout patio.',
+      images: [
+        '/images/villas/forever-santai/rooms/ocean-lookout-master/1.jpg',
+        '/images/villas/forever-santai/rooms/ocean-lookout-master/2.jpg',
+        '/images/villas/forever-santai/rooms/ocean-lookout-master/3.jpg',
+        '/images/villas/forever-santai/rooms/ocean-lookout-master/4.jpg',
+        '/images/villas/forever-santai/rooms/ocean-lookout-master/5.jpg',
+        '/images/villas/forever-santai/rooms/ocean-lookout-master/6.jpg'
+      ],
+    },
+    {
+      id: 'santai-master',
+      label: 'Santai Master',
+      description: 'Located on one side of the infinity pool, this master suite has an indoor shower, a private outdoor tub and a separate balcony.',
+      images: [
+        '/images/villas/forever-santai/rooms/santai-master/1.jpg',
+        '/images/villas/forever-santai/rooms/santai-master/2.jpg',
+        '/images/villas/forever-santai/rooms/santai-master/3.jpg',
+        '/images/villas/forever-santai/rooms/santai-master/4.jpg'
+      ],
+    },
+    {
+      id: 'santai-guest',
+      label: 'Santai Guest',
+      description: 'This suite’s beautiful view will have you stepping straight from bed to the pool in just a few effortless steps.',
+      images: [
+        '/images/villas/forever-santai/rooms/santai-guest/1.jpg',
+        '/images/villas/forever-santai/rooms/santai-guest/2.jpg',
+        '/images/villas/forever-santai/rooms/santai-guest/3.jpg'
+      ],
+    },
+    {
+      id: 'santai-childrens',
+      label: "Santai Children's",
+      description: 'This suite is ideal for children or teenagers who want their own space. It features two twin beds however they can be converted in to a King size upon request. The ensuite bathroom includes a luxurious bathtub, perfect for unwinding after a day of activities.',
+      images: [
+        '/images/villas/forever-santai/rooms/santai-childrens/1.jpg',
+        '/images/villas/forever-santai/rooms/santai-childrens/2.jpg',
+        '/images/villas/forever-santai/rooms/santai-childrens/3.jpg'
+      ],
+    },
+    {
       id: 'garden-view-studio',
       label: 'Garden View Studio',
-      description: 'A beautifully appointed studio surrounded by lush tropical greenery, offering complete privacy and peace.',
+      description: 'Equipped with a kitchenette for simple cooking and a private, tucked-away feel on the garden level. Enjoy the quaint garden pathway and your own plunge pool for quiet moments of relaxation.',
       images: [
         '/images/villas/forever-santai/rooms/garden-view-studio/1.jpg',
         '/images/villas/forever-santai/rooms/garden-view-studio/2.jpg',
@@ -50,58 +94,21 @@ const santaiData: VillaData = {
       ],
     },
     {
-      id: 'ocean-lookout-master',
-      label: 'Ocean Lookout Master',
-      description: 'An elevated master suite offering sweeping, uninterrupted views of the ocean from a private balcony.',
-      images: [
-        '/images/villas/forever-santai/rooms/ocean-lookout-master/1.jpg',
-        '/images/villas/forever-santai/rooms/ocean-lookout-master/2.jpg',
-        '/images/villas/forever-santai/rooms/ocean-lookout-master/3.jpg',
-        '/images/villas/forever-santai/rooms/ocean-lookout-master/4.jpg',
-        '/images/villas/forever-santai/rooms/ocean-lookout-master/5.jpg',
-        '/images/villas/forever-santai/rooms/ocean-lookout-master/6.jpg'
-      ],
-    },
-    {
-      id: 'santai-childrens',
-      label: "Santai Children's",
-      description: 'A thoughtfully designed room crafted specially for our younger guests to rest and play.',
-      images: [
-        '/images/villas/forever-santai/rooms/santai-childrens/1.jpg',
-        '/images/villas/forever-santai/rooms/santai-childrens/2.jpg',
-        '/images/villas/forever-santai/rooms/santai-childrens/3.jpg'
-      ],
-    },
-    {
       id: 'santai-garden-view',
-      label: 'Santai Garden View',
-      description: 'Immersed in nature, this spacious room features natural materials and floor-to-ceiling garden views.',
+      label: 'Garden View Guest',
+      description: 'This large and spacious suite is tucked in a cozy corner in the garden level. Perfect for the guest who relishes little extra privacy.',
       images: [
         '/images/villas/forever-santai/rooms/santai-garden-view-guest/1.jpg',
         '/images/villas/forever-santai/rooms/santai-garden-view-guest/2.jpg'
       ],
     },
-    {
-      id: 'santai-guest',
-      label: 'Santai Guest',
-      description: 'A luxurious and welcoming space designed to provide the ultimate comfort for visiting guests.',
-      images: [
-        '/images/villas/forever-santai/rooms/santai-guest/1.jpg',
-        '/images/villas/forever-santai/rooms/santai-guest/2.jpg',
-        '/images/villas/forever-santai/rooms/santai-guest/3.jpg'
-      ],
-    },
-    {
-      id: 'santai-master',
-      label: 'Santai Master',
-      description: 'Our signature master suite featuring premium amenities, an open-plan bathroom, and unparalleled luxury.',
-      images: [
-        '/images/villas/forever-santai/rooms/santai-master/1.jpg',
-        '/images/villas/forever-santai/rooms/santai-master/2.jpg',
-        '/images/villas/forever-santai/rooms/santai-master/3.jpg',
-        '/images/villas/forever-santai/rooms/santai-master/4.jpg'
-      ],
-    },
+  ],
+  galleryImages: [
+    '/images/villas/forever-santai/gallery/60-DSC05649.jpg',
+    '/images/villas/forever-santai/gallery/Forever Santai A 10 HR.jpg',
+    '/images/villas/forever-santai/gallery/Forever Santai A 11 HR.jpg',
+    '/images/villas/forever-santai/gallery/Forever Santai A 12 HR.jpg',
+    '/images/villas/forever-santai/gallery/Outdoor seating.JPG'
   ],
   facilities: [
     {

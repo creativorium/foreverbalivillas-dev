@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import NewsletterStrip from '@/components/NewsletterStrip';
 import Footer from '@/components/Footer';
 import VillaRoomsGallery from './VillaRoomsGallery';
+import VillaGalleryTestimonies, { TestimonyData } from './VillaGalleryTestimonies';
 import styles from './VillaPage.module.css';
 
 export interface RoomTab {
@@ -20,6 +20,11 @@ export interface FacilityCard {
   imagePath: string;
 }
 
+export interface Amenity {
+  label: string;
+  icon: string;
+}
+
 export interface VillaData {
   slug: string;
   name: string;
@@ -30,8 +35,10 @@ export interface VillaData {
   longDescription: string;
   heroImage?: string;
   heroVideo?: string;
-  amenityTags: string[];
+  amenities: Amenity[];
   rooms: RoomTab[];
+  galleryImages: string[];
+  testimonies?: TestimonyData[];
   facilities: FacilityCard[];
   bookingUrl?: string;
 }
@@ -42,19 +49,6 @@ interface VillaPageProps {
 
 export default function VillaPage({ villa }: VillaPageProps) {
   const [activeRoom, setActiveRoom] = useState(villa.rooms[0]?.id || '');
-  const [facilityIndex, setFacilityIndex] = useState(0);
-  const currentRoom = villa.rooms.find(r => r.id === activeRoom) || villa.rooms[0];
-
-  const prevFacility = () =>
-    setFacilityIndex(i => (i - 1 + villa.facilities.length) % villa.facilities.length);
-  const nextFacility = () =>
-    setFacilityIndex(i => (i + 1) % villa.facilities.length);
-
-  // Show 3 facilities at a time
-  const visibleFacilities = [0, 1, 2].map(
-    offset => villa.facilities[(facilityIndex + offset) % villa.facilities.length]
-  );
-
   return (
     <>
       {/* ── HERO ── */}
@@ -86,10 +80,10 @@ export default function VillaPage({ villa }: VillaPageProps) {
           <div className={styles.heroDivider} />
           
           <div className={styles.heroAmenities}>
-            {villa.amenityTags.map(tag => (
-              <span key={tag} className={styles.heroAmenityItem}>
-                {/* For now rendering the string as is. Replace with SVG icons if needed. */}
-                {tag}
+            {villa.amenities.map(amenity => (
+              <span key={amenity.label} className={styles.heroAmenityItem}>
+                <img src={amenity.icon} alt="" className={styles.heroAmenityIcon} />
+                {amenity.label}
               </span>
             ))}
           </div>
@@ -108,50 +102,18 @@ export default function VillaPage({ villa }: VillaPageProps) {
       </section>
 
       {/* ── THE ROOMS ── */}
-      {/* ── THE ROOMS ── */}
       <VillaRoomsGallery rooms={villa.rooms} />
 
-      {/* ── FACILITIES & SERVICES ── */}
-      <section className={styles.facilitiesSection} aria-label="Facilities and services">
-        <div className="container">
-          <h2 className={`t-h2 ${styles.facilitiesTitle}`} data-reveal>
-            Facilities &amp; Services
-          </h2>
-          <p className={styles.facilitiesDesc} data-reveal>
-            {villa.name} is fully equipped and acquainted with luxuries and generous amenities including private spa and massage spaces, fully functional gym and areas for other recreational sports such as table tennis.
-          </p>
+      {/* ── GALLERY & TESTIMONIES ── */}
+      <VillaGalleryTestimonies 
+        images={villa.galleryImages} 
+        testimonies={villa.testimonies} 
+      />
 
-          <div className={styles.facilitiesCarousel}>
-            <button className={styles.carouselBtn} onClick={prevFacility} aria-label="Previous facility">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <polyline points="15 18 9 12 15 6"/>
-              </svg>
-            </button>
-
-            <div className={styles.facilitiesGrid}>
-              {visibleFacilities.map((facility, i) => (
-                <div key={`${facility.title}-${i}`} className={styles.facilityCard}>
-                  <div className={styles.facilityImg}>
-                    {/* REPLACE: add facility-[n].jpg to public/images/villas/[slug]/facilities/ */}
-                    <div className={styles.facilityImgPlaceholder}>
-                      <span>{facility.title}</span>
-                    </div>
-                    <div className={styles.facilityOverlay} />
-                  </div>
-                  <div className={styles.facilityBody}>
-                    <h4 className={styles.facilityTitle}>{facility.title}</h4>
-                    <p className={styles.facilityDesc}>{facility.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <button className={styles.carouselBtn} onClick={nextFacility} aria-label="Next facility">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <polyline points="9 18 15 12 9 6"/>
-              </svg>
-            </button>
-          </div>
+      {/* ── IMAGE SEPARATOR ── */}
+      <section className={styles.separatorSection}>
+        <div className={styles.separatorImageWrap}>
+          <img src="/images/separator-villas/separator-villas.jpg" alt="Separator" className={styles.separatorImage} />
         </div>
       </section>
 
@@ -170,7 +132,6 @@ export default function VillaPage({ villa }: VillaPageProps) {
         </div>
       </section>
 
-      <NewsletterStrip />
       <Footer />
     </>
   );

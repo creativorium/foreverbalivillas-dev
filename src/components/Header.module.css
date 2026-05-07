@@ -230,3 +230,37 @@
   justify-content: flex-end;
   align-items: center;
 }
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+@media (max-width: 768px) {
+  .logoImg {
+    width: 110px;
+    height: 55px;
+  }
+  .scrolled .logoImg {
+    width: 90px;
+    height: 45px;
+  }
+  .inner {
+    height: 100px;
+    padding: 20px clamp(16px, 4vw, 24px);
+  }
+  .scrolled .inner {
+    height: 60px;
+  }
+  .bookBtn {
+    padding: 0 16px;
+    height: 38px;
+    font-size: 0.55rem;
+  }
+  .navGroup {
+    height: 38px;
+    padding: 4px 4px 4px 10px;
+  }
+  .hamburger {
+    width: 24px;
+    height: 24px;
+  }
+}

@@ -103,7 +103,7 @@ button {
    ============================================= */
 .t-hero {
   font-family: var(--font-heading);
-  font-size: clamp(2.5rem, 6vw, 5.5rem);
+  font-size: clamp(2rem, 8vw, 5.5rem);
   font-weight: 700;
   line-height: 1.1;
   letter-spacing: 0.02em;
@@ -112,7 +112,7 @@ button {
 
 .t-h1 {
   font-family: var(--font-heading);
-  font-size: clamp(2rem, 4.5vw, 4rem);
+  font-size: clamp(1.8rem, 6vw, 4rem);
   font-weight: 600;
   line-height: 1.15;
   text-transform: capitalize;
@@ -120,7 +120,7 @@ button {
 
 .t-h2 {
   font-family: var(--font-heading);
-  font-size: clamp(1.6rem, 3vw, 2.8rem);
+  font-size: clamp(1.4rem, 5vw, 2.8rem);
   font-weight: 600;
   line-height: 1.2;
   text-transform: capitalize;

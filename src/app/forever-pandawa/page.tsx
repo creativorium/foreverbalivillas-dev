@@ -14,54 +14,30 @@ const pandawaData: VillaData = {
   tagline: 'Where Tradition Meets Modern Luxury',
   heroTagline: 'Forever Pandawa • Nusa Dua, Bali',
   heroDescription:
-    'Inspired by the heroic Pandawa of the Mahabharata, this villa is a masterwork of cultural storytelling and modern luxury. Five bedrooms. Five elements. One unforgettable journey.',
+    'Forever Pandawa is a stylish luxury villa designed for relaxed coastal living near Pandawa Beach. The villa features six spacious bedrooms and six bathrooms, and ca also can sleep 12 to 14 with added beds offering comfort and privacy for families or groups.',
   description:
-    'Our villas are fully equipped and acquainted with luxuries and generous amenities including private spa and massage spaces, fully functional gym and areas for other recreational sports such as table tennis.',
+    'Open-plan living and dining areas connect seamlessly to the outdoor spaces, creating an easy indoor–outdoor flow.',
   longDescription:
-    'Forever Pandawa draws from the rich mythology of Bali, where five brothers — Yudhistira, Bima, Arjuna, Nakula, and Sahadeva — each represent a virtue. Each bedroom is a tribute: wisdom, strength, grace, harmony, and beauty manifest in extraordinary design.',
+    'Guests can enjoy a private swimming pool, sun loungers, a fully equipped kitchen, air-conditioned bedrooms, and high-speed Wi-Fi, all supported by attentive in-villa staff for a smooth, comfortable stay.',
   heroImage: '/images/villas/forever-pandawa/hero/hero.jpg',
   heroVideo: '/videos/villas/forever-pandawa/forever-pandawa-video.mp4',
-  amenityTags: [
-    '🌊 À la Carte',
-    '💆 Spa',
-    '🛁 Bathroom',
-    '🍽️ Dining Room',
-    '📚 Board Games',
-    '🏋️ Gym',
-    '🌿 Garden',
-    '🏊 Pool',
-    '🎾 Tennis',
-    '🌙 Terrace',
+  amenities: [
+    { label: 'À la Carte', icon: '/images/icons/villas-icon/Breakfast.png' },
+    { label: 'Bathroom', icon: '/images/icons/villas-icon/Bathtub.png' },
+    { label: 'Dining Room', icon: '/images/icons/villas-icon/Food.png' },
+    { label: 'Air Conditioning', icon: '/images/icons/villas-icon/AC.png' },
+    { label: 'Bedrooms', icon: '/images/icons/villas-icon/Bed.png' },
+    { label: 'Private Chef', icon: '/images/icons/villas-icon/Cook.png' },
+    { label: 'Pool', icon: '/images/icons/villas-icon/Pool.png' },
+    { label: 'Living Room', icon: '/images/icons/villas-icon/Sofa.png' },
+    { label: 'BBQ Facility', icon: '/images/icons/villas-icon/Grill.png' },
+    { label: '24/7 Security', icon: '/images/icons/villas-icon/Alarm.png' },
   ],
   rooms: [
     {
-      id: 'garden-view-room',
-      label: 'Garden View Room',
-      description: 'A serene retreat surrounded by lush tropical gardens, offering a peaceful escape.',
-      images: [
-        '/images/villas/forever-pandawa/rooms/garden-view-room/garden-view-room-1.jpg',
-        '/images/villas/forever-pandawa/rooms/garden-view-room/garden-view-room-2.jpg',
-        '/images/villas/forever-pandawa/rooms/garden-view-room/garden-view-room-3.jpg',
-        '/images/villas/forever-pandawa/rooms/garden-view-room/garden-view-room-4.jpg',
-        '/images/villas/forever-pandawa/rooms/garden-view-room/garden-view-room-5.jpg'
-      ],
-    },
-    {
-      id: 'living-and-dinning',
-      label: 'Living and Dinning',
-      description: 'Spacious open-plan living areas designed for relaxation and entertaining with ocean views.',
-      images: [
-        '/images/villas/forever-pandawa/rooms/living-and-dinning/living-and-dinning-1.jpg',
-        '/images/villas/forever-pandawa/rooms/living-and-dinning/living-and-dinning-2.jpg',
-        '/images/villas/forever-pandawa/rooms/living-and-dinning/living-and-dinning-3.jpg',
-        '/images/villas/forever-pandawa/rooms/living-and-dinning/living-and-dinning-4.jpg',
-        '/images/villas/forever-pandawa/rooms/living-and-dinning/living-and-dinning-5.jpg'
-      ],
-    },
-    {
       id: 'ocean-suite-1',
       label: 'Ocean Suite 1',
-      description: 'Wake up to panoramic views of the ocean in this luxuriously appointed suite.',
+      description: 'The epitome of modern Balinese luxury, Ocean Suite 1 offers uninterrupted ocean views directly from the bed. The experience is elevated by a sculptural marble bathtub and striking stone relief artwork, creating a serene and indulgent retreat.',
       images: [
         '/images/villas/forever-pandawa/rooms/ocean-suite-1/ocean-suite-1-a.jpg',
         '/images/villas/forever-pandawa/rooms/ocean-suite-1/ocean-suite-1-b.jpg',
@@ -73,7 +49,7 @@ const pandawaData: VillaData = {
     {
       id: 'ocean-suite-2',
       label: 'Ocean Suite 2',
-      description: 'Elegant design meets sweeping coastal views in our second master ocean suite.',
+      description: 'Designed for added privacy, Ocean Suite 2 features a separate private entrance and a secluded balcony, perfect for quiet mornings overlooking the ocean. The suite also includes an outdoor bathtub set beside the tranquil turtle pond.',
       images: [
         '/images/villas/forever-pandawa/rooms/ocean-suite-2/ocean-suite-2-a.jpg',
         '/images/villas/forever-pandawa/rooms/ocean-suite-2/ocean-suite-2-b.jpg',
@@ -83,24 +59,31 @@ const pandawaData: VillaData = {
       ],
     },
     {
-      id: 'pandawa-room',
-      label: 'Pandawa Room',
-      description: 'A beautifully crafted room featuring authentic Balinese touches and modern comfort.',
+      id: 'garden-view-room',
+      label: 'Garden View Room',
+      description: 'Conveniently located near the living area and pool, the Garden View Room enjoys easy access to the villa’s social spaces while overlooking Pandawa’s koi and turtle pond. A peaceful setting that balances connection and calm.',
       images: [
-        '/images/villas/forever-pandawa/rooms/pandawa-room/pandawa-room-1.jpg',
-        '/images/villas/forever-pandawa/rooms/pandawa-room/pandawa-room-2.jpg',
-        '/images/villas/forever-pandawa/rooms/pandawa-room/pandawa-room-3.jpg',
-        '/images/villas/forever-pandawa/rooms/pandawa-room/pandawa-room-4.jpg',
-        '/images/villas/forever-pandawa/rooms/pandawa-room/pandawa-room-5.jpg',
-        '/images/villas/forever-pandawa/rooms/pandawa-room/pandawa-room-6.jpg',
-        '/images/villas/forever-pandawa/rooms/pandawa-room/pandawa-room-7.jpg'
-        
+        '/images/villas/forever-pandawa/rooms/garden-view-room/garden-view-room-1.jpg',
+        '/images/villas/forever-pandawa/rooms/garden-view-room/garden-view-room-2.jpg',
+        '/images/villas/forever-pandawa/rooms/garden-view-room/garden-view-room-3.jpg',
+        '/images/villas/forever-pandawa/rooms/garden-view-room/garden-view-room-4.jpg',
+        '/images/villas/forever-pandawa/rooms/garden-view-room/garden-view-room-5.jpg'
+      ],
+    },
+    {
+      id: 'pool-view-room',
+      label: 'Pool View Room',
+      description: 'With the infinity pool just steps from the bed, the Pool View Room offers an effortless indoor–outdoor living experience. Wake to ocean views and step straight into the pool, with the sea always within sight.',
+      images: [
+        '/images/villas/forever-pandawa/rooms/pool-view-room/pool-view-room-1.jpg',
+        '/images/villas/forever-pandawa/rooms/pool-view-room/pool-view-room-2.jpg',
+        '/images/villas/forever-pandawa/rooms/pool-view-room/pool-view-room-3.jpg'
       ],
     },
     {
       id: 'pandawa-studio',
       label: 'Pandawa Studio',
-      description: 'A private and intimate space, perfect for quiet moments and ultimate relaxation.',
+      description: 'Situated on the lower garden level, the Pandawa Studio features its own dining area and generous space, making it ideal for families or guests requiring additional room. The studio comfortably accommodates extra beds.',
       images: [
         '/images/villas/forever-pandawa/rooms/pandawa-studio/pandawa-studio-1.jpg',
         '/images/villas/forever-pandawa/rooms/pandawa-studio/pandawa-studio-2.jpg',
@@ -110,15 +93,26 @@ const pandawaData: VillaData = {
       ],
     },
     {
-      id: 'pool-view-room',
-      label: 'Pool View Room',
-      description: 'With the infinity pool just steps from the bed, offering an effortless indoor-outdoor living experience.',
+      id: 'pandawa-room',
+      label: 'Pandawa Room',
+      description: 'Also located on the lower garden level, the Pandawa Room is a spacious yet intimate retreat with a warm, cozy atmosphere — perfect for guests seeking comfort and privacy.',
       images: [
-        '/images/villas/forever-pandawa/rooms/pool-view-room/pool-view-room-1.jpg',
-        '/images/villas/forever-pandawa/rooms/pool-view-room/pool-view-room-2.jpg',
-        '/images/villas/forever-pandawa/rooms/pool-view-room/pool-view-room-3.jpg'
+        '/images/villas/forever-pandawa/rooms/pandawa-room/pandawa-room-1.jpg',
+        '/images/villas/forever-pandawa/rooms/pandawa-room/pandawa-room-2.jpg',
+        '/images/villas/forever-pandawa/rooms/pandawa-room/pandawa-room-3.jpg',
+        '/images/villas/forever-pandawa/rooms/pandawa-room/pandawa-room-4.jpg',
+        '/images/villas/forever-pandawa/rooms/pandawa-room/pandawa-room-5.jpg',
+        '/images/villas/forever-pandawa/rooms/pandawa-room/pandawa-room-6.jpg',
+        '/images/villas/forever-pandawa/rooms/pandawa-room/pandawa-room-7.jpg'
       ],
     },
+  ],
+  galleryImages: [
+    '/images/villas/forever-pandawa/gallery/20250551 Harding Forever Pandawa Forever Santai_DSC21175 lo res.jpg',
+    '/images/villas/forever-pandawa/gallery/Forever Santai B 23 HR.jpg',
+    '/images/villas/forever-pandawa/gallery/Forever Santai B 24 HR.jpg',
+    '/images/villas/forever-pandawa/gallery/Forever Santai B 25 HR.jpg',
+    '/images/villas/forever-pandawa/gallery/Forever Santai B 37 HR.jpg'
   ],
   facilities: [
     {
