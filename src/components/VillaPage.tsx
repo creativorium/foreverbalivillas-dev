@@ -117,20 +117,6 @@ export default function VillaPage({ villa }: VillaPageProps) {
         </div>
       </section>
 
-      {/* ── OTA PARTNERS ── */}
-      <section className={styles.otaSection} aria-label="Book on">
-        <div className="container">
-          <div className={styles.otaInner}>
-            <p className={`t-label ${styles.otaLabel}`}>Also Available On</p>
-            <div className={styles.otaLogos}>
-              {/* REPLACE: add actual logos to public/images/logos/ */}
-              <div className={styles.otaLogo}>Booking.com</div>
-              <div className={styles.otaLogo}>agoda ●●●●●</div>
-              <div className={styles.otaLogo}>traveloka✦</div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       <Footer />
     </>

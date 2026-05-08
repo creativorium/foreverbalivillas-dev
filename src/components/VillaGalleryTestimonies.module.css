@@ -26,9 +26,10 @@
   display: flex;
   gap: 16px;
   overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  /* no scroll-snap — our momentum drag handles positioning */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  touch-action: pan-y;
 }
 
 .track::-webkit-scrollbar { 
@@ -40,7 +41,6 @@
   min-width: 280px;
   aspect-ratio: 4 / 3;
   position: relative;
-  scroll-snap-align: start;
   cursor: pointer;
 }
 
@@ -80,14 +80,15 @@
    ========================================== */
 .testimoniesContainer {
   text-align: center;
-  padding-top: 40px;
+  padding-top: 60px;
+  padding-bottom: 20px;
 }
 
 .testimoniesHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 30px;
+  margin-bottom: 40px;
   padding: 0 16px;
 }
 
@@ -95,7 +96,7 @@
   font-family: var(--font-sans);
   font-weight: 300;
   font-size: clamp(2rem, 4vw, 3rem);
-  color: #444;
+  color: #333;
   margin: 0;
 }
 
@@ -108,67 +109,73 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 1px solid var(--gray-light);
+  border: 1px solid #ccc;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--dark);
+  color: #333;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.2s, border-color 0.2s;
   background: transparent;
 }
 
 .testNavBtn:hover:not(:disabled) {
-  background: var(--white);
-  border-color: var(--gray);
+  background: #222;
+  border-color: #222;
+  color: #fff;
 }
 
 .testNavBtn:disabled {
-  opacity: 0.4;
+  opacity: 0.3;
   cursor: not-allowed;
 }
 
 .testimoniesTrackWrapper {
+  /* FIXED height = tallest possible card + track top-padding.
+     The section height never changes, so nothing below shifts.
+     Active card grows upward into this reserved space. */
   overflow: hidden;
   width: 100%;
+  height: 500px; /* base 270 + active extra ~110 + track padding 120 */
 }
 
 .testimoniesTrack {
   display: flex;
-  gap: 24px;
+  gap: 16px;
+  align-items: flex-end; /* all cards sit on the same bottom baseline */
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding: 20px 16px; /* give some room for scale effect */
+  height: 100%;
+  padding: 80px 20px 32px; /* top space for the active card to grow into */
+  box-sizing: border-box;
 }
 
 .testimoniesTrack::-webkit-scrollbar {
   display: none;
 }
 
+/* ── Base card: fixed bottom-padding, min-height, no transitions that affect layout ─── */
 .testimonyCard {
-  flex: 0 0 calc(33.333% - 16px);
-  min-width: 300px;
-  background: var(--cream);
-  padding: 40px 30px;
-  border-radius: 4px;
+  flex: 0 0 calc(33.333% - 11px);
+  min-width: 260px;
+  background: #e8ddd0;
+  padding: 36px 28px;
+  border-radius: 2px;
   text-align: left;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), background 0.4s ease, box-shadow 0.4s ease, opacity 0.4s ease;
   scroll-snap-align: center;
-  transform: scale(0.92);
-  opacity: 0.75;
+  /* Animate padding only — doesn’t affect track/wrapper height */
+  transition: padding-top 0.4s ease;
+  align-self: flex-end; /* stick to bottom edge of track */
 }
 
+/* ── Active card: grows taller upward via increased top-padding ─── */
 .testimonyCardActive {
-  background: #d8cdbe;
-  transform: scale(1.06);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
-  z-index: 2;
-  opacity: 1;
+  padding-top: 68px; /* extra top space makes card taller, grows toward top */
 }
 
 /* ==========================================
@@ -240,11 +247,13 @@
 }
 
 .quoteIcon svg {
-  width: 48px;
-  height: 48px;
-  fill: #d0c8bd;
-  margin-left: -8px; /* Offset to align visually */
+  width: 40px;
+  height: 40px;
+  fill: #ccc;
+  margin-left: -6px;
 }
+
+/* No colour overrides needed — all cards share the same beige palette */
 
 .stars {
   display: flex;
@@ -253,10 +262,10 @@
 
 .testimonyText {
   font-family: var(--font-sans);
-  font-size: 1.05rem;
+  font-size: 1rem;
   color: #555;
-  line-height: 1.5;
-  margin-bottom: 24px;
+  line-height: 1.65;
+  margin-bottom: 16px;
 }
 
 .authorRow {
@@ -267,14 +276,15 @@
 }
 
 .authorAvatar {
-  width: 32px;
-  height: 32px;
-  background: #333;
+  width: 34px;
+  height: 34px;
+  background: #222;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
+  flex-shrink: 0;
 }
 
 .authorAvatar svg {
@@ -284,8 +294,9 @@
 
 .authorName {
   font-family: var(--font-sans);
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
   color: #333;
 }
 
@@ -294,16 +305,13 @@
    ========================================== */
 @media (max-width: 900px) {
   .testimonyCard {
-    flex: 0 0 calc(50% - 12px);
-    transform: scale(0.95);
-    opacity: 0.8;
-  }
-  .testimonyCardActive {
-    transform: scale(1.03);
-    opacity: 1;
+    flex: 0 0 calc(60% - 10px);
   }
   .slide {
     flex: 0 0 calc(50% - 8px);
+  }
+  .testimoniesTrackWrapper {
+    height: 420px;
   }
 }
 
@@ -312,7 +320,10 @@
     flex: 0 0 100%;
   }
   .testimonyCard {
-    flex: 0 0 100%;
+    flex: 0 0 85%;
+  }
+  .testimoniesTrackWrapper {
+    height: 380px;
   }
   .testimoniesHeader {
     flex-direction: column;

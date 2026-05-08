@@ -1,15 +1,30 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import NavOverlay from './NavOverlay';
 import styles from './Header.module.css';
 
+// Pages that have a light/white background behind the header
+// — on these, logo and buttons should default to dark colours
+const LIGHT_BG_PATHS = [
+  '/cancellation-policy',
+  '/faq',
+];
+
+const isLightBgPath = (path: string) =>
+  LIGHT_BG_PATHS.some(p => path === p || path.startsWith(p + '/')) ||
+  // journal detail pages (not the archive itself)
+  (path.startsWith('/journal/') && path.length > '/journal/'.length);
+
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
+  const pathname = usePathname();
+  const forcedLight = isLightBgPath(pathname);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -29,7 +44,7 @@ export default function Header() {
     <>
       <header
         ref={headerRef}
-        className={`${styles.header} ${scrolled ? styles.scrolled : ''} ${navOpen ? styles.navActive : ''}`}
+        className={`${styles.header} ${scrolled ? styles.scrolled : ''} ${navOpen ? styles.navActive : ''} ${forcedLight ? styles.forcedLight : ''}`}
       >
         <div className={styles.inner}>
           {/* Left: nav group capsule = hamburger + FEATURES pill inside a bordered container */}

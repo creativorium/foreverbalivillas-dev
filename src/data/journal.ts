@@ -17,35 +17,52 @@ export interface JournalPost {
   title: string;
   excerpt: string;
   coverImage: string;   // path inside /public
+  gallery?: string[];   // 3 images for the details page
   date: string;         // ISO date string e.g. '2025-01-15'
   category?: string;    // optional label e.g. 'Lifestyle'
 }
 
 export const POSTS: JournalPost[] = [
   {
-    slug: 'art-of-slowing-down',
-    title: 'The Art Of Slowing Down',
+    slug: 'art-of-slow-living',
+    title: 'The Art of Slow Living: A Balinese Way of Being',
     excerpt:
-      'Discover the philosophy behind Forever Bali Villas — where time slows, senses awaken, and every moment is crafted for pure presence.',
+      'Bali does not reveal itself quickly. It rewards those who are willing to sit still long enough to truly see it.',
     coverImage: '/images/journal/blog-image-1.jpg',
+    gallery: [
+      '/images/journal/blog-image-1.jpg',
+      '/images/journal/blog-image-2.jpg',
+      '/images/journal/blog-image-3.jpg'
+    ],
     date: '2025-01-15',
     category: 'Lifestyle',
   },
   {
     slug: 'blog-fbv-1',
-    title: 'Blog FBV #1',
+    title: 'Lorem Ipsum Dolor sit Amet',
     excerpt:
-      'Perched above Pandawa Beach, Forever Santai blends Balinese architecture with contemporary luxury for an unforgettable retreat.',
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor.',
     coverImage: '/images/journal/blog-image-2.jpg',
+    gallery: [
+      '/images/journal/blog-image-2.jpg',
+      '/images/journal/blog-image-3.jpg',
+      '/images/journal/blog-image-1.jpg'
+    ],
     date: '2025-02-10',
-    category: 'Villas',
+    category: 'Travel Guides',
   },
   {
     slug: 'blog-fbv-2',
-    title: 'Blog FBV #2',
+    title: 'Lorem Ipsum Dolor sit Amet',
+    // second post slug differs so URLs are unique
     excerpt:
       'Sweeping ocean views, an infinity pool, and six spacious suites — Forever Pandawa is designed for moments that last forever.',
     coverImage: '/images/journal/blog-image-3.jpg',
+    gallery: [
+      '/images/journal/blog-image-3.jpg',
+      '/images/journal/blog-image-1.jpg',
+      '/images/journal/blog-image-2.jpg'
+    ],
     date: '2025-03-05',
     category: 'Villas',
   },
@@ -70,9 +87,9 @@ export const POSTS: JournalPost[] = [
  * Change these slugs any time to swap which posts appear on the home page.
  */
 export const HOME_FEATURED_SLUGS = [
-  'art-of-slowing-down',  // [0] big full-width top card
-  'blog-fbv-1',           // [1] bottom-left card
-  'blog-fbv-2',           // [2] bottom-right card
+  'art-of-slow-living',  // [0] big full-width top card
+  'blog-fbv-1',          // [1] bottom-left card
+  'blog-fbv-2',          // [2] bottom-right card
 ];
 
 /** Helper: get the 3 home-featured posts in order */

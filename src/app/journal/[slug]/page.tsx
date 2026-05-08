@@ -1,25 +1,25 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import NewsletterStrip from '@/components/NewsletterStrip';
 import Footer from '@/components/Footer';
+import { POSTS } from '@/data/journal';
 import styles from './page.module.css';
 
-// In production, fetch post data from CMS (Sanity, Contentful, etc.)
-// REPLACE: wire up real data source here
-const getPost = (slug: string) => ({
-  slug,
-  category: 'Lifestyle',
-  title: slug === 'art-of-slow-living'
-    ? 'The Art of Slow Living: A Balinese Way of Being'
-    : 'Lorem Ipsum Dolor sit Amet',
-  heroImage: `/images/journal/posts/post-${slug}.jpg`,
-  body: [
-    `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.`,
-    `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.`,
-  ],
-  pullQuote: '"Bali does not reveal itself quickly. It rewards those who are willing to sit still long enough to truly see it."',
-  inlineImage: `/images/journal/posts/post-${slug}.jpg`,
-});
+// In production, fetch post data from CMS
+const getPost = (slug: string) => {
+  const post = POSTS.find(p => p.slug === slug);
+  if (!post) return null;
+  
+  return {
+    ...post,
+    body: [
+      `Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.`,
+      `Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.`
+    ],
+    pullQuote: '"Bali does not reveal itself quickly. It rewards those who are willing to sit still long enough to truly see it."',
+  };
+};
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -28,6 +28,7 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = getPost(slug);
+  if (!post) return { title: 'Post Not Found' };
   return {
     title: post.title,
     description: post.body[0].slice(0, 160),
@@ -37,16 +38,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function JournalPostPage({ params }: Props) {
   const { slug } = await params;
   const post = getPost(slug);
+  
+  if (!post) {
+    notFound();
+  }
 
   return (
     <>
       {/* Hero */}
       <section className={styles.hero}>
-        <div className={styles.heroBg} />
+        <div className={styles.heroBg} style={{ backgroundImage: `url(${post.coverImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
         <div className={styles.heroOverlay} />
         <div className={`container ${styles.heroContent}`}>
-          <p className={`t-label ${styles.category}`}>{post.category}</p>
           <h1 className={`t-h1 ${styles.heroTitle}`}>{post.title}</h1>
+          <p className={`t-label ${styles.category}`}>{post.category}</p>
         </div>
       </section>
 
@@ -55,13 +60,16 @@ export default async function JournalPostPage({ params }: Props) {
         <div className={`container ${styles.articleInner}`}>
           <p className={`t-body ${styles.bodyText}`}>{post.body[0]}</p>
 
-          {/* Inline image */}
-          <figure className={styles.inlineImg}>
-            <div className={styles.inlineImgPlaceholder}>
-              <span>Inline Article Image</span>
-              <small>Drop post image in public/images/journal/posts/</small>
+          {/* 3 Inline images */}
+          {post.gallery && post.gallery.length === 3 && (
+            <div className={styles.galleryGrid}>
+              {post.gallery.map((img, i) => (
+                <div key={i} className={styles.galleryImageWrap}>
+                  <img src={img} alt={`${post.title} gallery ${i + 1}`} className={styles.galleryImage} />
+                </div>
+              ))}
             </div>
-          </figure>
+          )}
 
           <p className={`t-body ${styles.bodyText}`}>{post.body[1]}</p>
 

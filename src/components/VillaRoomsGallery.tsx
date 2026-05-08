@@ -15,7 +15,7 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
   const [cursorVisible, setCursorVisible] = useState(false);
   const [cursorPressed, setCursorPressed] = useState(false);
 
-  // Drag state
+  // Drag state — single source of truth, no double-handling
   const dragging = useRef(false);
   const startX = useRef(0);
   const startScroll = useRef(0);
@@ -41,11 +41,8 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
     const t = trackRef.current;
     if (!t) return;
     const sw = slideW();
-    
-    // Calculate projected destination based on momentum
     let targetIdx = Math.round((t.scrollLeft + velocityPx * 50) / sw);
     targetIdx = Math.max(0, Math.min(targetIdx, images.length - 1));
-    
     const target = targetIdx * sw;
 
     cancelAnimationFrame(animRaf.current);
@@ -53,11 +50,8 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
     const dist = target - from;
     const dur = Math.min(Math.abs(dist) * 0.6, 500);
     const start = performance.now();
-    
-    if (dist === 0) {
-      clampAndSetIdx();
-      return;
-    }
+
+    if (dist === 0) { clampAndSetIdx(); return; }
 
     const animate = (now: number) => {
       const p = Math.min((now - start) / dur, 1);
@@ -79,18 +73,12 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
     if (!t) return;
     const sw = slideW();
     const target = safeIdx * sw;
-    
     cancelAnimationFrame(animRaf.current);
     const from = t.scrollLeft;
     const dist = target - from;
     const dur = Math.min(Math.abs(dist) * 0.5, 600) + 100;
     const start = performance.now();
-    
-    if (dist === 0) {
-      setActiveImageIdx(safeIdx);
-      return;
-    }
-
+    if (dist === 0) { setActiveImageIdx(safeIdx); return; }
     const go = (now: number) => {
       const p = Math.min((now - start) / dur, 1);
       const ease = 1 - Math.pow(1 - p, 3);
@@ -111,7 +99,7 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
     }
   };
 
-  // Handle Resize correctly
+  // Resize: re-align scroll position
   useEffect(() => {
     const handleResize = () => {
       if (trackRef.current) {
@@ -122,24 +110,19 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
     return () => window.removeEventListener('resize', handleResize);
   }, [activeImageIdx]);
 
-  // Touch handlers
+  // Touch: ONLY prevent vertical page scroll during horizontal swipe.
+  // Pointer events (below) handle the actual scrollLeft update — no double handling.
   useEffect(() => {
     const el = wrapRef.current;
     if (!el) return;
     const onTouchMove = (e: TouchEvent) => {
-      if (!dragging.current) return;
-      e.preventDefault(); // prevent vertical scroll while swiping gallery
-      const t = trackRef.current;
-      if (!t) return;
-      const dx = e.touches[0].clientX - startX.current;
-      t.scrollLeft = startScroll.current - dx;
-      vel.current = prevX.current - e.touches[0].clientX;
-      prevX.current = e.touches[0].clientX;
+      if (dragging.current) e.preventDefault();
     };
     el.addEventListener('touchmove', onTouchMove, { passive: false });
     return () => el.removeEventListener('touchmove', onTouchMove);
   }, []);
 
+  // Pointer events handle BOTH mouse and touch (touch-action: none ensures this)
   const onPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     const t = trackRef.current;
     if (!t) return;
@@ -171,22 +154,6 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
     snap(vel.current);
   }, [snap]);
 
-  const onTouchStart = useCallback((e: React.TouchEvent) => {
-    const t = trackRef.current;
-    if (!t) return;
-    cancelAnimationFrame(animRaf.current);
-    dragging.current = true;
-    startX.current = e.touches[0].clientX;
-    startScroll.current = t.scrollLeft;
-    prevX.current = e.touches[0].clientX;
-    vel.current = 0;
-  }, []);
-
-  const onTouchEnd = useCallback(() => {
-    dragging.current = false;
-    snap(vel.current);
-  }, [snap]);
-
   if (!rooms || rooms.length === 0 || images.length === 0) return null;
 
   return (
@@ -206,6 +173,11 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
             </button>
           ))}
         </div>
+        {/* Mobile swipe hint — vertical scrollDrop (mirrors hero indicator) */}
+        <div className={styles.swipeHint} aria-hidden="true">
+          <span className={styles.swipeLetter}>Swipe</span>
+          <span className={styles.swipeLine} />
+        </div>
       </div>
 
       <div
@@ -213,13 +185,14 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
         className={styles.galleryWrap}
         data-reveal
         onMouseEnter={() => setCursorVisible(true)}
-        onMouseLeave={() => { setCursorVisible(false); if (dragging.current) { dragging.current = false; setCursorPressed(false); snap(vel.current); } }}
+        onMouseLeave={() => {
+          setCursorVisible(false);
+          if (dragging.current) { dragging.current = false; setCursorPressed(false); snap(vel.current); }
+        }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
-        onTouchStart={onTouchStart}
-        onTouchEnd={onTouchEnd}
       >
         <div
           ref={cursorRef}
@@ -243,7 +216,6 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
               />
               <div className={styles.slideContent}>
                 <p className={styles.slideDesc}>{currentRoom.description}</p>
-                
                 {images.length > 1 && (
                   <div className={styles.counter} aria-hidden="true">
                     <span className={styles.counterCurrent}>
@@ -264,7 +236,7 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
             </div>
           ))}
         </div>
-        
+
         {activeImageIdx > 0 && images.length > 1 && (
           <button className={`${styles.arrow} ${styles.arrowLeft}`} onClick={() => goToImage(activeImageIdx - 1)} aria-label="Previous">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

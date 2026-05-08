@@ -25,7 +25,8 @@
   gap: clamp(16px, 4vw, 40px);
   overflow-x: auto;
   scrollbar-width: none;
-  padding: 0 20px;
+  padding: 0 24px 12px;
+  -webkit-overflow-scrolling: touch;
 }
 
 .tabs::-webkit-scrollbar {
@@ -41,12 +42,72 @@
   transition: all 0.3s ease;
   white-space: nowrap;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .tabActive {
   color: #222;
   font-weight: 500;
   border-bottom-color: #222;
+}
+
+/* On mobile, switch to flex-start so the tab bar actually scrolls */
+@media (max-width: 768px) {
+  .tabs {
+    justify-content: flex-start;
+    padding-left: 20px;
+  }
+}
+
+/* Mobile swipe hint — vertical scrollDrop line (mirrors hero scroll indicator) */
+.swipeHint {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .swipeHint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    color: rgba(0, 0, 0, 0.35);
+  }
+
+  .swipeLetter {
+    font-family: var(--font-sans);
+    font-size: 0.5rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #aaa;
+    writing-mode: horizontal-tb;
+  }
+
+  /* The vertical scrollDrop line */
+  .swipeLine {
+    display: block;
+    width: 1px;
+    height: 44px;
+    background: rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .swipeLine::after {
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: 0;
+    width: 1px;
+    height: 100%;
+    background: #888;
+    animation: swipeDrop 1.8s ease-in-out infinite;
+  }
+
+  @keyframes swipeDrop {
+    0%   { top: -100%; }
+    100% { top: 100%; }
+  }
 }
 
 /* ── Gallery Wrap ────────────────────────────────────────────────── */
@@ -57,7 +118,8 @@
   cursor: none;
   user-select: none;
   -webkit-user-select: none;
-  touch-action: pan-y;
+  /* none so pointer events fire for touch; touchmove useEffect prevents page scroll */
+  touch-action: none;
 }
 
 .track {

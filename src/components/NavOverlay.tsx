@@ -206,7 +206,7 @@ export default function NavOverlay({ isOpen, onClose }: NavOverlayProps) {
           {/* Terms */}
           <div className={styles.terms}>
             <Link href="/cancellation-policy" className={styles.termsLink} onClick={onClose}>
-              Policies and Terms
+              Terms & Conditions
             </Link>
           </div>
         </div>

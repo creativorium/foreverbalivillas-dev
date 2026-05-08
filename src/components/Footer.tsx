@@ -123,7 +123,7 @@ export default function Footer() {
       <div className={styles.bottom}>
         <span>{new Date().getFullYear()} © Forever Bali Villas All Rights Reserved.</span>
         <div className={styles.bottomLinks}>
-          <Link href="/cancellation-policy">Cancellations and Refunds</Link>
+          <Link href="/cancellation-policy">Terms & Conditions</Link>
           <Link href="/privacy-policy">Policy</Link>
         </div>
       </div>

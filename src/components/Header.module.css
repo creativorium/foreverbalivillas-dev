@@ -24,6 +24,34 @@
   border-bottom-color: transparent;
 }
 
+/* ── Forced-light pages (T&C, FAQ, journal posts) ──────────────────
+   Header sits over a light/cream background, so all elements go dark
+   from the very first render — no scroll required.
+   ------------------------------------------------------------------ */
+.header.forcedLight .bar         { background: var(--dark); }
+.header.forcedLight .navGroup    {
+  border-color: rgba(0,0,0,0.2);
+  background: rgba(0,0,0,0.04);
+}
+.header.forcedLight .navGroup:hover {
+  border-color: rgba(0,0,0,0.4);
+  background: rgba(0,0,0,0.08);
+}
+.header.forcedLight .logoImg     { filter: none !important; }
+.header.forcedLight .bookBtn     {
+  color: var(--dark);
+  border-color: rgba(0,0,0,0.2);
+  background: rgba(0,0,0,0.04);
+}
+.header.forcedLight .bookBtn:hover {
+  background: var(--dark);
+  border-color: var(--dark);
+  color: var(--white);
+}
+/* navActive overrides forcedLight when menu opens */
+.header.navActive .bar           { background: var(--white); }
+.header.navActive .logoImg       { filter: brightness(0) invert(1) !important; }
+
 .inner {
   display: flex;
   align-items: center;
