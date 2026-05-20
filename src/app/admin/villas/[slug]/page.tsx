@@ -23,6 +23,8 @@ interface VillaContent {
   description?: string;
   longDescription?: string;
   heroImage?: string;
+  heroVideo?: string;
+  featuredImage?: string;
   separatorImage?: string;
   galleryImages?: string[];
   rooms?: Room[];
@@ -165,16 +167,8 @@ function RoomCard({
             <label className="adm-label">Room Images <span className="adm-label-hint">{room.images.filter(Boolean).length} images</span></label>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '10px' }}>
               {room.images.map((img, i) => (
-                <div key={i} style={{ display: 'grid', gridTemplateColumns: '160px 1fr auto', gap: '12px', alignItems: 'center', padding: '10px', background: '#f9fafb', borderRadius: '8px', border: '1px solid var(--adm-border)' }}>
-                  {/* Thumbnail */}
-                  <div style={{ aspectRatio: '4/3', borderRadius: '6px', overflow: 'hidden', background: '#e5e7eb', flexShrink: 0 }}>
-                    {img
-                      ? <img src={img} alt={`Room image ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af', fontSize: '0.72rem' }}>No image</div>
-                    }
-                  </div>
-                  {/* URL input + upload */}
-                  <div style={{ minWidth: 0 }}>
+                <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', padding: '10px', background: '#f9fafb', borderRadius: '8px', border: '1px solid var(--adm-border)' }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
                     <ImageField
                       label={`Image ${i + 1}`}
                       value={img}
@@ -183,12 +177,11 @@ function RoomCard({
                       aspect="4/3"
                     />
                   </div>
-                  {/* Remove */}
                   <button
                     type="button"
                     onClick={() => removeImage(i)}
                     className="adm-btn adm-btn-danger adm-btn-sm"
-                    style={{ alignSelf: 'flex-start', whiteSpace: 'nowrap' }}
+                    style={{ marginTop: '22px', whiteSpace: 'nowrap', flexShrink: 0 }}
                   >Remove</button>
                 </div>
               ))}
@@ -313,14 +306,35 @@ export default function VillaEditorPage() {
         <Field label="Long Description" value={villa.longDescription ?? ''} onChange={v => set('longDescription', v)} multiline rows={4} />
       </Section>
 
-      {/* ── 2. Hero Image ── */}
-      <Section title="Hero Image" hint="full-screen background behind the villa name">
+      {/* ── 2. Hero ── */}
+      <Section title="Hero" hint="the full-screen section at the top of the villa page">
+        <div style={{ padding: '10px 12px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '8px', marginBottom: '16px', fontSize: '0.78rem', color: '#15803d' }}>
+          The hero uses a <strong>video</strong> when available, falling back to the image. The Featured Image is shown as the villa card preview in the admin.
+        </div>
+        <div className="adm-form-group">
+          <label className="adm-label">Hero Video URL <span className="adm-label-hint">paste the /videos/... path from your project</span></label>
+          <input
+            className="adm-input"
+            value={villa.heroVideo ?? ''}
+            onChange={e => set('heroVideo', e.target.value)}
+            placeholder="/videos/villas/forever-pandawa/forever-pandawa-video.mp4"
+          />
+        </div>
         <ImageField
-          label="Hero Background"
+          label="Hero Fallback Image"
+          hint="shown if video doesn't load or on devices that can't autoplay"
           value={villa.heroImage ?? ''}
           onChange={v => set('heroImage', v)}
           folder={`villas/${slug}`}
           aspect="16/9"
+        />
+        <ImageField
+          label="Featured Image"
+          hint="shown on the admin villa card — use a clear, well-lit photo"
+          value={villa.featuredImage ?? ''}
+          onChange={v => set('featuredImage', v)}
+          folder={`villas/${slug}`}
+          aspect="4/3"
         />
       </Section>
 
@@ -348,22 +362,18 @@ export default function VillaEditorPage() {
       <Section title="Main Gallery" hint={`${galleryImages.filter(Boolean).length} images · shown below the rooms section`}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px' }}>
           {galleryImages.map((img, i) => (
-            <div key={i} style={{ display: 'grid', gridTemplateColumns: '160px 1fr auto', gap: '12px', alignItems: 'center', padding: '10px', background: '#f9fafb', borderRadius: '8px', border: '1px solid var(--adm-border)' }}>
-              <div style={{ aspectRatio: '4/3', borderRadius: '6px', overflow: 'hidden', background: '#e5e7eb' }}>
-                {img
-                  ? <img src={img} alt={`Gallery ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af', fontSize: '0.72rem' }}>No image</div>
-                }
+            <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', padding: '10px', background: '#f9fafb', borderRadius: '8px', border: '1px solid var(--adm-border)' }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <ImageField
+                  label={`Gallery Image ${i + 1}`}
+                  value={img}
+                  onChange={v => { const next = [...galleryImages]; next[i] = v; set('galleryImages', next); }}
+                  folder={`villas/${slug}`}
+                  aspect="4/3"
+                />
               </div>
-              <ImageField
-                label={`Gallery Image ${i + 1}`}
-                value={img}
-                onChange={v => { const next = [...galleryImages]; next[i] = v; set('galleryImages', next); }}
-                folder={`villas/${slug}`}
-                aspect="4/3"
-              />
               <button type="button" onClick={() => set('galleryImages', galleryImages.filter((_, j) => j !== i))}
-                className="adm-btn adm-btn-danger adm-btn-sm" style={{ alignSelf: 'flex-start', whiteSpace: 'nowrap' }}>
+                className="adm-btn adm-btn-danger adm-btn-sm" style={{ marginTop: '22px', whiteSpace: 'nowrap', flexShrink: 0 }}>
                 Remove
               </button>
             </div>

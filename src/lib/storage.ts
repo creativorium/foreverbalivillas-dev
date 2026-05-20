@@ -30,11 +30,15 @@ async function customGet<T>(endpoint: string): Promise<T | null> {
 }
 
 async function customPut(endpoint: string, data: unknown): Promise<void> {
-  await fetch(`${CUSTOM_URL}/${endpoint}`, {
+  const res = await fetch(`${CUSTOM_URL}/${endpoint}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', 'X-Api-Key': CUSTOM_KEY },
     body: JSON.stringify(data),
   });
+  if (!res.ok) {
+    const msg = await res.text().catch(() => res.statusText);
+    throw new Error(`Storage write failed (${endpoint}): ${res.status} ${msg}`);
+  }
 }
 
 export async function uploadImage(file: File): Promise<string> {
