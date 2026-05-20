@@ -13,8 +13,7 @@ const PAGES = [
 ];
 
 export default async function DashboardPage() {
-  const posts = await getPosts();
-  const users = getUsers();
+  const [posts, users] = await Promise.all([getPosts(), getUsers()]);
   const recentPosts = [...posts].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
 
   return (

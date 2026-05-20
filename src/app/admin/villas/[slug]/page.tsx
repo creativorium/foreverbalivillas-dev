@@ -162,26 +162,34 @@ function RoomCard({
           <Field label="Description" value={room.description} onChange={v => setField('description', v)} multiline rows={3} />
 
           <div className="adm-form-group" style={{ marginBottom: 0 }}>
-            <label className="adm-label">Room Images</label>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px', marginBottom: '10px' }}>
+            <label className="adm-label">Room Images <span className="adm-label-hint">{room.images.filter(Boolean).length} images</span></label>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '10px' }}>
               {room.images.map((img, i) => (
-                <div key={i} style={{ position: 'relative' }}>
-                  <ImageField
-                    label={`Image ${i + 1}`}
-                    value={img}
-                    onChange={v => setImage(i, v)}
-                    folder={`villas/${slug}`}
-                    aspect="4/3"
-                  />
+                <div key={i} style={{ display: 'grid', gridTemplateColumns: '160px 1fr auto', gap: '12px', alignItems: 'center', padding: '10px', background: '#f9fafb', borderRadius: '8px', border: '1px solid var(--adm-border)' }}>
+                  {/* Thumbnail */}
+                  <div style={{ aspectRatio: '4/3', borderRadius: '6px', overflow: 'hidden', background: '#e5e7eb', flexShrink: 0 }}>
+                    {img
+                      ? <img src={img} alt={`Room image ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af', fontSize: '0.72rem' }}>No image</div>
+                    }
+                  </div>
+                  {/* URL input + upload */}
+                  <div style={{ minWidth: 0 }}>
+                    <ImageField
+                      label={`Image ${i + 1}`}
+                      value={img}
+                      onChange={v => setImage(i, v)}
+                      folder={`villas/${slug}`}
+                      aspect="4/3"
+                    />
+                  </div>
+                  {/* Remove */}
                   <button
                     type="button"
                     onClick={() => removeImage(i)}
-                    style={{
-                      position: 'absolute', top: 0, right: 0, background: '#ef4444', color: '#fff',
-                      border: 'none', borderRadius: '0 0 0 6px', padding: '2px 7px',
-                      fontSize: '0.7rem', cursor: 'pointer',
-                    }}
-                  >✕</button>
+                    className="adm-btn adm-btn-danger adm-btn-sm"
+                    style={{ alignSelf: 'flex-start', whiteSpace: 'nowrap' }}
+                  >Remove</button>
                 </div>
               ))}
             </div>
@@ -337,29 +345,27 @@ export default function VillaEditorPage() {
       </Section>
 
       {/* ── 4. Gallery ── */}
-      <Section title="Main Gallery" hint="shown below the rooms section on the villa page">
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '12px', marginBottom: '12px' }}>
+      <Section title="Main Gallery" hint={`${galleryImages.filter(Boolean).length} images · shown below the rooms section`}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px' }}>
           {galleryImages.map((img, i) => (
-            <div key={i} style={{ position: 'relative' }}>
+            <div key={i} style={{ display: 'grid', gridTemplateColumns: '160px 1fr auto', gap: '12px', alignItems: 'center', padding: '10px', background: '#f9fafb', borderRadius: '8px', border: '1px solid var(--adm-border)' }}>
+              <div style={{ aspectRatio: '4/3', borderRadius: '6px', overflow: 'hidden', background: '#e5e7eb' }}>
+                {img
+                  ? <img src={img} alt={`Gallery ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af', fontSize: '0.72rem' }}>No image</div>
+                }
+              </div>
               <ImageField
-                label={`Gallery ${i + 1}`}
+                label={`Gallery Image ${i + 1}`}
                 value={img}
-                onChange={v => {
-                  const next = [...galleryImages]; next[i] = v;
-                  set('galleryImages', next);
-                }}
+                onChange={v => { const next = [...galleryImages]; next[i] = v; set('galleryImages', next); }}
                 folder={`villas/${slug}`}
                 aspect="4/3"
               />
-              <button
-                type="button"
-                onClick={() => set('galleryImages', galleryImages.filter((_, j) => j !== i))}
-                style={{
-                  position: 'absolute', top: 0, right: 0, background: '#ef4444', color: '#fff',
-                  border: 'none', borderRadius: '0 0 0 6px', padding: '2px 7px',
-                  fontSize: '0.7rem', cursor: 'pointer',
-                }}
-              >✕</button>
+              <button type="button" onClick={() => set('galleryImages', galleryImages.filter((_, j) => j !== i))}
+                className="adm-btn adm-btn-danger adm-btn-sm" style={{ alignSelf: 'flex-start', whiteSpace: 'nowrap' }}>
+                Remove
+              </button>
             </div>
           ))}
         </div>

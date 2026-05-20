@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
 
     if (!isEnvAdmin) {
       // Check JSON-stored users
-      const user = getUser(username);
+      const user = await getUser(username);
       if (!user || !verifyPassword(password, user.passwordHash, user.passwordSalt)) {
         return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
       }

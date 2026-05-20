@@ -87,7 +87,7 @@ export function getSiteContent(): SiteContent {
   return JSON.parse(raw) as SiteContent;
 }
 
-// ── Admin users (local only — contains password hashes) ───────────────────────
+// ── Admin users ───────────────────────────────────────────────────────────────
 
 export interface AdminUser {
   id: string;
@@ -99,42 +99,35 @@ export interface AdminUser {
   createdAt: string;
 }
 
-function readUsers(): AdminUser[] {
-  const raw = fs.readFileSync(path.join(DATA_DIR, 'admin-users.json'), 'utf8');
-  return JSON.parse(raw) as AdminUser[];
+export async function getUsers(): Promise<AdminUser[]> {
+  return storageGet<AdminUser[]>('fbv:users', 'admin-users.json');
 }
 
-function writeUsers(users: AdminUser[]): void {
-  fs.writeFileSync(path.join(DATA_DIR, 'admin-users.json'), JSON.stringify(users, null, 2), 'utf8');
+export async function getUser(username: string): Promise<AdminUser | undefined> {
+  const users = await getUsers();
+  return users.find(u => u.username === username);
 }
 
-export function getUsers(): AdminUser[] {
-  return readUsers();
-}
-
-export function getUser(username: string): AdminUser | undefined {
-  return readUsers().find(u => u.username === username);
-}
-
-export function createUser(user: AdminUser): AdminUser {
-  const users = readUsers();
+export async function createUser(user: AdminUser): Promise<AdminUser> {
+  const users = await getUsers();
   if (users.find(u => u.username === user.username)) {
     throw new Error(`User "${user.username}" already exists`);
   }
   users.push(user);
-  writeUsers(users);
+  await storageSet('fbv:users', 'admin-users.json', users);
   return user;
 }
 
-export function deleteUser(id: string): void {
-  writeUsers(readUsers().filter(u => u.id !== id));
+export async function deleteUser(id: string): Promise<void> {
+  const users = await getUsers();
+  await storageSet('fbv:users', 'admin-users.json', users.filter(u => u.id !== id));
 }
 
-export function updateUser(id: string, data: Partial<AdminUser>): AdminUser {
-  const users = readUsers();
+export async function updateUser(id: string, data: Partial<AdminUser>): Promise<AdminUser> {
+  const users = await getUsers();
   const idx = users.findIndex(u => u.id === id);
   if (idx === -1) throw new Error('User not found');
   users[idx] = { ...users[idx], ...data };
-  writeUsers(users);
+  await storageSet('fbv:users', 'admin-users.json', users);
   return users[idx];
 }

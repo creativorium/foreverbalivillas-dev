@@ -45,11 +45,27 @@ export default function ImageField({ label, value, onChange, hint, aspect = '16/
         {value && (
           <div style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--adm-border)', aspectRatio: aspect, background: '#f3f4f6' }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={value} alt="Current" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+            <img
+              src={value}
+              alt="Current"
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              onError={e => {
+                const el = e.currentTarget;
+                el.style.display = 'none';
+                const parent = el.parentElement;
+                if (parent && !parent.querySelector('.img-placeholder')) {
+                  const ph = document.createElement('div');
+                  ph.className = 'img-placeholder';
+                  ph.style.cssText = 'position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#9ca3af;font-size:0.72rem;font-family:system-ui';
+                  ph.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>Image not loaded</span><span style="font-size:0.65rem;word-break:break-all;padding:0 8px;text-align:center">' + value.slice(0, 50) + '</span>';
+                  parent.appendChild(ph);
+                }
+              }}
+            />
             <button
               type="button"
               onClick={() => onChange('')}
-              style={{ position: 'absolute', top: '6px', right: '6px', background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', borderRadius: '50%', width: '22px', height: '22px', cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              style={{ position: 'absolute', top: '6px', right: '6px', background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', borderRadius: '50%', width: '22px', height: '22px', cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1 }}
               title="Remove image"
             >✕</button>
           </div>

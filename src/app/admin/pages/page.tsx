@@ -334,9 +334,6 @@ export default function PagesEditorPage() {
       {/* ── VILLAS ── redirect to dedicated editor */}
       {activeTab === 'villas' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div className="adm-alert adm-alert-info">
-            Villa editing has moved to a dedicated editor with full room, gallery, and image management.
-          </div>
           {(['forever-pandawa', 'forever-santai'] as const).map(slug => {
             const name = slug === 'forever-pandawa' ? 'Forever Pandawa' : 'Forever Santai';
             return (

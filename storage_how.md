@@ -132,6 +132,31 @@ if ($method === 'GET') {
 }
 ```
 
+#### `users.php`
+```php
+<?php
+require_once __DIR__ . '/auth.php';
+header('Content-Type: application/json');
+
+$file = __DIR__ . '/data/users.json';
+if (!is_dir(__DIR__ . '/data')) mkdir(__DIR__ . '/data', 0755, true);
+
+$method = $_SERVER['REQUEST_METHOD'];
+if ($method === 'OPTIONS') { exit; }
+require_auth();
+
+if ($method === 'GET') {
+    echo file_exists($file) ? file_get_contents($file) : '[]';
+} elseif ($method === 'PUT') {
+    $body = file_get_contents('php://input');
+    if (json_decode($body) === null) {
+        http_response_code(400); echo json_encode(['error' => 'Invalid JSON']); exit;
+    }
+    file_put_contents($file, $body);
+    echo $body;
+}
+```
+
 #### `upload.php`
 ```php
 <?php
