@@ -4,8 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "build": "next build",
     "start": "next start"
+  },
+  "engines": {
+    "node": ">=20.9.0"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
