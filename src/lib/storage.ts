@@ -18,15 +18,20 @@ const USE_CUSTOM    = !!CUSTOM_URL;
 export const STORAGE_MODE: 'custom' | 'kv' | 'file' =
   USE_CUSTOM ? 'custom' : USE_KV ? 'kv' : 'file';
 
-// ── Custom shared-hosting PHP API ────────────────────────────────────────────
+// ── Custom shared-hosting PHP API ─────────────────────────────────────────────
 
 async function customGet<T>(endpoint: string): Promise<T | null> {
-  const res = await fetch(`${CUSTOM_URL}/${endpoint}`, {
-    headers: { 'X-Api-Key': CUSTOM_KEY },
-    cache: 'no-store',
-  });
-  if (!res.ok) return null;
-  return res.json() as Promise<T>;
+  try {
+    const res = await fetch(`${CUSTOM_URL}/${endpoint}`, {
+      headers: { 'X-Api-Key': CUSTOM_KEY },
+      cache: 'no-store',
+    });
+    if (!res.ok) return null;
+    return await res.json() as T;
+  } catch {
+    // Network error, timeout, or invalid JSON — treat as missing
+    return null;
+  }
 }
 
 async function customPut(endpoint: string, data: unknown): Promise<void> {
@@ -45,21 +50,28 @@ export async function uploadImage(file: File): Promise<string> {
   if (!USE_CUSTOM) throw new Error('Image upload requires CUSTOM_STORAGE_URL');
   const form = new FormData();
   form.append('file', file);
-  const res  = await fetch(`${CUSTOM_URL}/upload.php`, {
+  const res = await fetch(`${CUSTOM_URL}/upload.php`, {
     method: 'POST',
     headers: { 'X-Api-Key': CUSTOM_KEY },
     body: form,
   });
-  if (!res.ok) throw new Error('Upload failed');
+  if (!res.ok) {
+    const msg = await res.text().catch(() => res.statusText);
+    throw new Error(`Hosting upload failed: ${msg}`);
+  }
   const { url } = await res.json() as { url: string };
   return url;
 }
 
-// ── Vercel KV ────────────────────────────────────────────────────────────────
+// ── Vercel KV ─────────────────────────────────────────────────────────────────
 
 async function kvGet<T>(key: string): Promise<T | null> {
-  const { kv } = await import('@vercel/kv');
-  return kv.get<T>(key);
+  try {
+    const { kv } = await import('@vercel/kv');
+    return kv.get<T>(key);
+  } catch {
+    return null;
+  }
 }
 
 async function kvSet(key: string, value: unknown): Promise<void> {
@@ -67,11 +79,16 @@ async function kvSet(key: string, value: unknown): Promise<void> {
   await kv.set(key, value);
 }
 
-// ── Local JSON files (dev) ────────────────────────────────────────────────────
+// ── Local JSON files ──────────────────────────────────────────────────────────
 
 function fileGet<T>(file: string): T {
-  const raw = fs.readFileSync(path.join(DATA_DIR, file), 'utf8');
-  return JSON.parse(raw) as T;
+  try {
+    const raw = fs.readFileSync(path.join(DATA_DIR, file), 'utf8');
+    return JSON.parse(raw) as T;
+  } catch {
+    // Return sensible defaults if file missing
+    return (file.endsWith('.json') && file.includes('posts') ? [] : {}) as T;
+  }
 }
 
 function fileSet(file: string, data: unknown): void {
@@ -81,25 +98,30 @@ function fileSet(file: string, data: unknown): void {
 // ── Public API ────────────────────────────────────────────────────────────────
 
 export async function storageGet<T>(key: string, jsonFile: string): Promise<T> {
-  if (USE_CUSTOM) {
-    const endpoint = keyToEndpoint(key);
-    const val      = await customGet<T>(endpoint);
-    if (val !== null) return val;
-    // Seed from local file on first use — failure is non-fatal (file may not exist yet)
-    const seed = fileGet<T>(jsonFile);
-    customPut(endpoint, seed).catch(() => {}); // fire and forget
-    return seed;
-  }
+  try {
+    if (USE_CUSTOM) {
+      const endpoint = keyToEndpoint(key);
+      const val      = await customGet<T>(endpoint);
+      if (val !== null) return val;
+      // Seed from local defaults — fire and forget, never blocks the page
+      const seed = fileGet<T>(jsonFile);
+      customPut(endpoint, seed).catch(() => {});
+      return seed;
+    }
 
-  if (USE_KV) {
-    const val = await kvGet<T>(key);
-    if (val !== null) return val;
-    const seed = fileGet<T>(jsonFile);
-    await kvSet(key, seed);
-    return seed;
-  }
+    if (USE_KV) {
+      const val = await kvGet<T>(key);
+      if (val !== null) return val;
+      const seed = fileGet<T>(jsonFile);
+      kvSet(key, seed).catch(() => {});
+      return seed;
+    }
 
-  return fileGet<T>(jsonFile);
+    return fileGet<T>(jsonFile);
+  } catch {
+    // Absolute last resort — never crash a page over storage
+    return fileGet<T>(jsonFile);
+  }
 }
 
 export async function storageSet(key: string, jsonFile: string, data: unknown): Promise<void> {
@@ -109,8 +131,6 @@ export async function storageSet(key: string, jsonFile: string, data: unknown): 
 }
 
 function keyToEndpoint(key: string): string {
-  // "fbv:site-content" → "content.php"
-  // "fbv:site-settings" → "settings.php"
   const slug = key.replace('fbv:', '').replace('site-', '');
   return `${slug}.php`;
 }
