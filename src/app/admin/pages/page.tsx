@@ -331,78 +331,27 @@ export default function PagesEditorPage() {
       {/* ── CATEGORIES ── */}
       {activeTab === 'categories' && <CategoriesPanel />}
 
-      {/* ── VILLAS ── */}
+      {/* ── VILLAS ── redirect to dedicated editor */}
       {activeTab === 'villas' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div className="adm-alert adm-alert-info">
+            Villa editing has moved to a dedicated editor with full room, gallery, and image management.
+          </div>
           {(['forever-pandawa', 'forever-santai'] as const).map(slug => {
-            const villa = (content.villas as Content)?.[slug] as Content;
+            const name = slug === 'forever-pandawa' ? 'Forever Pandawa' : 'Forever Santai';
             return (
-              <Section key={slug} title={villa?.name as string || slug}>
-                <Field label="Villa Name" value={villa?.name as string}
-                  onChange={v => setDeep(['villas', slug, 'name'], v)} />
-                <Field label="Tagline (under name in description)" value={villa?.tagline as string}
-                  onChange={v => setDeep(['villas', slug, 'tagline'], v)} />
-                <Field label="Description (short)" multiline rows={3} value={villa?.description as string}
-                  onChange={v => setDeep(['villas', slug, 'description'], v)} />
-                <Field label="Long Description" multiline rows={5} value={villa?.longDescription as string}
-                  onChange={v => setDeep(['villas', slug, 'longDescription'], v)} />
-
-                <ImageField
-                  label="Hero Image"
-                  hint="main full-screen hero background"
-                  value={(villa?.heroImage as string) ?? ''}
-                  onChange={v => setDeep(['villas', slug, 'heroImage'], v)}
-                  folder={`villas/${slug}`}
-                  aspect="16/9"
-                />
-
-                <ImageField
-                  label="Separator Image"
-                  hint="full-width image between gallery and facilities sections"
-                  value={(villa?.separatorImage as string) ?? ''}
-                  onChange={v => setDeep(['villas', slug, 'separatorImage'], v)}
-                  folder={`villas/${slug}`}
-                  aspect="21/9"
-                />
-
-                <div className="adm-form-group">
-                  <label className="adm-label">Gallery Images <span className="adm-label-hint">slideshow shown on the villa page</span></label>
-                  {((villa?.galleryImages as string[]) ?? []).map((img: string, i: number) => (
-                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '8px', marginBottom: '12px', alignItems: 'end' }}>
-                      <ImageField
-                        label={`Gallery Image ${i + 1}`}
-                        value={img}
-                        onChange={v => {
-                          const images = [...((villa?.galleryImages as string[]) ?? [])];
-                          images[i] = v;
-                          setDeep(['villas', slug, 'galleryImages'], images);
-                        }}
-                        folder={`villas/${slug}`}
-                        aspect="4/3"
-                      />
-                      <button
-                        className="adm-btn adm-btn-danger adm-btn-sm"
-                        style={{ marginBottom: '8px' }}
-                        onClick={() => {
-                          const images = ((villa?.galleryImages as string[]) ?? []).filter((_: string, j: number) => j !== i);
-                          setDeep(['villas', slug, 'galleryImages'], images);
-                        }}
-                      >Remove</button>
-                    </div>
-                  ))}
-                  <button
-                    className="adm-btn adm-btn-ghost adm-btn-sm"
-                    onClick={() => {
-                      const images = [...((villa?.galleryImages as string[]) ?? []), ''];
-                      setDeep(['villas', slug, 'galleryImages'], images);
-                    }}
-                  >+ Add Gallery Image</button>
+              <div key={slug} className="adm-card adm-card-body" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <div style={{ fontWeight: 600, color: 'var(--adm-text)' }}>{name}</div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--adm-muted)' }}>Rooms, images, gallery, separator image</div>
                 </div>
-              </Section>
+                <a href={`/admin/villas/${slug}`} className="adm-btn adm-btn-primary adm-btn-sm">Edit Villa →</a>
+              </div>
             );
           })}
         </div>
       )}
+
     </>
   );
 }

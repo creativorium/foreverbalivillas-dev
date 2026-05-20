@@ -4,12 +4,12 @@ import Link from 'next/link';
 import DatabaseStatus from '@/components/admin/DatabaseStatus';
 
 const PAGES = [
-  { label: 'Homepage',           tab: 'homepage',   href: '/',                    icon: '🏠', desc: 'Hero, gallery, about, features' },
-  { label: 'FAQ',                tab: 'faq',        href: '/faq',                 icon: '❓', desc: 'Questions, hero, CTA' },
-  { label: 'Forever Pandawa',    tab: 'villas',     href: '/forever-pandawa',     icon: '🏖', desc: 'Images, text, gallery' },
-  { label: 'Forever Santai',     tab: 'villas',     href: '/forever-santai',      icon: '🌴', desc: 'Images, text, gallery' },
-  { label: 'Terms & Conditions', tab: 'legal',      href: '/cancellation-policy', icon: '📋', desc: 'Policies, cancellation, check-in' },
-  { label: 'Privacy Policy',     tab: 'legal',      href: '/privacy-policy',      icon: '🔒', desc: 'GDPR, data handling, cookies' },
+  { label: 'Homepage',           editHref: '/admin/pages?tab=homepage', href: '/',                    icon: '🏠', desc: 'Hero, gallery, about, features' },
+  { label: 'FAQ',                editHref: '/admin/pages?tab=faq',      href: '/faq',                 icon: '❓', desc: 'Questions, hero, CTA' },
+  { label: 'Forever Pandawa',    editHref: '/admin/villas/forever-pandawa', href: '/forever-pandawa', icon: '🏖', desc: 'Rooms, images, gallery' },
+  { label: 'Forever Santai',     editHref: '/admin/villas/forever-santai',  href: '/forever-santai',  icon: '🌴', desc: 'Rooms, images, gallery' },
+  { label: 'Terms & Conditions', editHref: '/admin/pages?tab=legal',    href: '/cancellation-policy', icon: '📋', desc: 'Policies, cancellation, check-in' },
+  { label: 'Privacy Policy',     editHref: '/admin/pages?tab=legal',    href: '/privacy-policy',      icon: '🔒', desc: 'GDPR, data handling, cookies' },
 ];
 
 export default async function DashboardPage() {
@@ -78,7 +78,7 @@ export default async function DashboardPage() {
               </div>
               <div style={{ display: 'flex', gap: '6px', marginTop: '12px' }}>
                 <Link
-                  href={`/admin/pages?tab=${page.tab}`}
+                  href={page.editHref}
                   className="adm-btn adm-btn-ghost adm-btn-sm"
                   style={{ fontSize: '0.72rem', flex: 1, justifyContent: 'center' }}
                 >

@@ -189,13 +189,16 @@ export default async function ForeverSantaiPage() {
 
   const villa: VillaData = {
     ...santaiData,
-    ...(vc.name        ? { name:            vc.name        as string   } : {}),
-    ...(vc.tagline     ? { tagline:          vc.tagline     as string   } : {}),
-    ...(vc.description ? { description:      vc.description as string   } : {}),
-    ...(vc.longDescription ? { longDescription: vc.longDescription as string } : {}),
-    ...(vc.heroImage   ? { heroImage:         vc.heroImage   as string   } : {}),
-    ...(vc.separatorImage ? { separatorImage: vc.separatorImage as string } : {}),
-    ...((vc.galleryImages as string[])?.length ? { galleryImages: vc.galleryImages as string[] } : {}),
+    ...(vc.name            ? { name:            vc.name            as string   } : {}),
+    ...(vc.tagline         ? { tagline:          vc.tagline         as string   } : {}),
+    ...(vc.heroTagline     ? { heroTagline:      vc.heroTagline     as string   } : {}),
+    ...(vc.heroDescription ? { heroDescription:  vc.heroDescription as string   } : {}),
+    ...(vc.description     ? { description:      vc.description     as string   } : {}),
+    ...(vc.longDescription ? { longDescription:  vc.longDescription as string   } : {}),
+    ...(vc.heroImage       ? { heroImage:        vc.heroImage       as string   } : {}),
+    ...(vc.separatorImage  ? { separatorImage:   vc.separatorImage  as string   } : {}),
+    ...((vc.galleryImages  as string[])?.length  ? { galleryImages: vc.galleryImages as string[] } : {}),
+    ...((vc.rooms          as VillaData['rooms'])?.length ? { rooms: vc.rooms as VillaData['rooms'] } : {}),
   };
 
   return <VillaPage villa={villa} />;
