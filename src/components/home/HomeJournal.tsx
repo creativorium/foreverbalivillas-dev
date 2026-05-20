@@ -1,10 +1,11 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { getHomeFeaturedPosts } from '@/data/journal';
 import styles from './HomeJournal.module.css';
 
-export default function HomeJournal() {
-  const [featured, second, third] = getHomeFeaturedPosts();
+interface Post { slug: string; title: string; coverImage: string; }
+
+export default function HomeJournal({ posts }: { posts: Post[] }) {
+  const [featured, second, third] = posts;
 
   return (
     <section className={styles.section} aria-label="The Journal">

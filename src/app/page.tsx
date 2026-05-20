@@ -6,6 +6,7 @@ import HomeFeatures from '@/components/home/HomeFeatures';
 import HomeGallery from '@/components/home/HomeGallery';
 import HomeJournal from '@/components/home/HomeJournal';
 import { storageGet } from '@/lib/storage';
+import { getPosts } from '@/lib/admin-data';
 
 export const revalidate = 60;
 
@@ -16,8 +17,12 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const siteContent = await storageGet<Record<string, unknown>>('fbv:site-content', 'site-content.json');
+  const [siteContent, allPosts] = await Promise.all([
+    storageGet<Record<string, unknown>>('fbv:site-content', 'site-content.json'),
+    getPosts(),
+  ]);
   const hp = (siteContent?.homepage as Record<string, unknown>) ?? {};
+  const journalPosts = allPosts.filter(p => p.published !== false).slice(0, 3);
 
   return (
     <>
@@ -41,7 +46,7 @@ export default async function HomePage() {
       <HomeGallery galleryImages={hp.galleryImages as string[] | undefined} />
 
       {/* 5. The Journal — banner + Art of Slowing Down + Blog #1/#2 */}
-      <HomeJournal />
+      <HomeJournal posts={journalPosts} />
 
       {/* 7. Footer */}
       <Footer />
