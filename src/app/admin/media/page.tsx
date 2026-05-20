@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import StorageBanner from '@/components/admin/StorageBanner';
 
 interface FileItem { filename: string; url: string; isPdf?: boolean }
 
@@ -10,7 +11,7 @@ export default function MediaLibraryPage() {
   const [dragOver,  setDragOver]  = useState(false);
   const [copied,    setCopied]    = useState<string | null>(null);
   const [error,     setError]     = useState('');
-  const [mode,      setMode]      = useState('file');
+  const [mode,      setMode]      = useState<'custom' | 'kv' | 'file' | null>(null);
   const [filter,    setFilter]    = useState<'all' | 'images' | 'pdfs'>('all');
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -64,7 +65,7 @@ export default function MediaLibraryPage() {
         <div>
           <h1 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--adm-text)' }}>Media Library</h1>
           <p style={{ fontSize: '0.8rem', color: 'var(--adm-muted)', marginTop: '2px' }}>
-            {imageCount} image{imageCount !== 1 ? 's' : ''} · {pdfCount} PDF{pdfCount !== 1 ? 's' : ''} · Click any file to copy its URL
+            {files.length} file{files.length !== 1 ? 's' : ''} · Click any file to copy its URL
           </p>
         </div>
         <button className="adm-btn adm-btn-primary" onClick={() => inputRef.current?.click()} disabled={uploading}>
@@ -76,22 +77,7 @@ export default function MediaLibraryPage() {
 
       {error && <div className="adm-alert adm-alert-error">{error}</div>}
 
-      {mode === 'file' && (
-        <div className="adm-alert adm-alert-info" style={{ marginBottom: '20px' }}>
-          <strong>Local mode</strong> — images are saved to <code>public/uploads/</code>.
-          Set up shared hosting or Vercel Blob to persist images in production. See <code>storage_how.md</code>.
-        </div>
-      )}
-      {mode === 'custom' && (
-        <div className="adm-alert adm-alert-ok" style={{ marginBottom: '20px' }}>
-          ✓ <strong>Shared Hosting</strong> — images upload to your hosting server and are live immediately.
-        </div>
-      )}
-      {mode === 'kv' && (
-        <div className="adm-alert adm-alert-warn" style={{ marginBottom: '20px' }}>
-          Connect <strong>Vercel Blob</strong> (<code>BLOB_READ_WRITE_TOKEN</code>) to enable image uploads in production.
-        </div>
-      )}
+      <StorageBanner mode={mode} />
 
       {/* ── Drop zone ── */}
       <div
