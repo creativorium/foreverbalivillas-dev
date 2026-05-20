@@ -82,13 +82,12 @@ function fileSet(file: string, data: unknown): void {
 
 export async function storageGet<T>(key: string, jsonFile: string): Promise<T> {
   if (USE_CUSTOM) {
-    // Map key to PHP endpoint, e.g. "fbv:site-content" → "content.php"
     const endpoint = keyToEndpoint(key);
     const val      = await customGet<T>(endpoint);
     if (val !== null) return val;
-    // Seed from local file on first use
+    // Seed from local file on first use — failure is non-fatal (file may not exist yet)
     const seed = fileGet<T>(jsonFile);
-    await customPut(endpoint, seed);
+    customPut(endpoint, seed).catch(() => {}); // fire and forget
     return seed;
   }
 
