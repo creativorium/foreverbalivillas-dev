@@ -287,6 +287,46 @@
   color: var(--white);
 }
 
+/* ── EXTRA ROWS (after Load More) ───────────────────────────────────── */
+.extraRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  /* no min-height — cards define their own */
+}
+
+.extraRow .card {
+  min-height: 320px;
+}
+
+/* ── THATS ALL CARD ─────────────────────────────────────────────────── */
+.thatsAllCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #1a1613;
+  padding: 40px 24px;
+  text-align: center;
+}
+
+.thatsAllLabel {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+}
+
+.thatsAllText {
+  font-family: var(--font-serif);
+  font-size: clamp(1rem, 1.6vw, 1.4rem);
+  font-weight: 300;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.4;
+}
+
 /* ── RESPONSIVE ─────────────────────────────────────────────────────── */
 @media (max-width: 700px) {
   .bottomRow {
@@ -300,6 +340,14 @@
   /* Load More becomes a full-width standalone banner on mobile */
   .loadMoreCard {
     min-height: 120px;
+    grid-column: 1 / -1;
+  }
+
+  .extraRow {
+    grid-template-columns: 1fr;
+  }
+
+  .thatsAllCard {
     grid-column: 1 / -1;
   }
 

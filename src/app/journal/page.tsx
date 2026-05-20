@@ -13,15 +13,13 @@ export const metadata: Metadata = {
     'Dive into the soul of Bali. Lifestyle stories, travel guides, and cultural insights from the team behind Forever Bali Villas.',
 };
 
-const FILTER_TABS = ['Lifestyle', 'Travel Guides', 'Culture'];
-
 export default async function JournalPage() {
   const allPosts = await getPosts();
   const published = allPosts.filter(p => p.published !== false);
 
   return (
     <>
-      {/* Hero */}
+      {/* Hero — uses first post cover as background */}
       <section className={styles.hero}>
         {published[0]?.coverImage && (
           <div className={styles.heroImg}>
@@ -35,24 +33,8 @@ export default async function JournalPage() {
         </div>
       </section>
 
-      {/* Filter tabs */}
-      <div className={styles.filters}>
-        <div className={styles.filterInner}>
-          {FILTER_TABS.map((tab, i) => (
-            <button key={tab} className={`${styles.filterBtn} ${i === 1 ? styles.filterActive : ''}`}>
-              {tab}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {published.length === 0 ? (
-        <section className={styles.postsSection} style={{ minHeight: '40vh', alignItems: 'center', justifyContent: 'center' }}>
-          <p style={{ textAlign: 'center', padding: '80px 20px', color: '#888' }}>No posts yet.</p>
-        </section>
-      ) : (
-        <JournalGrid posts={published} />
-      )}
+      {/* Grid with filter tabs + Load More — client component */}
+      <JournalGrid posts={published} />
 
       <NewsletterStrip />
       <Footer />

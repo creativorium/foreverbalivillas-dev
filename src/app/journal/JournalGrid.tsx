@@ -4,24 +4,24 @@ import { useState } from 'react';
 import Link from 'next/link';
 import styles from './page.module.css';
 
-interface Post { slug: string; title: string; coverImage: string; }
+interface Post { slug: string; title: string; coverImage: string; category?: string; }
 
-const INITIAL = 3;   // posts shown before Load More
-const PER_LOAD = 6;  // posts revealed per Load More click
+const FILTER_TABS = ['All', 'Lifestyle', 'Travel Guides', 'Culture'];
+const PER_LOAD = 6;
 
 export default function JournalGrid({ posts }: { posts: Post[] }) {
-  const [visible, setVisible] = useState(INITIAL);
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [visible, setVisible]               = useState(3);
 
-  const featured = posts[0];
-  const rest      = posts.slice(1, visible);
-  const hasMore   = visible < posts.length;
+  const filtered = activeCategory === 'All'
+    ? posts
+    : posts.filter(p => p.category === activeCategory);
 
-  if (!featured) return null;
-
-  // Split rest into rows of 3 for the "load more" rows
-  // The initial bottom row is handled separately (includes Load More card slot)
-  const initialRow = rest.slice(0, 2);      // posts[1], posts[2]
-  const extraPosts = rest.slice(2);          // posts[3], posts[4], ... after load more
+  const featured    = filtered[0];
+  const shown       = filtered.slice(1, visible);
+  const initialRow  = shown.slice(0, 2);   // posts[1], posts[2]
+  const extraPosts  = shown.slice(2);       // posts[3] onward after Load More
+  const hasMore     = visible < filtered.length;
 
   // Group extra posts into rows of 3
   const extraRows: Post[][] = [];
@@ -29,74 +29,114 @@ export default function JournalGrid({ posts }: { posts: Post[] }) {
     extraRows.push(extraPosts.slice(i, i + 3));
   }
 
+  const handleCategoryChange = (cat: string) => {
+    setActiveCategory(cat);
+    setVisible(3); // reset pagination when filter changes
+  };
+
   return (
-    <section className={styles.postsSection}>
-      {/* Featured — full width */}
-      <Link href={`/journal/${featured.slug}`} className={styles.featuredCard}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={featured.coverImage} alt={featured.title} className={styles.featuredImg} />
-        <div className={styles.featuredOverlay} />
-        <div className={styles.featuredFooter}>
-          <h2 className={styles.featuredTitle}>{featured.title}</h2>
-          <span className={styles.readBtn}>Read More &nbsp;→</span>
+    <>
+      {/* Filter tabs */}
+      <div className={styles.filters}>
+        <div className={styles.filterInner}>
+          {FILTER_TABS.map(tab => (
+            <button
+              key={tab}
+              onClick={() => handleCategoryChange(tab)}
+              className={`${styles.filterBtn} ${activeCategory === tab ? styles.filterActive : ''}`}
+            >
+              {tab}
+            </button>
+          ))}
         </div>
-      </Link>
-
-      {/* Initial bottom row: 2 posts + Load More card */}
-      <div className={styles.bottomRow}>
-        {initialRow.map(post => (
-          <Link key={post.slug} href={`/journal/${post.slug}`} className={styles.card}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={post.coverImage} alt={post.title} className={styles.cardImg} />
-            <div className={styles.cardOverlay} />
-            <div className={styles.cardFooter}>
-              <h3 className={styles.cardTitle}>{post.title}</h3>
-              <span className={styles.readBtn}>Read More &nbsp;→</span>
-            </div>
-          </Link>
-        ))}
-
-        {/* Load More card always in the 3rd slot of the initial row */}
-        {hasMore && (
-          <div className={styles.loadMoreCard} onClick={() => setVisible(v => v + PER_LOAD)}>
-            <button className={styles.loadMoreBtn}>Load More</button>
-          </div>
-        )}
-
-        {/* Empty placeholder if initial row has < 2 posts and no Load More */}
-        {!hasMore && initialRow.length < 2 && (
-          <div style={{ background: '#0d0d0d' }} />
-        )}
       </div>
 
-      {/* Extra rows revealed by Load More */}
-      {extraRows.map((row, ri) => (
-        <div key={ri} className={styles.bottomRow}>
-          {row.map(post => (
-            <Link key={post.slug} href={`/journal/${post.slug}`} className={styles.card}>
+      <section className={styles.postsSection}>
+        {!featured ? (
+          <p style={{ textAlign: 'center', padding: '80px 20px', color: '#888' }}>
+            No posts in this category yet.
+          </p>
+        ) : (
+          <>
+            {/* Featured — full width */}
+            <Link href={`/journal/${featured.slug}`} className={styles.featuredCard}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={post.coverImage} alt={post.title} className={styles.cardImg} />
-              <div className={styles.cardOverlay} />
-              <div className={styles.cardFooter}>
-                <h3 className={styles.cardTitle}>{post.title}</h3>
+              <img src={featured.coverImage} alt={featured.title} className={styles.featuredImg} />
+              <div className={styles.featuredOverlay} />
+              <div className={styles.featuredFooter}>
+                <h2 className={styles.featuredTitle}>{featured.title}</h2>
                 <span className={styles.readBtn}>Read More &nbsp;→</span>
               </div>
             </Link>
-          ))}
-          {/* Fill empty slots so grid stays 3-col */}
-          {Array.from({ length: 3 - row.length }).map((_, i) => (
-            <div key={`empty-${i}`} style={{ background: '#0d0d0d' }} />
-          ))}
-        </div>
-      ))}
 
-      {/* Bottom Load More if there are still more after extra rows */}
-      {hasMore && extraRows.length > 0 && (
-        <div className={styles.loadMoreCard} onClick={() => setVisible(v => v + PER_LOAD)}
-          style={{ minHeight: '80px' }}>
-          <button className={styles.loadMoreBtn}>Load More</button>
-        </div>
-      )}
-    </section>
+            {/* Initial bottom row: up to 2 posts + Load More / That's All in 3rd slot */}
+            <div className={styles.bottomRow}>
+              {initialRow.map(post => (
+                <Link key={post.slug} href={`/journal/${post.slug}`} className={styles.card}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={post.coverImage} alt={post.title} className={styles.cardImg} />
+                  <div className={styles.cardOverlay} />
+                  <div className={styles.cardFooter}>
+                    <h3 className={styles.cardTitle}>{post.title}</h3>
+                    <span className={styles.readBtn}>Read More &nbsp;→</span>
+                  </div>
+                </Link>
+              ))}
+
+              {/* 3rd slot */}
+              {hasMore ? (
+                <div className={styles.loadMoreCard} onClick={() => setVisible(v => v + PER_LOAD)}>
+                  <button className={styles.loadMoreBtn}>Load More</button>
+                </div>
+              ) : (
+                <div className={styles.thatsAllCard}>
+                  <p className={styles.thatsAllLabel}>The Journal</p>
+                  <p className={styles.thatsAllText}>
+                    You&rsquo;ve reached the end of our stories.
+                    <br />More coming soon.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Extra rows revealed by Load More — no empty black slots */}
+            {extraRows.map((row, ri) => (
+              <div key={ri} className={styles.extraRow}>
+                {row.map(post => (
+                  <Link key={post.slug} href={`/journal/${post.slug}`} className={styles.card}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={post.coverImage} alt={post.title} className={styles.cardImg} />
+                    <div className={styles.cardOverlay} />
+                    <div className={styles.cardFooter}>
+                      <h3 className={styles.cardTitle}>{post.title}</h3>
+                      <span className={styles.readBtn}>Read More &nbsp;→</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ))}
+
+            {/* Load More at bottom when extra rows exist but still more posts */}
+            {hasMore && extraRows.length > 0 && (
+              <div className={styles.loadMoreCard} style={{ minHeight: '100px' }}
+                onClick={() => setVisible(v => v + PER_LOAD)}>
+                <button className={styles.loadMoreBtn}>Load More</button>
+              </div>
+            )}
+
+            {/* That's All at bottom after extra rows when all shown */}
+            {!hasMore && extraRows.length > 0 && (
+              <div className={styles.thatsAllCard} style={{ padding: '48px 24px' }}>
+                <p className={styles.thatsAllLabel}>The Journal</p>
+                <p className={styles.thatsAllText}>
+                  You&rsquo;ve reached the end of our stories.
+                  <br />More coming soon.
+                </p>
+              </div>
+            )}
+          </>
+        )}
+      </section>
+    </>
   );
 }
