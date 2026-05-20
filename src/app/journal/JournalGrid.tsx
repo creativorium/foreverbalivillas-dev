@@ -6,12 +6,16 @@ import styles from './page.module.css';
 
 interface Post { slug: string; title: string; coverImage: string; category?: string; }
 
-const FILTER_TABS = ['All', 'Lifestyle', 'Travel Guides', 'Culture'];
 const PER_LOAD = 6;
 
 export default function JournalGrid({ posts }: { posts: Post[] }) {
   const [activeCategory, setActiveCategory] = useState('All');
   const [visible, setVisible]               = useState(3);
+
+  // Build filter tabs from actual post categories — always up to date
+  const categories = ['All', ...Array.from(
+    new Set(posts.map(p => p.category).filter((c): c is string => !!c))
+  )];
 
   const filtered = activeCategory === 'All'
     ? posts
@@ -39,7 +43,7 @@ export default function JournalGrid({ posts }: { posts: Post[] }) {
       {/* Filter tabs */}
       <div className={styles.filters}>
         <div className={styles.filterInner}>
-          {FILTER_TABS.map(tab => (
+          {categories.map(tab => (
             <button
               key={tab}
               onClick={() => handleCategoryChange(tab)}
