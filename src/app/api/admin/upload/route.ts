@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
       const b64file = Buffer.from(bytes).toString('base64');
       const payload = JSON.stringify({ filename: file.name, type: file.type, data: b64file });
       const encoded = Buffer.from(payload).toString('base64');
-      const res = await fetch(`${CUSTOM_URL}/upload.php`, {
+      const res = await fetch(`${CUSTOM_URL}/media.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-Api-Key': CUSTOM_KEY },
         body: JSON.stringify({ _e: encoded }),

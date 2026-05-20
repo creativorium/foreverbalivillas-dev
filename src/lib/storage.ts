@@ -52,7 +52,7 @@ export async function uploadImage(file: File): Promise<string> {
   if (!USE_CUSTOM) throw new Error('Image upload requires CUSTOM_STORAGE_URL');
   const form = new FormData();
   form.append('file', file);
-  const res = await fetch(`${CUSTOM_URL}/upload.php`, {
+  const res = await fetch(`${CUSTOM_URL}/media.php`, {
     method: 'POST',
     headers: { 'X-Api-Key': CUSTOM_KEY },
     body: form,
