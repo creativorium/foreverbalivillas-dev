@@ -1,6 +1,7 @@
 import { getPosts } from '@/lib/admin-data';
 import { getUsers } from '@/lib/admin-data';
 import Link from 'next/link';
+import DatabaseStatus from '@/components/admin/DatabaseStatus';
 
 const PAGES = [
   { label: 'Homepage',           tab: 'homepage',   href: '/',                    icon: '🏠', desc: 'Hero, gallery, about, features' },
@@ -18,9 +19,7 @@ export default async function DashboardPage() {
 
   return (
     <>
-      <div className="adm-alert adm-alert-info" style={{ marginBottom: '24px' }}>
-        <strong>Production note:</strong> Content changes are saved to local JSON files. On Vercel, connect Vercel KV or a shared hosting API for live updates without redeployment.
-      </div>
+      <DatabaseStatus />
 
       {/* Stats */}
       <div className="adm-stats">
