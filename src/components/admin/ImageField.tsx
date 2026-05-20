@@ -9,9 +9,10 @@ interface Props {
   hint?:     string;
   folder?:   string;           // e.g. "blog", "villas/pandawa", "homepage"
   aspect?:   string;           // CSS aspect-ratio for preview, e.g. "16/9"
+  stacked?:  boolean;          // stack preview above controls (use in narrow sidebars)
 }
 
-export default function ImageField({ label, value, onChange, hint, aspect = '16/9' }: Props) {
+export default function ImageField({ label, value, onChange, hint, aspect = '16/9', stacked = false }: Props) {
   const [uploading, setUploading] = useState(false);
   const [error,     setError]     = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -39,7 +40,10 @@ export default function ImageField({ label, value, onChange, hint, aspect = '16/
         {hint && <span className="adm-label-hint">{hint}</span>}
       </label>
 
-      <div style={{ display: 'grid', gridTemplateColumns: value ? '180px 1fr' : '1fr', gap: '12px', alignItems: 'start' }}>
+      <div style={stacked
+        ? { display: 'flex', flexDirection: 'column', gap: '10px' }
+        : { display: 'grid', gridTemplateColumns: value ? '180px 1fr' : '1fr', gap: '12px', alignItems: 'start' }
+      }>
 
         {/* Current image preview */}
         {value && (

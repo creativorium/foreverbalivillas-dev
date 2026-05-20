@@ -448,6 +448,7 @@ export default function VillaEditorPage() {
               onChange={v => set('featuredImage', v)}
               folder={`villas/${slug}`}
               aspect="4/3"
+              stacked
             />
           </div>
         </div>

@@ -3,21 +3,12 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import NewsletterStrip from '@/components/NewsletterStrip';
 import Footer from '@/components/Footer';
-import { POSTS } from '@/data/journal';
+import { getPosts } from '@/lib/admin-data';
 import styles from './page.module.css';
 
-const FALLBACK_BODY = 'The full article content will appear here once added via the admin panel at /admin/blog.';
+export const revalidate = 300;
 
-const getPost = (slug: string) => {
-  const post = POSTS.find(p => p.slug === slug);
-  if (!post) return null;
-  // Split body (from admin) on blank lines into paragraphs; fall back to excerpt
-  const rawBody = (post as typeof post & { body?: string }).body || '';
-  const paragraphs = rawBody.trim()
-    ? rawBody.split(/\n\n+/).map(p => p.replace(/\n/g, ' ').trim()).filter(Boolean)
-    : [post.excerpt || FALLBACK_BODY];
-  return { ...post, paragraphs };
-};
+const FALLBACK_BODY = 'The full article content will appear here once added via the admin panel at /admin/blog.';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -25,21 +16,28 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPost(slug);
+  const posts = await getPosts();
+  const post = posts.find(p => p.slug === slug);
   if (!post) return { title: 'Post Not Found' };
   return {
     title: post.title,
-    description: post.paragraphs[0].slice(0, 160),
+    description: (post.excerpt || '').slice(0, 160),
   };
 }
 
 export default async function JournalPostPage({ params }: Props) {
   const { slug } = await params;
-  const post = getPost(slug);
-  
-  if (!post) {
-    notFound();
-  }
+  const posts = await getPosts();
+  const post = posts.find(p => p.slug === slug);
+
+  if (!post) notFound();
+
+  const rawBody = post.body || '';
+  const paragraphs = rawBody.trim()
+    ? rawBody.split(/\n\n+/).map(p => p.replace(/\n/g, ' ').trim()).filter(Boolean)
+    : [post.excerpt || FALLBACK_BODY];
+
+  const half = Math.ceil(paragraphs.length / 2);
 
   return (
     <>
@@ -56,12 +54,10 @@ export default async function JournalPostPage({ params }: Props) {
       {/* Article */}
       <article className={styles.article}>
         <div className={`container ${styles.articleInner}`}>
-          {/* First paragraph(s) before gallery */}
-          {post.paragraphs.slice(0, Math.ceil(post.paragraphs.length / 2)).map((p, i) => (
+          {paragraphs.slice(0, half).map((p, i) => (
             <p key={i} className={`t-body ${styles.bodyText}`}>{p}</p>
           ))}
 
-          {/* Inline gallery */}
           {post.gallery && post.gallery.length > 0 && (
             <div className={styles.galleryGrid}>
               {post.gallery.map((img, i) => (
@@ -72,8 +68,7 @@ export default async function JournalPostPage({ params }: Props) {
             </div>
           )}
 
-          {/* Remaining paragraphs after gallery */}
-          {post.paragraphs.slice(Math.ceil(post.paragraphs.length / 2)).map((p, i) => (
+          {paragraphs.slice(half).map((p, i) => (
             <p key={i} className={`t-body ${styles.bodyText}`}>{p}</p>
           ))}
 

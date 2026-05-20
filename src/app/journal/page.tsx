@@ -2,8 +2,10 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import NewsletterStrip from '@/components/NewsletterStrip';
 import Footer from '@/components/Footer';
-import { POSTS } from '@/data/journal';
+import { getPosts } from '@/lib/admin-data';
 import styles from './page.module.css';
+
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: 'The Journal — Stories, Travel Guides & Culture',
@@ -13,8 +15,27 @@ export const metadata: Metadata = {
 
 const FILTER_TABS = ['Lifestyle', 'Travel Guides', 'Culture'];
 
-export default function JournalPage() {
-  const [featured, ...rest] = POSTS;
+export default async function JournalPage() {
+  const allPosts = await getPosts();
+  const published = allPosts.filter(p => p.published !== false);
+  const [featured, ...rest] = published;
+
+  if (!featured) {
+    return (
+      <>
+        <section className={styles.hero}>
+          <div className={styles.heroContent}>
+            <h1 className={styles.heroTitle}>The Journal</h1>
+          </div>
+        </section>
+        <section className={styles.postsSection}>
+          <p style={{ textAlign: 'center', padding: '80px 20px', color: '#6b7280' }}>No posts yet.</p>
+        </section>
+        <NewsletterStrip />
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>
@@ -65,14 +86,9 @@ export default function JournalPage() {
 
         {/* Bottom row — 3 equal columns */}
         <div className={styles.bottomRow}>
-          {/* Post card 1 */}
           {rest[0] && (
             <Link href={`/journal/${rest[0].slug}`} className={styles.card}>
-              <img
-                src={rest[0].coverImage}
-                alt={rest[0].title}
-                className={styles.cardImg}
-              />
+              <img src={rest[0].coverImage} alt={rest[0].title} className={styles.cardImg} />
               <div className={styles.cardOverlay} />
               <div className={styles.cardFooter}>
                 <h3 className={styles.cardTitle}>{rest[0].title}</h3>
@@ -81,14 +97,9 @@ export default function JournalPage() {
             </Link>
           )}
 
-          {/* Post card 2 */}
           {rest[1] && (
             <Link href={`/journal/${rest[1].slug}`} className={styles.card}>
-              <img
-                src={rest[1].coverImage}
-                alt={rest[1].title}
-                className={styles.cardImg}
-              />
+              <img src={rest[1].coverImage} alt={rest[1].title} className={styles.cardImg} />
               <div className={styles.cardOverlay} />
               <div className={styles.cardFooter}>
                 <h3 className={styles.cardTitle}>{rest[1].title}</h3>

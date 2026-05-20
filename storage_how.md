@@ -31,6 +31,8 @@ Using your hosting file manager or FTP, create this folder:
 
 ### Step 2 — Upload these 6 files into `/public_html/fbv-api/`
 
+> Note: the upload file is named **`media.php`** (not `upload.php`).
+
 #### `.htaccess`
 ```apache
 Options -Indexes
@@ -167,7 +169,7 @@ if ($method === 'GET') {
 }
 ```
 
-#### `upload.php`
+#### `media.php`
 ```php
 <?php
 require_once __DIR__ . '/auth.php';
@@ -179,43 +181,34 @@ require_auth();
 $upload_dir = __DIR__ . '/images/';
 if (!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(400); echo json_encode(['error' => 'POST required']); exit;
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_FILES['file'])) {
+    http_response_code(400); echo json_encode(['error' => 'No file']); exit;
 }
 
-// Accept base64-encoded JSON upload (WAF-safe, no multipart)
-$raw     = file_get_contents('php://input');
-$parsed  = json_decode($raw, true);
-if (!is_array($parsed) || !isset($parsed['_e'])) {
-    http_response_code(400); echo json_encode(['error' => 'Invalid request']); exit;
-}
-$payload  = json_decode(base64_decode($parsed['_e']), true);
-$filename_orig = $payload['filename'] ?? 'upload';
-$filetype      = $payload['type']     ?? '';
-$filedata      = base64_decode($payload['data'] ?? '');
-
+$file     = $_FILES['file'];
 $allowed  = ['image/jpeg','image/png','image/webp','image/gif','image/svg+xml','application/pdf','video/mp4','video/webm','video/quicktime'];
-$is_video = strpos($filetype, 'video/') === 0;
-$max_size = $is_video ? 200*1024*1024 : ($filetype === 'application/pdf' ? 25*1024*1024 : 10*1024*1024);
+$is_video = strpos($file['type'], 'video/') === 0;
+$max_size = $is_video ? 200*1024*1024 : ($file['type'] === 'application/pdf' ? 25*1024*1024 : 10*1024*1024);
 
-if (!in_array($filetype, $allowed)) {
+if (!in_array($file['type'], $allowed)) {
     http_response_code(400); echo json_encode(['error' => 'File type not allowed']); exit;
 }
-if (strlen($filedata) > $max_size) {
+if ($file['size'] > $max_size) {
     http_response_code(400); echo json_encode(['error' => 'File too large']); exit;
 }
 
-$ext      = pathinfo($filename_orig, PATHINFO_EXTENSION);
-$name     = preg_replace('/[^a-z0-9-]/', '', strtolower(pathinfo($filename_orig, PATHINFO_FILENAME)));
+$ext      = pathinfo($file['name'], PATHINFO_EXTENSION);
+$name     = preg_replace('/[^a-z0-9-]/', '', strtolower(pathinfo($file['name'], PATHINFO_FILENAME)));
 $filename = $name . '-' . time() . '.' . $ext;
 
-if (file_put_contents($upload_dir . $filename, $filedata) === false) {
+if (!move_uploaded_file($file['tmp_name'], $upload_dir . $filename)) {
     http_response_code(500); echo json_encode(['error' => 'Upload failed']); exit;
 }
 
-$base = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'];
-$path = str_replace($_SERVER['DOCUMENT_ROOT'], '', $upload_dir);
-echo json_encode(['url' => $base . $path . $filename, 'filename' => $filename]);
+// Build URL from SCRIPT_NAME — more reliable than DOCUMENT_ROOT on shared hosting
+$base    = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'];
+$api_dir = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
+echo json_encode(['url' => $base . $api_dir . '/images/' . $filename, 'filename' => $filename]);
 ```
 
 ### Step 3 — Generate a secret key
