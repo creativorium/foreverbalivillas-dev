@@ -12,8 +12,20 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
 
-  const load = () => fetch('/api/admin/users').then(r => r.json()).then(setUsers);
-  useEffect(() => { load(); }, []);
+  const load = async () => {
+    try {
+      const res  = await fetch('/api/admin/users');
+      const data = await res.json();
+      if (res.ok && Array.isArray(data)) {
+        setUsers(data);
+      } else {
+        setError(data.error || `Failed to load users (${res.status})`);
+      }
+    } catch {
+      setError('Network error — could not reach the server');
+    }
+  };
+  useEffect(() => { load(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
 
@@ -32,7 +44,7 @@ export default function UsersPage() {
       setSuccess(`User "${form.username}" created.`);
       setForm({ username: '', name: '', password: '', role: 'editor' });
       setShowForm(false);
-      load();
+      await load();
       setTimeout(() => setSuccess(''), 4000);
     } catch {
       setError('Network error');
