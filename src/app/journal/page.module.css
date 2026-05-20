@@ -251,7 +251,13 @@
   justify-content: center;
   overflow: hidden;
   cursor: pointer;
-  background: #1a1a1a;
+  background: #7a6555; /* warm brown — matches site palette */
+  min-height: 200px;
+  transition: background 0.25s;
+}
+
+.loadMoreCard:hover {
+  background: #8a7460;
 }
 
 .loadMoreOverlay {
@@ -262,21 +268,23 @@
   position: relative;
   z-index: 1;
   background: transparent;
-  color: var(--white);
+  color: rgba(255, 255, 255, 0.9);
   font-family: var(--font-sans);
-  font-size: 1.15rem;
-  font-weight: 400;
-  letter-spacing: 0.06em;
-  border: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
-  padding-bottom: 5px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 100px;
+  padding: 12px 32px;
   cursor: pointer;
-  transition: color 0.25s, border-color 0.25s;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
 }
 
 .loadMoreCard:hover .loadMoreBtn {
-  color: var(--gold-light, #d4b896);
-  border-color: var(--gold-light, #d4b896);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.8);
+  color: var(--white);
 }
 
 /* ── RESPONSIVE ─────────────────────────────────────────────────────── */
@@ -289,8 +297,10 @@
     min-height: 300px;
   }
 
+  /* Load More becomes a full-width standalone banner on mobile */
   .loadMoreCard {
-    min-height: 180px;
+    min-height: 120px;
+    grid-column: 1 / -1;
   }
 
   .featuredFooter,

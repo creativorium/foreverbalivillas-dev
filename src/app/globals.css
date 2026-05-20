@@ -447,6 +447,26 @@ button {
   .newsletter-form { width: 100%; }
 }
 
+@media (max-width: 480px) {
+  .newsletter-form {
+    flex-direction: column;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .newsletter-form input {
+    width: 100%;
+    text-align: center;
+    border-bottom: 1px solid var(--gray-light);
+  }
+  .newsletter-form button {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    border-radius: 0;
+    padding: 14px;
+  }
+}
+
 @media (max-width: 600px) {
   .footer-grid {
     grid-template-columns: 1fr;
@@ -455,4 +475,33 @@ button {
     flex-direction: column;
     text-align: center;
   }
+}
+
+/* ── Legal page HTML content (dangerouslySetInnerHTML) ─────────────────────── */
+.legal-body h3 {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #3a3028;
+  margin-top: 24px;
+  margin-bottom: 10px;
+}
+.legal-body p {
+  margin-bottom: 12px;
+}
+.legal-body ul,
+.legal-body ol {
+  padding-left: 20px;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.legal-body li {
+  line-height: 1.75;
+}
+.legal-body a {
+  color: var(--forest, #2c5f56);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }

@@ -4,7 +4,7 @@ import { useRef, useState, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import styles from './HomeGallery.module.css';
 
-const BASE = [
+const DEFAULT_BASE = [
   { src: '/images/home/gallery/gallery-01.webp', alt: 'Forever Bali Villas — 1' },
   { src: '/images/home/gallery/gallery-02.webp', alt: 'Forever Bali Villas — 2' },
   { src: '/images/home/gallery/gallery-03.webp', alt: 'Forever Bali Villas — 3' },
@@ -15,11 +15,12 @@ const BASE = [
   { src: '/images/home/gallery/gallery-08.webp', alt: 'Forever Bali Villas — 8' },
 ];
 
-const N = BASE.length;
-// Triple-clone for infinite feel
-const SLIDES = [...BASE, ...BASE, ...BASE];
-
-export default function HomeGallery() {
+export default function HomeGallery({ galleryImages }: { galleryImages?: string[] }) {
+  const BASE = (galleryImages && galleryImages.length > 0)
+    ? galleryImages.map((src, i) => ({ src, alt: `Forever Bali Villas — ${i + 1}` }))
+    : DEFAULT_BASE;
+  const N = BASE.length;
+  const SLIDES = [...BASE, ...BASE, ...BASE];
   const wrapRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);

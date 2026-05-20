@@ -3,8 +3,7 @@
 import styles from './WhatsAppButton.module.css';
 
 export default function WhatsAppButton() {
-  const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '';
-  const href = number ? `https://wa.me/${number}` : '#';
+  const href = 'https://wa.me/6281996488881';
 
   return (
     <a

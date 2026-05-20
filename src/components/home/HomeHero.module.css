@@ -38,12 +38,13 @@
 .overlay {
   position: absolute;
   inset: 0;
-  /* Soft vignette — no heavy bottom darkness since there is no hero text */
-  background: radial-gradient(
-    ellipse at center,
-    rgba(0,0,0,0.05) 0%,
-    rgba(0,0,0,0.32) 100%
-  );
+  background:
+    /* top band — nav visibility */
+    linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.0) 28%),
+    /* bottom band — scroll indicator visibility */
+    linear-gradient(to top, rgba(0,0,0,0.50) 0%, rgba(0,0,0,0.0) 28%),
+    /* general vignette */
+    radial-gradient(ellipse at center, rgba(0,0,0,0.04) 0%, rgba(0,0,0,0.22) 100%);
   z-index: 1;
 }
 

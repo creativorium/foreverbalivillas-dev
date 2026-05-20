@@ -59,7 +59,7 @@
   }
 }
 
-/* Mobile swipe hint — vertical scrollDrop line (mirrors hero scroll indicator) */
+/* Mobile swipe hint — horizontal swipe arrow indicator */
 .swipeHint {
   display: none;
 }
@@ -67,10 +67,11 @@
 @media (max-width: 768px) {
   .swipeHint {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    gap: 8px;
-    margin-top: 12px;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 16px;
     color: rgba(0, 0, 0, 0.35);
   }
 
@@ -80,33 +81,45 @@
     letter-spacing: 0.22em;
     text-transform: uppercase;
     color: #aaa;
-    writing-mode: horizontal-tb;
   }
 
-  /* The vertical scrollDrop line */
+  /* Horizontal animated line with sliding fill */
   .swipeLine {
     display: block;
-    width: 1px;
-    height: 44px;
-    background: rgba(0, 0, 0, 0.15);
+    width: 44px;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.12);
     position: relative;
     overflow: hidden;
   }
 
+  .swipeLine::before,
   .swipeLine::after {
     content: '';
     position: absolute;
-    top: -100%;
-    left: 0;
-    width: 1px;
-    height: 100%;
+    top: 0;
+    height: 1px;
     background: #888;
-    animation: swipeDrop 1.8s ease-in-out infinite;
   }
 
-  @keyframes swipeDrop {
-    0%   { top: -100%; }
-    100% { top: 100%; }
+  /* Left arrow pulse */
+  .swipeLine::before {
+    left: -100%;
+    width: 100%;
+    animation: swipeLeft 1.8s ease-in-out infinite;
+  }
+
+  /* Right arrow pulse (offset) */
+  .swipeLine::after {
+    left: -100%;
+    width: 100%;
+    background: #aaa;
+    animation: swipeLeft 1.8s ease-in-out 0.9s infinite;
+  }
+
+  @keyframes swipeLeft {
+    0%   { left: -100%; }
+    100% { left: 100%; }
   }
 }
 
@@ -288,7 +301,9 @@
     aspect-ratio: 4 / 3;
   }
   .arrow {
-    display: none; /* Rely on drag for mobile */
+    display: flex;
+    width: 38px;
+    height: 38px;
   }
   .galleryWrap {
     cursor: auto;

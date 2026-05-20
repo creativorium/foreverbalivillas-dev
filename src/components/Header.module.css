@@ -222,6 +222,63 @@
   background: rgba(255, 255, 255, 0.06);
 }
 
+/* Book Now dropdown wrapper */
+.bookWrap {
+  position: relative;
+}
+
+.bookChevron {
+  margin-left: 6px;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.bookBtnOpen .bookChevron {
+  transform: rotate(180deg);
+}
+
+.bookDropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 180px;
+  background: rgba(30, 55, 48, 0.97);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  overflow: hidden;
+  z-index: 200;
+  animation: dropIn 0.18s ease;
+}
+
+@keyframes dropIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.bookDropdownItem {
+  display: block;
+  padding: 14px 20px;
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.8);
+  transition: background 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+
+.bookDropdownItem:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--white);
+}
+
+.bookDropdownItem + .bookDropdownItem {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
 /* Logo link wrapper */
 .logo {
   flex: 0 0 auto;

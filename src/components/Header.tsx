@@ -7,17 +7,18 @@ import Image from 'next/image';
 import NavOverlay from './NavOverlay';
 import styles from './Header.module.css';
 
-// Pages that have a light/white background behind the header
-// — on these, logo and buttons should default to dark colours
+const BOOKING_URL = 'https://hotels.cloudbeds.com/en/reservation/UJe0hq/';
+
+// Pages with no dark hero at the top — header starts with dark elements immediately.
+// FAQ and journal detail pages have dark hero images, so they are NOT here;
+// they rely on the scrolled state to transition the header to dark.
 const LIGHT_BG_PATHS = [
   '/cancellation-policy',
-  '/faq',
+  '/privacy-policy',
 ];
 
 const isLightBgPath = (path: string) =>
-  LIGHT_BG_PATHS.some(p => path === p || path.startsWith(p + '/')) ||
-  // journal detail pages (not the archive itself)
-  (path.startsWith('/journal/') && path.length > '/journal/'.length);
+  LIGHT_BG_PATHS.some(p => path === p || path.startsWith(p + '/'));
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -39,6 +40,9 @@ export default function Header() {
   }, [navOpen]);
 
   const toggleNav = () => setNavOpen(prev => !prev);
+
+  // Admin pages have their own shell — no site header needed
+  if (pathname.startsWith('/admin')) return null;
 
   return (
     <>
@@ -77,16 +81,16 @@ export default function Header() {
             />
           </Link>
 
-          {/* Right: BOOK NOW ghost pill */}
+          {/* Right: BOOK NOW */}
           <div className={styles.right}>
-            <Link
-              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || ''}`}
+            <a
+              href={BOOKING_URL}
               target="_blank"
               rel="noopener noreferrer"
               className={styles.bookBtn}
             >
               BOOK NOW
-            </Link>
+            </a>
           </div>
         </div>
       </header>

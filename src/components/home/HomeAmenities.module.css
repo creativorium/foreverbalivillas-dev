@@ -76,6 +76,20 @@
 }
 
 @media (max-width: 580px) {
-  .icons { gap: 28px; }
-  .iconItem { max-width: 72px; }
+  .icons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 28px 0;
+  }
+
+  /* Each item is exactly 1/3 of the row — 3 fit on row 1, 2 center on row 2 */
+  .iconItem {
+    flex: 0 0 33.33%;
+    max-width: 33.33%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
 }

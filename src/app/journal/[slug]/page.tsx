@@ -6,19 +6,17 @@ import Footer from '@/components/Footer';
 import { POSTS } from '@/data/journal';
 import styles from './page.module.css';
 
-// In production, fetch post data from CMS
+const FALLBACK_BODY = 'The full article content will appear here once added via the admin panel at /admin/blog.';
+
 const getPost = (slug: string) => {
   const post = POSTS.find(p => p.slug === slug);
   if (!post) return null;
-  
-  return {
-    ...post,
-    body: [
-      `Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.`,
-      `Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.`
-    ],
-    pullQuote: '"Bali does not reveal itself quickly. It rewards those who are willing to sit still long enough to truly see it."',
-  };
+  // Split body (from admin) on blank lines into paragraphs; fall back to excerpt
+  const rawBody = (post as typeof post & { body?: string }).body || '';
+  const paragraphs = rawBody.trim()
+    ? rawBody.split(/\n\n+/).map(p => p.replace(/\n/g, ' ').trim()).filter(Boolean)
+    : [post.excerpt || FALLBACK_BODY];
+  return { ...post, paragraphs };
 };
 
 interface Props {
@@ -31,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!post) return { title: 'Post Not Found' };
   return {
     title: post.title,
-    description: post.body[0].slice(0, 160),
+    description: post.paragraphs[0].slice(0, 160),
   };
 }
 
@@ -58,10 +56,13 @@ export default async function JournalPostPage({ params }: Props) {
       {/* Article */}
       <article className={styles.article}>
         <div className={`container ${styles.articleInner}`}>
-          <p className={`t-body ${styles.bodyText}`}>{post.body[0]}</p>
+          {/* First paragraph(s) before gallery */}
+          {post.paragraphs.slice(0, Math.ceil(post.paragraphs.length / 2)).map((p, i) => (
+            <p key={i} className={`t-body ${styles.bodyText}`}>{p}</p>
+          ))}
 
-          {/* 3 Inline images */}
-          {post.gallery && post.gallery.length === 3 && (
+          {/* Inline gallery */}
+          {post.gallery && post.gallery.length > 0 && (
             <div className={styles.galleryGrid}>
               {post.gallery.map((img, i) => (
                 <div key={i} className={styles.galleryImageWrap}>
@@ -71,9 +72,10 @@ export default async function JournalPostPage({ params }: Props) {
             </div>
           )}
 
-          <p className={`t-body ${styles.bodyText}`}>{post.body[1]}</p>
-
-          <blockquote className={styles.pullQuote}>{post.pullQuote}</blockquote>
+          {/* Remaining paragraphs after gallery */}
+          {post.paragraphs.slice(Math.ceil(post.paragraphs.length / 2)).map((p, i) => (
+            <p key={i} className={`t-body ${styles.bodyText}`}>{p}</p>
+          ))}
 
           <hr className={styles.divider} />
 

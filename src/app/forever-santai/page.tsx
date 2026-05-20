@@ -1,6 +1,48 @@
 import type { Metadata } from 'next';
 import VillaPage from '@/components/VillaPage';
 import type { VillaData } from '@/components/VillaPage';
+import type { TestimonyData } from '@/components/VillaGalleryTestimonies';
+import { storageGet } from '@/lib/storage';
+
+export const dynamic = 'force-dynamic';
+
+const SANTAI_TESTIMONIES: TestimonyData[] = [
+  {
+    id: 1,
+    rating: 5,
+    text: "Waking up to the sound of the ocean every morning was pure magic. The villa staff anticipated every need before we even asked — truly world-class hospitality.",
+    author: "Sarah M.",
+    age: 34,
+  },
+  {
+    id: 2,
+    rating: 5,
+    text: "Santai lives up to its name — we completely relaxed from the moment we arrived. The newly renovated interiors are beautiful and the pool level is stunning.",
+    author: "Emma & Will",
+    age: 36,
+  },
+  {
+    id: 3,
+    rating: 5,
+    text: "The level of privacy and tranquility here is unmatched. After a week of exploring Bali, coming back to Santai each evening felt like a true retreat.",
+    author: "Priya K.",
+    age: 37,
+  },
+  {
+    id: 4,
+    rating: 5,
+    text: "Six bedrooms, a gym, a movie room, a private infinity pool — Forever Santai has thought of everything. Our family had the most unforgettable holiday.",
+    author: "The Hendersons",
+    age: 44,
+  },
+  {
+    id: 5,
+    rating: 5,
+    text: "The garden-level studio was perfect for our teenagers. Meanwhile the adults had the ocean-view master all to themselves. The layout is genius.",
+    author: "Lena F.",
+    age: 41,
+  },
+];
 
 export const metadata: Metadata = {
   title: 'Forever Santai — Luxury Private Villa Bali',
@@ -70,7 +112,7 @@ const santaiData: VillaData = {
     },
     {
       id: 'santai-childrens',
-      label: "Santai Children's",
+      label: "Twin Room",
       description: 'This suite is ideal for children or teenagers who want their own space. It features two twin beds however they can be converted in to a King size upon request. The ensuite bathroom includes a luxurious bathtub, perfect for unwinding after a day of activities.',
       images: [
         '/images/villas/forever-santai/rooms/santai-childrens/1.jpg',
@@ -137,8 +179,24 @@ const santaiData: VillaData = {
       imagePath: '/images/villas/forever-santai/facilities/facility-5.jpg',
     },
   ],
+  testimonies: SANTAI_TESTIMONIES,
+  separatorImage: '/images/villas/forever-santai/gallery/Forever Santai A 27 HR.jpg',
 };
 
-export default function ForeverSantaiPage() {
-  return <VillaPage villa={santaiData} />;
+export default async function ForeverSantaiPage() {
+  const siteContent = await storageGet<Record<string, unknown>>('fbv:site-content', 'site-content.json');
+  const vc = ((siteContent?.villas as Record<string, unknown>)?.['forever-santai'] as Record<string, unknown>) ?? {};
+
+  const villa: VillaData = {
+    ...santaiData,
+    ...(vc.name        ? { name:            vc.name        as string   } : {}),
+    ...(vc.tagline     ? { tagline:          vc.tagline     as string   } : {}),
+    ...(vc.description ? { description:      vc.description as string   } : {}),
+    ...(vc.longDescription ? { longDescription: vc.longDescription as string } : {}),
+    ...(vc.heroImage   ? { heroImage:         vc.heroImage   as string   } : {}),
+    ...(vc.separatorImage ? { separatorImage: vc.separatorImage as string } : {}),
+    ...((vc.galleryImages as string[])?.length ? { galleryImages: vc.galleryImages as string[] } : {}),
+  };
+
+  return <VillaPage villa={villa} />;
 }

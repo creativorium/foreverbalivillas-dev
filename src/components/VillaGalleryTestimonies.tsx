@@ -23,14 +23,14 @@ const DEFAULT_TESTIMONIES: TestimonyData[] = [
   {
     id: 2,
     rating: 5,
-    text: "We celebrated our anniversary here and it exceeded every expectation. The private pool, the sunset views, the breakfast spread — everything was flawless. We'll be back.",
+    text: "We celebrated our anniversary here and it exceeded every expectation. The private pool, the sunset views, the breakfast spread — everything was flawless.",
     author: "James & Lisa",
     age: 41,
   },
   {
     id: 3,
     rating: 5,
-    text: "Forever Pandawa felt like our own private corner of Bali. The architecture is stunning and the team made us feel completely at home. Already planning our return trip.",
+    text: "Forever Pandawa felt like our own private corner of Bali. The architecture is stunning and the team made us feel completely at home. Already planning our return.",
     author: "Nico B.",
     age: 29,
   },
@@ -44,7 +44,7 @@ const DEFAULT_TESTIMONIES: TestimonyData[] = [
   {
     id: 5,
     rating: 5,
-    text: "From the seamless check-in to the thoughtful little touches throughout our stay, this is exactly what a luxury villa experience should feel like. Absolutely stunning.",
+    text: "From the seamless check-in to the thoughtful little touches throughout our stay, this is exactly what a luxury villa experience should feel like.",
     author: "Tom & Rachel",
     age: 45,
   },
@@ -55,7 +55,7 @@ interface Props {
   testimonies?: TestimonyData[];
 }
 
-// ─── Smooth drag hook ─────────────────────────────────────────────────────────
+// ─── Gallery momentum drag ────────────────────────────────────────────────────
 function useDrag(trackRef: React.RefObject<HTMLDivElement>) {
   const dragging = useRef(false);
   const startX = useRef(0);
@@ -67,7 +67,7 @@ function useDrag(trackRef: React.RefObject<HTMLDivElement>) {
   const fling = useCallback(() => {
     const el = trackRef.current;
     if (!el) return;
-    const speed = vel.current * 0.92; // friction
+    const speed = vel.current * 0.92;
     if (Math.abs(speed) < 0.5) return;
     el.scrollLeft += speed;
     vel.current = speed;
@@ -107,11 +107,20 @@ export default function VillaGalleryTestimonies({ images = [], testimonies = DEF
   const trackRef = useRef<HTMLDivElement>(null!);
   const testTrackRef = useRef<HTMLDivElement>(null!);
 
+  const n = testimonies.length;
   const extendedImages = [...images, ...images, ...images, ...images, ...images];
+  // Triple testimonies for seamless infinite loop
+  const extendedTestimonies = [...testimonies, ...testimonies, ...testimonies];
 
-  const [testIdx, setTestIdx] = useState(0);
+  // rawIdx = index (in extended array) of the leftmost fully-visible card
+  const [rawIdx, setRawIdx] = useState(n);
   const [lightboxImg, setLightboxImg] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+
+  // Mouse-only drag state for testimonies
+  const testDragging = useRef(false);
+  const testStartX = useRef(0);
+  const testStartScroll = useRef(0);
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 900);
@@ -122,10 +131,8 @@ export default function VillaGalleryTestimonies({ images = [], testimonies = DEF
 
   // Gallery drag
   const galleryDrag = useDrag(trackRef);
-  // Testimony drag
-  const testDrag = useDrag(testTrackRef);
 
-  // Gallery scroll: init to middle set + infinite loop
+  // Gallery: init to middle copy + infinite loop on scroll
   useEffect(() => {
     const el = trackRef.current;
     if (!el || images.length === 0) return;
@@ -146,46 +153,105 @@ export default function VillaGalleryTestimonies({ images = [], testimonies = DEF
     else if (el.scrollLeft > single * 4) el.scrollLeft -= single * 2;
   };
 
+  // Testimonies: init scroll to start of middle copy
+  useEffect(() => {
+    const el = testTrackRef.current;
+    if (!el) return;
+    const init = () => {
+      const firstChild = el.children[0] as HTMLElement | undefined;
+      if (!firstChild) return;
+      const cardW = firstChild.clientWidth + 16;
+      if (cardW > 0) {
+        el.scrollLeft = cardW * n;
+        setRawIdx(n);
+      }
+    };
+    requestAnimationFrame(init);
+  }, [n]);
+
+  // Testimonies scroll: track position + silent jump for infinite loop
   const handleTestScroll = () => {
     const el = testTrackRef.current;
     if (!el) return;
     const firstChild = el.children[0] as HTMLElement | undefined;
     if (!firstChild) return;
     const cardW = firstChild.clientWidth + 16;
-    if (cardW > 0) setTestIdx(Math.round(el.scrollLeft / cardW));
+    if (cardW <= 0) return;
+
+    const cur = Math.round(el.scrollLeft / cardW);
+    setRawIdx(cur);
+
+    // Silent jump: keep scroll within the middle copy's neighbourhood
+    const single = cardW * n;
+    if (el.scrollLeft < single * 0.4) {
+      el.scrollLeft += single;
+    } else if (el.scrollLeft > single * 2.6) {
+      el.scrollLeft -= single;
+    }
   };
 
+  // ── Button nav ──
   const prevSlide = () => {
     const el = trackRef.current;
     if (!el) return;
-    const slideW = (el.children[0] as HTMLElement)?.clientWidth + 16 || 0;
-    el.scrollBy({ left: -slideW, behavior: 'smooth' });
+    el.scrollBy({ left: -((el.children[0] as HTMLElement)?.clientWidth + 16 || 0), behavior: 'smooth' });
   };
   const nextSlide = () => {
     const el = trackRef.current;
     if (!el) return;
-    const slideW = (el.children[0] as HTMLElement)?.clientWidth + 16 || 0;
-    el.scrollBy({ left: slideW, behavior: 'smooth' });
+    el.scrollBy({ left: (el.children[0] as HTMLElement)?.clientWidth + 16 || 0, behavior: 'smooth' });
   };
   const prevTest = () => {
     const el = testTrackRef.current;
     if (!el) return;
-    const cardW = (el.children[0] as HTMLElement)?.clientWidth + 16 || 0;
-    el.scrollBy({ left: -cardW, behavior: 'smooth' });
+    el.scrollBy({ left: -((el.children[0] as HTMLElement)?.clientWidth + 16 || 0), behavior: 'smooth' });
   };
   const nextTest = () => {
     const el = testTrackRef.current;
     if (!el) return;
-    const cardW = (el.children[0] as HTMLElement)?.clientWidth + 16 || 0;
-    el.scrollBy({ left: cardW, behavior: 'smooth' });
+    el.scrollBy({ left: (el.children[0] as HTMLElement)?.clientWidth + 16 || 0, behavior: 'smooth' });
   };
+
+  // ── Mouse-only drag for testimonies ──
+  const onTestPointerDown = useCallback((e: React.PointerEvent) => {
+    if (e.pointerType !== 'mouse') return;
+    const el = testTrackRef.current;
+    if (!el) return;
+    testDragging.current = true;
+    testStartX.current = e.clientX;
+    testStartScroll.current = el.scrollLeft;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    el.style.scrollSnapType = 'none';
+  }, []);
+
+  const onTestPointerMove = useCallback((e: React.PointerEvent) => {
+    if (!testDragging.current || e.pointerType !== 'mouse') return;
+    const el = testTrackRef.current;
+    if (!el) return;
+    el.scrollLeft = testStartScroll.current - (e.clientX - testStartX.current);
+  }, []);
+
+  const onTestPointerUp = useCallback(() => {
+    if (!testDragging.current) return;
+    testDragging.current = false;
+    const el = testTrackRef.current;
+    if (!el) return;
+    el.style.scrollSnapType = '';
+    const firstChild = el.children[0] as HTMLElement | undefined;
+    if (!firstChild) return;
+    const cardW = firstChild.clientWidth + 16;
+    if (cardW > 0) {
+      const target = Math.round(el.scrollLeft / cardW) * cardW;
+      el.scrollTo({ left: target, behavior: 'smooth' });
+    }
+  }, []);
 
   if (!images || images.length === 0) return null;
 
   return (
     <section className={styles.section}>
       {/* ── GALLERY ── */}
-      <div className={styles.carouselContainer} data-reveal>
+      <div className={styles.carouselContainer}>
         <button className={`${styles.navBtn} ${styles.navBtnLeft}`} onClick={prevSlide} aria-label="Previous image">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <polyline points="15 18 9 12 15 6" />
@@ -225,7 +291,7 @@ export default function VillaGalleryTestimonies({ images = [], testimonies = DEF
       {/* ── TESTIMONIES ── */}
       <div className={`container ${styles.testimoniesContainer}`}>
         <div className={styles.testimoniesHeader}>
-          <h2 className={`t-h2 ${styles.testimoniesTitle}`} data-reveal>Testimonies</h2>
+          <h2 className={`t-h2 ${styles.testimoniesTitle}`}>Testimonies</h2>
           <div className={styles.testNavBtns}>
             <button className={styles.testNavBtn} onClick={prevTest} aria-label="Previous testimony">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -245,11 +311,15 @@ export default function VillaGalleryTestimonies({ images = [], testimonies = DEF
             className={styles.testimoniesTrack}
             ref={testTrackRef}
             onScroll={handleTestScroll}
-            {...testDrag}
-            style={{ cursor: 'grab', userSelect: 'none' }}
+            onPointerDown={onTestPointerDown}
+            onPointerMove={onTestPointerMove}
+            onPointerUp={onTestPointerUp}
+            onPointerCancel={onTestPointerUp}
+            style={{ cursor: 'grab' }}
           >
-            {testimonies.map((t, idx) => {
-              const isActive = isMobile ? testIdx === idx : testIdx + 1 === idx;
+            {extendedTestimonies.map((t, idx) => {
+              // Active = middle of 3 visible on desktop, leftmost on mobile
+              const isActive = isMobile ? rawIdx === idx : rawIdx + 1 === idx;
               return (
                 <div key={idx} className={`${styles.testimonyCard} ${isActive ? styles.testimonyCardActive : ''}`}>
                   <div className={styles.quoteIcon}>

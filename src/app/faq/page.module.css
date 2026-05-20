@@ -24,17 +24,19 @@
   position: relative;
   z-index: 2;
   color: var(--white);
-  text-align: left;
-  padding-bottom: 60px;
+  text-align: center;
+  padding-bottom: 48px;
   width: 100%;
 }
 
 .heroTitle {
+  font-family: var(--font-serif);
+  font-size: clamp(2.4rem, 5vw, 4.5rem);
+  font-weight: 300;
   color: var(--white);
-  text-transform: uppercase;
-  font-size: clamp(3rem, 7vw, 6rem);
-  line-height: 1.05;
   letter-spacing: 0.02em;
+  text-transform: none;
+  line-height: 1.1;
   margin-bottom: 16px;
 }
 
@@ -45,6 +47,7 @@
   max-width: 480px;
   line-height: 1.7;
   font-weight: 300;
+  margin: 0 auto;
 }
 
 /* FAQ Wrapper */

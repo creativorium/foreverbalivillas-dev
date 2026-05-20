@@ -41,6 +41,7 @@ export interface VillaData {
   testimonies?: TestimonyData[];
   facilities: FacilityCard[];
   bookingUrl?: string;
+  separatorImage?: string;
 }
 
 interface VillaPageProps {
@@ -113,7 +114,11 @@ export default function VillaPage({ villa }: VillaPageProps) {
       {/* ── IMAGE SEPARATOR ── */}
       <section className={styles.separatorSection}>
         <div className={styles.separatorImageWrap}>
-          <img src="/images/separator-villas/separator-villas.jpg" alt="Separator" className={styles.separatorImage} />
+          <img
+            src={villa.separatorImage || '/images/separator-villas/separator-villas.jpg'}
+            alt={`${villa.name} separator`}
+            className={styles.separatorImage}
+          />
         </div>
       </section>
 

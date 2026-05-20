@@ -5,6 +5,8 @@ import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import CustomCursor from "@/components/CustomCursor";
 import ScrollReveal from "@/components/ScrollReveal";
+import CookieConsent from "@/components/CookieConsent";
+import SiteOnlyShell from "@/components/SiteOnlyShell";
 
 export const metadata: Metadata = {
   title: {
@@ -55,8 +57,11 @@ export default function RootLayout({
         <CustomCursor />
         <Header />
         <main>{children}</main>
-        <WhatsAppButton />
-        <ScrollReveal />
+        <SiteOnlyShell>
+          <WhatsAppButton />
+          <ScrollReveal />
+          <CookieConsent />
+        </SiteOnlyShell>
       </body>
     </html>
   );

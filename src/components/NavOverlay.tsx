@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import styles from './NavOverlay.module.css';
 
-const WA = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '';
+const WA = '6281996488881';
 
 // Nav links with associated preview images
 const NAV_LINKS = [

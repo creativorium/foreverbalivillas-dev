@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import styles from './HomeHero.module.css';
 
-export default function HomeHero() {
+export default function HomeHero({ heroImage }: { heroImage?: string }) {
   const ctasRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -27,7 +27,7 @@ export default function HomeHero() {
       {/* Hero image background — place hero-bg.webp in public/images/home/hero/ */}
       <div className={styles.imageBg}>
         <Image
-          src="/images/home/hero/hero-bg.webp"
+          src={heroImage || "/images/home/hero/hero-bg.webp"}
           alt="Forever Bali Villas hero background"
           fill
           priority
@@ -41,7 +41,7 @@ export default function HomeHero() {
 
       {/* Centered CTA buttons only */}
       <div ref={ctasRef} className={styles.ctas} style={{ opacity: 0 }}>
-        <Link href="/forever-santai" className="btn btn-primary">
+        <Link href="/forever-santai" className="btn btn-outline">
           Forever Santai
         </Link>
         <Link href="/forever-pandawa" className="btn btn-outline">

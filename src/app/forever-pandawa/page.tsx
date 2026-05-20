@@ -1,6 +1,48 @@
 import type { Metadata } from 'next';
 import VillaPage from '@/components/VillaPage';
 import type { VillaData } from '@/components/VillaPage';
+import type { TestimonyData } from '@/components/VillaGalleryTestimonies';
+import { storageGet } from '@/lib/storage';
+
+export const dynamic = 'force-dynamic';
+
+const PANDAWA_TESTIMONIES: TestimonyData[] = [
+  {
+    id: 1,
+    rating: 5,
+    text: "Forever Pandawa felt like our own private corner of Bali. The architecture is stunning and the team made us feel completely at home. Already planning our return.",
+    author: "Nico B.",
+    age: 29,
+  },
+  {
+    id: 2,
+    rating: 5,
+    text: "We celebrated our anniversary here and it exceeded every expectation. The private pool, the sunset views, the breakfast spread — everything was flawless.",
+    author: "James & Lisa",
+    age: 41,
+  },
+  {
+    id: 3,
+    rating: 5,
+    text: "The grandeur of Pandawa is unlike anything we've experienced. Six bedrooms, an infinity pool overlooking the ocean, and a team that treated us like family.",
+    author: "Marcus T.",
+    age: 38,
+  },
+  {
+    id: 4,
+    rating: 5,
+    text: "From the seamless check-in to the thoughtful little touches throughout our stay — this is exactly what a luxury villa experience should feel like.",
+    author: "Tom & Rachel",
+    age: 45,
+  },
+  {
+    id: 5,
+    rating: 5,
+    text: "The ocean views from the top level took our breath away every single morning. Pandawa is a once-in-a-lifetime stay that we will absolutely repeat.",
+    author: "Chloe & David",
+    age: 33,
+  },
+];
 
 export const metadata: Metadata = {
   title: 'Forever Pandawa — Where Tradition Meets Modern Luxury',
@@ -141,8 +183,24 @@ const pandawaData: VillaData = {
       imagePath: '/images/villas/forever-pandawa/facilities/facility-5.jpg',
     },
   ],
+  testimonies: PANDAWA_TESTIMONIES,
+  separatorImage: '/images/villas/forever-pandawa/gallery/Forever Santai B 25 HR.jpg',
 };
 
-export default function ForeverPandawaPage() {
-  return <VillaPage villa={pandawaData} />;
+export default async function ForeverPandawaPage() {
+  const siteContent = await storageGet<Record<string, unknown>>('fbv:site-content', 'site-content.json');
+  const vc = ((siteContent?.villas as Record<string, unknown>)?.['forever-pandawa'] as Record<string, unknown>) ?? {};
+
+  const villa: VillaData = {
+    ...pandawaData,
+    ...(vc.name        ? { name:            vc.name        as string   } : {}),
+    ...(vc.tagline     ? { tagline:          vc.tagline     as string   } : {}),
+    ...(vc.description ? { description:      vc.description as string   } : {}),
+    ...(vc.longDescription ? { longDescription: vc.longDescription as string } : {}),
+    ...(vc.heroImage   ? { heroImage:         vc.heroImage   as string   } : {}),
+    ...(vc.separatorImage ? { separatorImage: vc.separatorImage as string } : {}),
+    ...((vc.galleryImages as string[])?.length ? { galleryImages: vc.galleryImages as string[] } : {}),
+  };
+
+  return <VillaPage villa={villa} />;
 }

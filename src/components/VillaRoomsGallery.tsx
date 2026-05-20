@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState, useCallback, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import styles from './VillaRoomsGallery.module.css';
 import type { RoomTab } from './VillaPage';
@@ -14,6 +15,9 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
   const [activeImageIdx, setActiveImageIdx] = useState(0);
   const [cursorVisible, setCursorVisible] = useState(false);
   const [cursorPressed, setCursorPressed] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
 
   // Drag state — single source of truth, no double-handling
   const dragging = useRef(false);
@@ -173,10 +177,17 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
             </button>
           ))}
         </div>
-        {/* Mobile swipe hint — vertical scrollDrop (mirrors hero indicator) */}
+        {/* Mobile swipe hint — horizontal swipe indicator */}
         <div className={styles.swipeHint} aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.4">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+          <span className={styles.swipeLine} />
           <span className={styles.swipeLetter}>Swipe</span>
           <span className={styles.swipeLine} />
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.4">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
         </div>
       </div>
 
@@ -194,14 +205,6 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
       >
-        <div
-          ref={cursorRef}
-          className={`${styles.dragCursor} ${cursorVisible ? styles.cursorVisible : ''} ${cursorPressed ? styles.cursorPress : ''}`}
-          aria-hidden="true"
-        >
-          <span>DRAG</span>
-        </div>
-
         <div ref={trackRef} className={styles.track}>
           {images.map((src, idx) => (
             <div key={`${currentRoom.id}-${idx}`} className={styles.slide}>
@@ -238,7 +241,12 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
         </div>
 
         {activeImageIdx > 0 && images.length > 1 && (
-          <button className={`${styles.arrow} ${styles.arrowLeft}`} onClick={() => goToImage(activeImageIdx - 1)} aria-label="Previous">
+          <button
+            className={`${styles.arrow} ${styles.arrowLeft}`}
+            onClick={() => goToImage(activeImageIdx - 1)}
+            onPointerDown={e => e.stopPropagation()}
+            aria-label="Previous"
+          >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polyline points="15 18 9 12 15 6" />
             </svg>
@@ -246,13 +254,31 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
         )}
 
         {activeImageIdx < images.length - 1 && images.length > 1 && (
-          <button className={`${styles.arrow} ${styles.arrowRight}`} onClick={() => goToImage(activeImageIdx + 1)} aria-label="Next">
+          <button
+            className={`${styles.arrow} ${styles.arrowRight}`}
+            onClick={() => goToImage(activeImageIdx + 1)}
+            onPointerDown={e => e.stopPropagation()}
+            aria-label="Next"
+          >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polyline points="9 18 15 12 9 6" />
             </svg>
           </button>
         )}
       </div>
+
+      {/* Drag cursor rendered in document.body via portal so position:fixed
+          is always relative to the viewport, never a GSAP-transformed ancestor */}
+      {mounted && createPortal(
+        <div
+          ref={cursorRef}
+          className={`${styles.dragCursor} ${cursorVisible ? styles.cursorVisible : ''} ${cursorPressed ? styles.cursorPress : ''}`}
+          aria-hidden="true"
+        >
+          <span>DRAG</span>
+        </div>,
+        document.body
+      )}
     </section>
   );
 }
