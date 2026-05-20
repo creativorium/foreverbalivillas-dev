@@ -2,8 +2,8 @@ import { getPosts } from '@/lib/admin-data';
 import Link from 'next/link';
 import BlogDeleteButton from './BlogDeleteButton';
 
-export default function BlogListPage() {
-  const posts = getPosts().sort((a, b) => b.date.localeCompare(a.date));
+export default async function BlogListPage() {
+  const posts = (await getPosts()).sort((a, b) => b.date.localeCompare(a.date));
 
   return (
     <>

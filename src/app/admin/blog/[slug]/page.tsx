@@ -90,8 +90,8 @@ export default function EditPostPage() {
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error || 'Save failed'); return; }
-      setSuccess('Saved successfully!');
-      setTimeout(() => setSuccess(''), 3000);
+      setSuccess('Saved! Changes will appear on the site within a few minutes.');
+      setTimeout(() => setSuccess(''), 6000);
     } catch {
       setError('Network error');
     } finally {
@@ -163,7 +163,16 @@ export default function EditPostPage() {
                 <input className="adm-input" type="date" value={form.date} onChange={e => set('date', e.target.value)} />
               </div>
             </div>
-            <button className="adm-btn adm-btn-primary adm-btn-lg" type="submit" disabled={loading} style={{ width: '100%', justifyContent: 'center' }}>
+            <button className="adm-btn adm-btn-primary adm-btn-lg" type="submit" disabled={loading}
+              style={{ width: '100%', justifyContent: 'center', opacity: loading ? 0.75 : 1, gap: '8px' }}>
+              {loading && (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                  style={{ animation: 'spin 1s linear infinite' }}>
+                  <circle cx="12" cy="12" r="10" strokeOpacity="0.3"/>
+                  <path d="M12 2a10 10 0 0 1 10 10"/>
+                  <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+                </svg>
+              )}
               {loading ? 'Saving…' : 'Save Changes'}
             </button>
           </div>

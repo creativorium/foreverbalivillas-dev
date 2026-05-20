@@ -4,7 +4,7 @@ import type { VillaData } from '@/components/VillaPage';
 import type { TestimonyData } from '@/components/VillaGalleryTestimonies';
 import { storageGet } from '@/lib/storage';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 const SANTAI_TESTIMONIES: TestimonyData[] = [
   {

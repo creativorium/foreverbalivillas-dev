@@ -3,7 +3,7 @@ import { getPosts, createPost } from '@/lib/admin-data';
 import type { Post } from '@/lib/admin-data';
 
 export async function GET() {
-  return NextResponse.json(getPosts());
+  return NextResponse.json(await getPosts());
 }
 
 export async function POST(req: NextRequest) {
@@ -12,9 +12,8 @@ export async function POST(req: NextRequest) {
     if (!data.slug || !data.title) {
       return NextResponse.json({ error: 'slug and title are required' }, { status: 400 });
     }
-    // Normalise slug
     data.slug = data.slug.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-    const post = createPost({ ...data, date: data.date || new Date().toISOString().slice(0, 10) });
+    const post = await createPost({ ...data, date: data.date || new Date().toISOString().slice(0, 10) });
     return NextResponse.json(post, { status: 201 });
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Unknown error';

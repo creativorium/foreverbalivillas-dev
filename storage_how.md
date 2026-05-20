@@ -29,7 +29,7 @@ Using your hosting file manager or FTP, create this folder:
 /public_html/fbv-api/
 ```
 
-### Step 2 — Upload these 4 files into `/public_html/fbv-api/`
+### Step 2 — Upload these 6 files into `/public_html/fbv-api/`
 
 #### `.htaccess`
 ```apache
@@ -82,6 +82,56 @@ if ($method === 'GET') {
 }
 ```
 
+#### `settings.php`
+```php
+<?php
+require_once __DIR__ . '/auth.php';
+header('Content-Type: application/json');
+
+$file = __DIR__ . '/data/site-settings.json';
+if (!is_dir(__DIR__ . '/data')) mkdir(__DIR__ . '/data', 0755, true);
+
+$method = $_SERVER['REQUEST_METHOD'];
+if ($method === 'OPTIONS') { exit; }
+require_auth();
+
+if ($method === 'GET') {
+    echo file_exists($file) ? file_get_contents($file) : '{}';
+} elseif ($method === 'PUT') {
+    $body = file_get_contents('php://input');
+    if (json_decode($body) === null) {
+        http_response_code(400); echo json_encode(['error' => 'Invalid JSON']); exit;
+    }
+    file_put_contents($file, $body);
+    echo $body;
+}
+```
+
+#### `posts.php`
+```php
+<?php
+require_once __DIR__ . '/auth.php';
+header('Content-Type: application/json');
+
+$file = __DIR__ . '/data/posts.json';
+if (!is_dir(__DIR__ . '/data')) mkdir(__DIR__ . '/data', 0755, true);
+
+$method = $_SERVER['REQUEST_METHOD'];
+if ($method === 'OPTIONS') { exit; }
+require_auth();
+
+if ($method === 'GET') {
+    echo file_exists($file) ? file_get_contents($file) : '[]';
+} elseif ($method === 'PUT') {
+    $body = file_get_contents('php://input');
+    if (json_decode($body) === null) {
+        http_response_code(400); echo json_encode(['error' => 'Invalid JSON']); exit;
+    }
+    file_put_contents($file, $body);
+    echo $body;
+}
+```
+
 #### `upload.php`
 ```php
 <?php
@@ -99,14 +149,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_FILES['file'])) {
 }
 
 $file     = $_FILES['file'];
-$allowed  = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
-$max_size = 10 * 1024 * 1024; // 10MB
+$allowed  = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml', 'application/pdf'];
+$max_size = $file['type'] === 'application/pdf' ? 25 * 1024 * 1024 : 10 * 1024 * 1024;
 
 if (!in_array($file['type'], $allowed)) {
     http_response_code(400); echo json_encode(['error' => 'File type not allowed']); exit;
 }
 if ($file['size'] > $max_size) {
-    http_response_code(400); echo json_encode(['error' => 'File too large (max 10MB)']); exit;
+    http_response_code(400); echo json_encode(['error' => 'File too large']); exit;
 }
 
 $ext      = pathinfo($file['name'], PATHINFO_EXTENSION);

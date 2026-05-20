@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import ImageField from '@/components/admin/ImageField';
+import StorageBanner from '@/components/admin/StorageBanner';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Content = Record<string, any>;
@@ -21,7 +22,7 @@ export default function PagesEditorPage() {
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<'idle' | 'ok' | 'error'>('idle');
 
-  const [storageMode, setStorageMode] = useState<'custom' | 'kv' | 'file'>('file');
+  const [storageMode, setStorageMode] = useState<'custom' | 'kv' | 'file' | null>(null);
 
   useEffect(() => {
     const tab = new URLSearchParams(window.location.search).get('tab');
@@ -76,25 +77,10 @@ export default function PagesEditorPage() {
         </button>
       </div>
 
-      {status === 'ok'    && <div className="adm-alert adm-alert-ok">Saved! Redeploy to see changes on the live site.</div>}
+      {status === 'ok'    && <div className="adm-alert adm-alert-ok">Saved! Changes will appear on the site within a few minutes.</div>}
       {status === 'error' && <div className="adm-alert adm-alert-error">Save failed — check the console.</div>}
 
-      {storageMode === 'custom' && (
-        <div className="adm-alert adm-alert-ok" style={{ marginBottom: '20px' }}>
-          ✓ <strong>Live mode (Shared Hosting)</strong> — changes save to your hosting server and go live <strong>immediately</strong>.
-        </div>
-      )}
-      {storageMode === 'kv' && (
-        <div className="adm-alert adm-alert-ok" style={{ marginBottom: '20px' }}>
-          ✓ <strong>Live mode (Vercel KV)</strong> — changes go live <strong>immediately</strong>, no redeployment needed.
-        </div>
-      )}
-      {storageMode === 'file' && (
-        <div className="adm-alert adm-alert-warn" style={{ marginBottom: '20px' }}>
-          <strong>Local mode</strong> — changes save to <code>src/data/site-content.json</code>.{' '}
-          Add <code>CUSTOM_STORAGE_URL</code> (your hosting) or <code>KV_REST_API_URL</code> (Vercel KV) to enable live updates.
-        </div>
-      )}
+      <StorageBanner mode={storageMode} />
 
       {/* Tab bar */}
       <div style={{ display: 'flex', gap: '4px', marginBottom: '20px', borderBottom: '1px solid var(--adm-border)', paddingBottom: '0' }}>

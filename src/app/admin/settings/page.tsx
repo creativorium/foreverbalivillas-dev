@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import StorageBanner from '@/components/admin/StorageBanner';
 
 interface Settings {
   contact: { email: string; phone: string; whatsapp: string };
@@ -11,12 +12,16 @@ interface Settings {
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<Settings | null>(null);
+  const [storageMode, setStorageMode] = useState<'custom' | 'kv' | 'file' | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
   useEffect(() => {
-    fetch('/api/admin/settings').then(r => r.json()).then(setSettings);
+    fetch('/api/admin/settings').then(r => r.json()).then(res => {
+      setSettings(res.data ?? res);
+      setStorageMode(res.storage ?? 'file');
+    });
   }, []);
 
   if (!settings) return <div style={{ color: 'var(--adm-muted)', padding: '40px' }}>Loading…</div>;
@@ -38,7 +43,7 @@ export default function SettingsPage() {
         body: JSON.stringify(settings),
       });
       if (!res.ok) { setError('Save failed'); return; }
-      setSuccess('Settings saved! Redeploy to see changes on the live site.');
+      setSuccess('Settings saved!');
       setTimeout(() => setSuccess(''), 5000);
     } catch {
       setError('Network error');
@@ -59,9 +64,7 @@ export default function SettingsPage() {
       {error && <div className="adm-alert adm-alert-error">{error}</div>}
       {success && <div className="adm-alert adm-alert-ok">{success}</div>}
 
-      <div className="adm-alert adm-alert-info">
-        Settings are stored in <code>src/data/site-settings.json</code>. To enable instant live updates, create a KV Database in your Vercel project's Storage tab.
-      </div>
+      <StorageBanner mode={storageMode} />
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
         {/* Contact */}

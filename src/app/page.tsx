@@ -7,7 +7,7 @@ import HomeGallery from '@/components/home/HomeGallery';
 import HomeJournal from '@/components/home/HomeJournal';
 import { storageGet } from '@/lib/storage';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: 'Forever Bali Villas — Where Tradition Meets Modern Luxury',

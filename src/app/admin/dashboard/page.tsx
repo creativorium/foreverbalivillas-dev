@@ -11,8 +11,8 @@ const PAGES = [
   { label: 'Privacy Policy',     tab: 'legal',      href: '/privacy-policy',      icon: '🔒', desc: 'GDPR, data handling, cookies' },
 ];
 
-export default function DashboardPage() {
-  const posts = getPosts();
+export default async function DashboardPage() {
+  const posts = await getPosts();
   const users = getUsers();
   const recentPosts = [...posts].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
 
