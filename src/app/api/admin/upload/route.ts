@@ -12,13 +12,19 @@ export async function POST(req: NextRequest) {
     const file = form.get('file') as File | null;
     if (!file) return NextResponse.json({ error: 'No file provided' }, { status: 400 });
 
-    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml', 'application/pdf'];
+    const allowed = [
+      'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml',
+      'application/pdf',
+      'video/mp4', 'video/webm', 'video/quicktime',
+    ];
     if (!allowed.includes(file.type)) {
-      return NextResponse.json({ error: 'File type not allowed. Use JPG, PNG, WEBP, GIF, SVG, or PDF.' }, { status: 400 });
+      return NextResponse.json({ error: 'File type not allowed. Use JPG, PNG, WEBP, PDF, MP4, or WebM.' }, { status: 400 });
     }
-    const maxSize = file.type === 'application/pdf' ? 25 * 1024 * 1024 : 10 * 1024 * 1024;
+    const isVideo = file.type.startsWith('video/');
+    const isPdf   = file.type === 'application/pdf';
+    const maxSize = isVideo ? 200 * 1024 * 1024 : isPdf ? 25 * 1024 * 1024 : 10 * 1024 * 1024;
     if (file.size > maxSize) {
-      return NextResponse.json({ error: `File too large. Max ${file.type === 'application/pdf' ? '25MB' : '10MB'}.` }, { status: 400 });
+      return NextResponse.json({ error: `File too large. Max ${isVideo ? '200MB' : isPdf ? '25MB' : '10MB'}.` }, { status: 400 });
     }
 
     // ── Custom shared hosting ────────────────────────────────────────────────
@@ -76,7 +82,7 @@ export async function GET() {
   if (!fs.existsSync(uploadsDir)) return NextResponse.json({ images: [], mode: 'file' });
 
   const files = fs.readdirSync(uploadsDir)
-    .filter(f => /\.(jpe?g|png|webp|gif|svg|pdf)$/i.test(f))
+    .filter(f => /\.(jpe?g|png|webp|gif|svg|pdf|mp4|webm|mov)$/i.test(f))
     .map(f => ({ filename: f, url: `/uploads/${f}`, isPdf: /\.pdf$/i.test(f) }))
     .reverse();
 

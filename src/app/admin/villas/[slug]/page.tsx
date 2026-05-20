@@ -1,10 +1,121 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import ImageField from '@/components/admin/ImageField';
 import StorageBanner from '@/components/admin/StorageBanner';
+
+// ── Hero media field (video OR image, one upload button) ──────────────────────
+
+function HeroMediaField({ videoUrl, imageUrl, onVideoChange, onImageChange, folder }: {
+  videoUrl: string; imageUrl: string;
+  onVideoChange: (v: string) => void; onImageChange: (v: string) => void;
+  folder: string;
+}) {
+  const [uploading, setUploading] = useState(false);
+  const [error, setError]         = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const currentUrl = videoUrl || imageUrl;
+  const mediaType  = videoUrl ? 'video' : imageUrl ? 'image' : null;
+
+  const isVideoUrl = (url: string) => /\.(mp4|webm|mov|avi)$/i.test(url);
+
+  const setUrl = (url: string) => {
+    if (isVideoUrl(url)) { onVideoChange(url); onImageChange(''); }
+    else                 { onImageChange(url); onVideoChange(''); }
+  };
+
+  const clear = () => { onVideoChange(''); onImageChange(''); };
+
+  const upload = async (file: File) => {
+    setUploading(true); setError('');
+    const form = new FormData();
+    form.append('file', file);
+    try {
+      const res  = await fetch('/api/admin/upload', { method: 'POST', body: form });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error || 'Upload failed'); return; }
+      if (file.type.startsWith('video/')) { onVideoChange(data.url); onImageChange(''); }
+      else                                { onImageChange(data.url); onVideoChange(''); }
+    } catch { setError('Upload failed — check connection.'); }
+    finally  { setUploading(false); }
+  };
+
+  return (
+    <div>
+      {/* Preview */}
+      {mediaType === 'video' && (
+        <video src={videoUrl} controls muted style={{ width: '100%', maxHeight: '220px', borderRadius: '8px', background: '#000', display: 'block', marginBottom: '12px' }} />
+      )}
+      {mediaType === 'image' && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={imageUrl} alt="Hero" style={{ width: '100%', maxHeight: '220px', objectFit: 'cover', borderRadius: '8px', display: 'block', marginBottom: '12px' }} />
+      )}
+      {!mediaType && (
+        <div style={{ height: '100px', border: '2px dashed #d1d5db', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af', fontSize: '0.82rem', marginBottom: '12px' }}>
+          No hero media — upload a video or image
+        </div>
+      )}
+
+      {/* Type badge */}
+      {mediaType && (
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.72rem', fontWeight: 600, padding: '3px 10px', borderRadius: '20px', marginBottom: '10px',
+          background: mediaType === 'video' ? '#f0fdf4' : '#eff6ff',
+          color: mediaType === 'video' ? '#15803d' : '#1d4ed8' }}>
+          {mediaType === 'video' ? '🎬 Video active' : '🖼 Image active'}
+        </div>
+      )}
+
+      {/* URL input */}
+      <input
+        className="adm-input"
+        value={currentUrl}
+        onChange={e => setUrl(e.target.value)}
+        placeholder="/videos/villa.mp4  or  /images/villa-hero.jpg"
+        style={{ marginBottom: '8px' }}
+      />
+
+      {/* Buttons */}
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+        <button type="button" className="adm-btn adm-btn-ghost adm-btn-sm"
+          onClick={() => inputRef.current?.click()} disabled={uploading}>
+          {uploading ? 'Uploading…' : `↑ Upload video or image`}
+        </button>
+        {mediaType && (
+          <button type="button" className="adm-btn adm-btn-danger adm-btn-sm" onClick={clear}>Remove</button>
+        )}
+        {mediaType === 'video' && imageUrl === '' && (
+          <span style={{ fontSize: '0.7rem', color: 'var(--adm-muted)' }}>Video set — image fallback optional below</span>
+        )}
+      </div>
+      {error && <p style={{ color: 'var(--adm-danger)', fontSize: '0.75rem', marginTop: '6px' }}>{error}</p>}
+
+      <input ref={inputRef} type="file" accept="image/*,video/mp4,video/webm,video/quicktime"
+        style={{ display: 'none' }}
+        onChange={e => { const f = e.target.files?.[0]; if (f) upload(f); e.target.value = ''; }} />
+
+      {/* Fallback image if video is set */}
+      {mediaType === 'video' && (
+        <div style={{ marginTop: '16px', paddingTop: '14px', borderTop: '1px solid var(--adm-border)' }}>
+          <ImageField
+            label="Fallback Image"
+            hint="shown on devices that can't autoplay video"
+            value={imageUrl}
+            onChange={v => onImageChange(v)}
+            folder={folder}
+            aspect="16/9"
+          />
+        </div>
+      )}
+
+      <p style={{ fontSize: '0.7rem', color: 'var(--adm-muted)', marginTop: '8px' }}>
+        Upload MP4/WebM for video or JPG/PNG/WebP for image. Video takes priority when both are set.
+      </p>
+    </div>
+  );
+}
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -298,45 +409,49 @@ export default function VillaEditorPage() {
           <Field label="Villa Name" value={villa.name ?? ''} onChange={v => set('name', v)} />
           <Field label="Tagline" value={villa.tagline ?? ''} onChange={v => set('tagline', v)} />
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-          <Field label="Hero Label" value={villa.heroTagline ?? ''} onChange={v => set('heroTagline', v)} hint="shown over hero video" />
-          <Field label="Hero Description" value={villa.heroDescription ?? ''} onChange={v => set('heroDescription', v)} multiline rows={2} />
-        </div>
         <Field label="Short Description" value={villa.description ?? ''} onChange={v => set('description', v)} multiline rows={3} />
         <Field label="Long Description" value={villa.longDescription ?? ''} onChange={v => set('longDescription', v)} multiline rows={4} />
       </Section>
 
-      {/* ── 2. Hero ── */}
-      <Section title="Hero" hint="the full-screen section at the top of the villa page">
-        <div style={{ padding: '10px 12px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '8px', marginBottom: '16px', fontSize: '0.78rem', color: '#15803d' }}>
-          The hero uses a <strong>video</strong> when available, falling back to the image. The Featured Image is shown as the villa card preview in the admin.
+      {/* ── 2. Hero + Featured Image (side by side) ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 260px', gap: '20px', marginBottom: '20px', alignItems: 'start' }}>
+        {/* Hero media */}
+        <div className="adm-card">
+          <div className="adm-card-header">
+            <span className="adm-card-title">Hero</span>
+            <span style={{ fontSize: '0.72rem', color: 'var(--adm-muted)' }}>full-screen at top of villa page</span>
+          </div>
+          <div className="adm-card-body">
+            <HeroMediaField
+              videoUrl={villa.heroVideo ?? ''}
+              imageUrl={villa.heroImage ?? ''}
+              onVideoChange={v => set('heroVideo', v)}
+              onImageChange={v => set('heroImage', v)}
+              folder={`villas/${slug}`}
+            />
+          </div>
         </div>
-        <div className="adm-form-group">
-          <label className="adm-label">Hero Video URL <span className="adm-label-hint">paste the /videos/... path from your project</span></label>
-          <input
-            className="adm-input"
-            value={villa.heroVideo ?? ''}
-            onChange={e => set('heroVideo', e.target.value)}
-            placeholder="/videos/villas/forever-pandawa/forever-pandawa-video.mp4"
-          />
+
+        {/* Featured image — admin only */}
+        <div className="adm-card" style={{ border: '2px dashed var(--adm-border)' }}>
+          <div className="adm-card-header" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
+            <span className="adm-card-title">Dashboard Preview</span>
+            <span style={{ fontSize: '0.68rem', background: '#fef3c7', color: '#92400e', padding: '2px 7px', borderRadius: '4px', fontWeight: 600 }}>
+              Admin only · not shown on site
+            </span>
+          </div>
+          <div className="adm-card-body">
+            <ImageField
+              label="Featured Image"
+              hint="shown on the Villas admin card so you can tell villas apart"
+              value={villa.featuredImage ?? ''}
+              onChange={v => set('featuredImage', v)}
+              folder={`villas/${slug}`}
+              aspect="4/3"
+            />
+          </div>
         </div>
-        <ImageField
-          label="Hero Fallback Image"
-          hint="shown if video doesn't load or on devices that can't autoplay"
-          value={villa.heroImage ?? ''}
-          onChange={v => set('heroImage', v)}
-          folder={`villas/${slug}`}
-          aspect="16/9"
-        />
-        <ImageField
-          label="Featured Image"
-          hint="shown on the admin villa card — use a clear, well-lit photo"
-          value={villa.featuredImage ?? ''}
-          onChange={v => set('featuredImage', v)}
-          folder={`villas/${slug}`}
-          aspect="4/3"
-        />
-      </Section>
+      </div>
 
       {/* ── 3. Rooms ── */}
       <Section title="Rooms" hint={`${rooms.length} room${rooms.length !== 1 ? 's' : ''} · click a room to expand`}>

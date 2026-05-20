@@ -174,8 +174,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_FILES['file'])) {
 }
 
 $file     = $_FILES['file'];
-$allowed  = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml', 'application/pdf'];
-$max_size = $file['type'] === 'application/pdf' ? 25 * 1024 * 1024 : 10 * 1024 * 1024;
+$allowed  = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml', 'application/pdf', 'video/mp4', 'video/webm', 'video/quicktime'];
+$is_video = strpos($file['type'], 'video/') === 0;
+$max_size = $is_video ? 200 * 1024 * 1024 : ($file['type'] === 'application/pdf' ? 25 * 1024 * 1024 : 10 * 1024 * 1024);
 
 if (!in_array($file['type'], $allowed)) {
     http_response_code(400); echo json_encode(['error' => 'File type not allowed']); exit;
