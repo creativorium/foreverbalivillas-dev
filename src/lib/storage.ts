@@ -35,12 +35,10 @@ async function customGet<T>(endpoint: string): Promise<T | null> {
 }
 
 async function customPut(endpoint: string, data: unknown): Promise<void> {
-  // Wrap payload in base64 so WAF keyword scanners can't inspect field names
-  const encoded = Buffer.from(JSON.stringify(data)).toString('base64');
   const res = await fetch(`${CUSTOM_URL}/${endpoint}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', 'X-Api-Key': CUSTOM_KEY },
-    body: JSON.stringify({ _e: encoded }),
+    body: JSON.stringify(data),
   });
   if (!res.ok) {
     const msg = await res.text().catch(() => res.statusText);

@@ -83,7 +83,7 @@ require_auth();
 if ($method === 'GET') {
     echo file_exists($file) ? file_get_contents($file) : '{}';
 } elseif ($method === 'PUT') {
-    $body = decode_body();
+    $body = file_get_contents('php://input');
     if (json_decode($body) === null) {
         http_response_code(400); echo json_encode(['error' => 'Invalid JSON']); exit;
     }
@@ -108,7 +108,7 @@ require_auth();
 if ($method === 'GET') {
     echo file_exists($file) ? file_get_contents($file) : '{}';
 } elseif ($method === 'PUT') {
-    $body = decode_body();
+    $body = file_get_contents('php://input');
     if (json_decode($body) === null) {
         http_response_code(400); echo json_encode(['error' => 'Invalid JSON']); exit;
     }
@@ -133,7 +133,7 @@ require_auth();
 if ($method === 'GET') {
     echo file_exists($file) ? file_get_contents($file) : '[]';
 } elseif ($method === 'PUT') {
-    $body = decode_body();
+    $body = file_get_contents('php://input');
     if (json_decode($body) === null) {
         http_response_code(400); echo json_encode(['error' => 'Invalid JSON']); exit;
     }
@@ -158,7 +158,7 @@ require_auth();
 if ($method === 'GET') {
     echo file_exists($file) ? file_get_contents($file) : '[]';
 } elseif ($method === 'PUT') {
-    $body = decode_body();
+    $body = file_get_contents('php://input');
     if (json_decode($body) === null) {
         http_response_code(400); echo json_encode(['error' => 'Invalid JSON']); exit;
     }

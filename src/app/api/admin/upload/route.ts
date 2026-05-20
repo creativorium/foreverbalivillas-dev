@@ -27,16 +27,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: `File too large. Max ${isVideo ? '200MB' : isPdf ? '25MB' : '10MB'}.` }, { status: 400 });
     }
 
-    // ── Custom shared hosting — send as base64 JSON to bypass WAF ────────────
+    // ── Custom shared hosting ────────────────────────────────────────────────
     if (CUSTOM_URL) {
-      const bytes   = await file.arrayBuffer();
-      const b64file = Buffer.from(bytes).toString('base64');
-      const payload = JSON.stringify({ filename: file.name, type: file.type, data: b64file });
-      const encoded = Buffer.from(payload).toString('base64');
+      const upstream = new FormData();
+      upstream.append('file', file);
       const res = await fetch(`${CUSTOM_URL}/media.php`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Api-Key': CUSTOM_KEY },
-        body: JSON.stringify({ _e: encoded }),
+        headers: { 'X-Api-Key': CUSTOM_KEY },
+        body: upstream,
       });
       if (!res.ok) {
         const err = await res.text();
