@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Footer from '@/components/Footer';
 import { storageGet } from '@/lib/storage';
 
-export const revalidate = 300;
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: 'Privacy Policy — Forever Bali Villas',

@@ -1,3 +1,4 @@
+import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 import { storageGet, storageSet, STORAGE_MODE } from '@/lib/storage';
 
@@ -16,6 +17,10 @@ export async function PUT(req: NextRequest) {
     const current = await storageGet<Record<string, unknown>>(KEY, FILE);
     const merged  = deepMerge(current as Record<string, unknown>, patch);
     await storageSet(KEY, FILE, merged);
+    // Immediately clear Vercel cache for all content-driven pages
+    for (const p of ['/', '/forever-pandawa', '/forever-santai', '/faq', '/cancellation-policy', '/privacy-policy']) {
+      revalidatePath(p);
+    }
     return NextResponse.json({ data: merged, storage: STORAGE_MODE });
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Unknown error';

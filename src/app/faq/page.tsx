@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { storageGet } from '@/lib/storage';
 import FAQContent, { type FaqItem } from './FAQContent';
 
-export const revalidate = 300;
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: 'FAQ — Forever Bali Villas',

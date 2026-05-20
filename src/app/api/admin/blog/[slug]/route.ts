@@ -1,3 +1,4 @@
+import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 import { getPost, updatePost, deletePost } from '@/lib/admin-data';
 
@@ -13,6 +14,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ slug
     const { slug } = await params;
     const data = await req.json();
     const post = await updatePost(slug, data);
+    revalidatePath('/journal');
+    revalidatePath(`/journal/${slug}`);
     return NextResponse.json(post);
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Unknown error';
@@ -24,6 +27,8 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ slu
   try {
     const { slug } = await params;
     await deletePost(slug);
+    revalidatePath('/journal');
+    revalidatePath(`/journal/${slug}`);
     return NextResponse.json({ ok: true });
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Unknown error';
