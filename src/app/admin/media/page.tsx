@@ -27,19 +27,29 @@ export default function MediaLibraryPage() {
     const list = Array.from(fileList);
     if (!list.length) return;
     setUploading(true); setError('');
-    const results: FileItem[] = [];
 
     for (const file of list) {
       const form = new FormData();
       form.append('file', file);
       const res = await fetch('/api/admin/upload', { method: 'POST', body: form });
       const data = await res.json();
-      if (!res.ok) { setError(data.error || 'Upload failed'); continue; }
-      results.push({ filename: data.filename, url: data.url, isPdf: file.type === 'application/pdf' });
+      if (!res.ok) { setError(data.error || 'Upload failed'); }
     }
 
-    setFiles(prev => [...results, ...prev]);
+    // Reload from server so the list is always in sync with what's actually on Bluehost
+    load();
     setUploading(false);
+  };
+
+  const deleteFile = async (file: FileItem) => {
+    if (!confirm(`Delete "${file.filename}"? This cannot be undone.`)) return;
+    const res = await fetch('/api/admin/upload', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filename: file.filename }),
+    });
+    if (res.ok) setFiles(prev => prev.filter(f => f.filename !== file.filename));
+    else setError('Delete failed — try again.');
   };
 
   const onDrop = (e: React.DragEvent) => {
@@ -150,12 +160,10 @@ export default function MediaLibraryPage() {
         gap: '12px',
       }}>
         {displayed.map(file => (
-          <div key={file.url} style={{ position: 'relative', borderRadius: '10px', overflow: 'hidden', border: '1px solid var(--adm-border)', background: '#f9fafb', cursor: 'pointer' }}
-            onClick={() => copy(file.url)}
-            title="Click to copy URL"
-          >
-            {/* Preview */}
-            <div style={{ aspectRatio: '1', overflow: 'hidden', background: '#e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div key={file.url} style={{ position: 'relative', borderRadius: '10px', overflow: 'hidden', border: '1px solid var(--adm-border)', background: '#f9fafb' }}>
+            {/* Preview — click to copy */}
+            <div style={{ aspectRatio: '1', overflow: 'hidden', background: '#e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+              onClick={() => copy(file.url)} title="Click to copy URL">
               {file.isPdf ? (
                 <div style={{ textAlign: 'center', padding: '16px' }}>
                   <div style={{ fontSize: '2.5rem', marginBottom: '8px' }}>📄</div>
@@ -167,22 +175,32 @@ export default function MediaLibraryPage() {
               )}
             </div>
 
-            {/* Filename + copy */}
+            {/* Filename + actions */}
             <div style={{ padding: '8px 10px' }}>
               <p style={{ fontSize: '0.65rem', color: 'var(--adm-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: '6px' }}>
                 {file.filename}
               </p>
-              <button
-                className="adm-btn adm-btn-ghost adm-btn-sm"
-                style={{ width: '100%', justifyContent: 'center', fontSize: '0.65rem',
-                  background: copied === file.url ? 'var(--adm-accent)' : undefined,
-                  color: copied === file.url ? '#fff' : undefined,
-                  borderColor: copied === file.url ? 'var(--adm-accent)' : undefined,
-                }}
-                onClick={e => { e.stopPropagation(); copy(file.url); }}
-              >
-                {copied === file.url ? '✓ Copied!' : 'Copy URL'}
-              </button>
+              <div style={{ display: 'flex', gap: '4px' }}>
+                <button
+                  className="adm-btn adm-btn-ghost adm-btn-sm"
+                  style={{ flex: 1, justifyContent: 'center', fontSize: '0.65rem',
+                    background: copied === file.url ? 'var(--adm-accent)' : undefined,
+                    color: copied === file.url ? '#fff' : undefined,
+                    borderColor: copied === file.url ? 'var(--adm-accent)' : undefined,
+                  }}
+                  onClick={() => copy(file.url)}
+                >
+                  {copied === file.url ? '✓ Copied!' : 'Copy URL'}
+                </button>
+                <button
+                  className="adm-btn adm-btn-danger adm-btn-sm"
+                  style={{ flexShrink: 0, fontSize: '0.65rem', padding: '0 8px' }}
+                  onClick={() => deleteFile(file)}
+                  title="Delete file"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
           </div>
         ))}

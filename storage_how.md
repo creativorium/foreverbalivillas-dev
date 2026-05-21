@@ -175,13 +175,54 @@ if ($method === 'GET') {
 require_once __DIR__ . '/auth.php';
 header('Content-Type: application/json');
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { exit; }
+$upload_dir = __DIR__ . '/images/';
+$method     = $_SERVER['REQUEST_METHOD'];
+
+if ($method === 'OPTIONS') { exit; }
 require_auth();
 
-$upload_dir = __DIR__ . '/images/';
 if (!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_FILES['file'])) {
+$base    = 'https://' . $_SERVER['HTTP_HOST'];
+$api_dir = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
+
+// ── GET: list all files ───────────────────────────────────────────────────────
+if ($method === 'GET') {
+    $allowed_exts = ['jpg','jpeg','png','webp','gif','svg','pdf','mp4','webm','mov'];
+    $files = [];
+    foreach (scandir($upload_dir) as $item) {
+        if ($item === '.' || $item === '..') continue;
+        $filepath = $upload_dir . $item;
+        if (!is_file($filepath)) continue;
+        $ext = strtolower(pathinfo($item, PATHINFO_EXTENSION));
+        if (!in_array($ext, $allowed_exts)) continue;
+        $files[] = [
+            'filename' => $item,
+            'url'      => $base . $api_dir . '/images/' . $item,
+            'isPdf'    => $ext === 'pdf',
+            'mtime'    => filemtime($filepath),
+        ];
+    }
+    usort($files, fn($a, $b) => $b['mtime'] - $a['mtime']);
+    echo json_encode(array_values($files));
+    exit;
+}
+
+// ── DELETE: remove a file ─────────────────────────────────────────────────────
+if ($method === 'DELETE') {
+    $body     = json_decode(file_get_contents('php://input'), true);
+    $filename = basename($body['filename'] ?? '');
+    if (!$filename) { http_response_code(400); echo json_encode(['error' => 'No filename']); exit; }
+    $path = $upload_dir . $filename;
+    if (!file_exists($path)) { http_response_code(404); echo json_encode(['error' => 'Not found']); exit; }
+    unlink($path)
+        ? print(json_encode(['ok' => true]))
+        : (http_response_code(500) && print(json_encode(['error' => 'Delete failed'])));
+    exit;
+}
+
+// ── POST: upload a file ───────────────────────────────────────────────────────
+if ($method !== 'POST' || empty($_FILES['file'])) {
     http_response_code(400); echo json_encode(['error' => 'No file']); exit;
 }
 
@@ -205,9 +246,6 @@ if (!move_uploaded_file($file['tmp_name'], $upload_dir . $filename)) {
     http_response_code(500); echo json_encode(['error' => 'Upload failed']); exit;
 }
 
-// Build URL from SCRIPT_NAME — more reliable than DOCUMENT_ROOT on shared hosting
-$base    = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'];
-$api_dir = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
 echo json_encode(['url' => $base . $api_dir . '/images/' . $filename, 'filename' => $filename]);
 ```
 

@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: `File too large. Max ${isVideo ? '200MB' : isPdf ? '25MB' : '10MB'}.` }, { status: 400 });
     }
 
-    // ── Custom shared hosting ────────────────────────────────────────────────
+    // ── Custom shared hosting ─────────────────────────────────────────────────
     if (CUSTOM_URL) {
       const upstream = new FormData();
       upstream.append('file', file);
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(await res.json());
     }
 
-    // ── Vercel Blob ──────────────────────────────────────────────────────────
+    // ── Vercel Blob ───────────────────────────────────────────────────────────
     if (process.env.BLOB_READ_WRITE_TOKEN) {
       const { put } = await import('@vercel/blob');
       const ext      = path.extname(file.name);
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ url: blob.url, filename });
     }
 
-    // ── Local fallback (dev only) ────────────────────────────────────────────
+    // ── Local fallback (dev only) ─────────────────────────────────────────────
     const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
     if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
@@ -71,20 +71,64 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// List uploaded images (local dev only)
+// List all files from Bluehost images/ folder
 export async function GET() {
-  if (CUSTOM_URL || process.env.BLOB_READ_WRITE_TOKEN) {
-    // Remote storage — can't list here; handled client-side
-    return NextResponse.json({ images: [], mode: STORAGE_MODE });
+  if (CUSTOM_URL) {
+    try {
+      const res = await fetch(`${CUSTOM_URL}/media.php`, {
+        headers: { 'X-Api-Key': CUSTOM_KEY },
+        cache: 'no-store',
+      });
+      if (res.ok) {
+        const files = await res.json();
+        return NextResponse.json({ files, mode: 'custom' });
+      }
+    } catch {}
+    return NextResponse.json({ files: [], mode: 'custom' });
   }
 
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    return NextResponse.json({ files: [], mode: 'kv' });
+  }
+
+  // Local fallback
   const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-  if (!fs.existsSync(uploadsDir)) return NextResponse.json({ images: [], mode: 'file' });
+  if (!fs.existsSync(uploadsDir)) return NextResponse.json({ files: [], mode: 'file' });
 
   const files = fs.readdirSync(uploadsDir)
     .filter(f => /\.(jpe?g|png|webp|gif|svg|pdf|mp4|webm|mov)$/i.test(f))
     .map(f => ({ filename: f, url: `/uploads/${f}`, isPdf: /\.pdf$/i.test(f) }))
     .reverse();
 
-  return NextResponse.json({ files, images: files.filter(f => !f.isPdf), mode: 'file' });
+  return NextResponse.json({ files, mode: 'file' });
 }
+
+// Delete a file from Bluehost
+export async function DELETE(req: NextRequest) {
+  try {
+    const { filename } = await req.json();
+    if (!filename) return NextResponse.json({ error: 'No filename' }, { status: 400 });
+
+    if (CUSTOM_URL) {
+      const res = await fetch(`${CUSTOM_URL}/media.php`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', 'X-Api-Key': CUSTOM_KEY },
+        body: JSON.stringify({ filename }),
+      });
+      if (!res.ok) return NextResponse.json({ error: 'Delete failed on hosting' }, { status: 502 });
+      return NextResponse.json({ ok: true });
+    }
+
+    // Local fallback
+    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+    const filepath   = path.join(uploadsDir, path.basename(filename));
+    if (fs.existsSync(filepath)) fs.unlinkSync(filepath);
+    return NextResponse.json({ ok: true });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'Delete failed';
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
+}
+
+// Unused export kept for compatibility
+export { STORAGE_MODE };
