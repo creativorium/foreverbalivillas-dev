@@ -1,12 +1,12 @@
 import Image from 'next/image';
 import styles from './HomeAmenities.module.css';
 
-const AMENITIES = [
-  { id: 'luxury',   label: 'Luxury\nAccommodations', imgSrc: '/images/icons/luxury.svg' },
-  { id: 'spa',      label: 'SPA',                    imgSrc: '/images/icons/spa.svg' },
-  { id: 'chef',     label: 'Personal\nChef',         imgSrc: '/images/icons/chef.svg' },
-  { id: 'pool',     label: 'Pool',                   imgSrc: '/images/icons/pool.svg' },
-  { id: 'ondemand', label: 'On Demand\nServices',    imgSrc: '/images/icons/on-demand.svg' },
+const DEFAULT_AMENITIES = [
+  { label: 'Luxury\nAccommodations', icon: '/images/icons/luxury.svg' },
+  { label: 'SPA',                    icon: '/images/icons/spa.svg' },
+  { label: 'Personal\nChef',         icon: '/images/icons/chef.svg' },
+  { label: 'Pool',                   icon: '/images/icons/pool.svg' },
+  { label: 'On Demand\nServices',    icon: '/images/icons/on-demand.svg' },
 ];
 
 const DEFAULT_HEADING = 'About Us';
@@ -16,14 +16,18 @@ const DEFAULT_BODY = [
   'Each villa features six spacious bedrooms, six bathrooms, expansive living areas, a fully equipped kitchen, private infinity pool, and dedicated staff, with private chef services available on request. Perfect for retreats, intimate events, group celebrations, and family holidays, we combine genuine Balinese hospitality with refined comfort, creating stays that feel both exclusive and effortless.',
 ].join('\n\n');
 
+interface AmenityItem { label: string; icon: string; }
+
 interface Props {
   heading?: string;
   body?: string;
+  amenities?: AmenityItem[];
 }
 
-export default function HomeAmenities({ heading, body }: Props) {
+export default function HomeAmenities({ heading, body, amenities }: Props) {
   const title = heading || DEFAULT_HEADING;
   const paragraphs = (body || DEFAULT_BODY).split('\n\n').filter(Boolean);
+  const icons = amenities && amenities.length > 0 ? amenities : DEFAULT_AMENITIES;
 
   return (
     <section className={styles.section}>
@@ -34,11 +38,11 @@ export default function HomeAmenities({ heading, body }: Props) {
 
         {/* Icon row */}
         <div className={styles.icons} data-reveal>
-          {AMENITIES.map((a) => (
-            <div key={a.id} className={styles.iconItem}>
+          {icons.map((a, idx) => (
+            <div key={idx} className={styles.iconItem}>
               <div className={styles.iconSvg}>
                 <Image
-                  src={a.imgSrc}
+                  src={a.icon}
                   alt={a.label.replace('\n', ' ')}
                   width={44}
                   height={44}

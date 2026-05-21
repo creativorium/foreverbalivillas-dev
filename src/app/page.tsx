@@ -33,6 +33,7 @@ export default async function HomePage() {
       <HomeAmenities
         heading={(hp.about as Record<string, unknown>)?.heading as string | undefined}
         body={(hp.about as Record<string, unknown>)?.body as string | undefined}
+        amenities={(hp.about as Record<string, unknown>)?.amenities as { label: string; icon: string }[] | undefined}
       />
 
       {/* 3. Key Features Per Villas — feature table */}

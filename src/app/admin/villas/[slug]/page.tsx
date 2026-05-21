@@ -520,7 +520,40 @@ export default function VillaEditorPage() {
         </div>
       </div>
 
-      {/* ── 3. Rooms ── */}
+      {/* ── 3. Amenities ── */}
+      <Section title="Amenities" hint={`${amenities.length} items · icon grid shown on villa page`}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '10px' }}>
+          {amenities.map((item, i) => (
+            <div key={i} style={{ display: 'flex', gap: '8px', alignItems: 'center', padding: '8px', background: '#f9fafb', borderRadius: '8px', border: '1px solid var(--adm-border)' }}>
+              <div style={{ width: 36, height: 36, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', borderRadius: '6px', border: '1px solid var(--adm-border)' }}>
+                {item.icon
+                  // eslint-disable-next-line @next/next/no-img-element
+                  ? <img src={item.icon} alt="" width={28} height={28} style={{ objectFit: 'contain' }} />
+                  : <span style={{ fontSize: '0.6rem', color: '#9ca3af' }}>icon</span>}
+              </div>
+              <input className="adm-input" value={item.icon} placeholder="/images/icons/villas-icon/Bed.png"
+                style={{ flex: 2 }}
+                onChange={e => setAmenity(i, 'icon', e.target.value)} />
+              <input className="adm-input" value={item.label} placeholder="Label"
+                style={{ flex: 1 }}
+                onChange={e => setAmenity(i, 'label', e.target.value)} />
+              <button type="button" className="adm-btn adm-btn-danger adm-btn-sm"
+                onClick={() => set('amenities', amenities.filter((_, j) => j !== i))}>
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
+        <button type="button" className="adm-btn adm-btn-ghost adm-btn-sm"
+          onClick={() => set('amenities', [...amenities, { label: 'New Amenity', icon: '' }])}>
+          + Add Amenity
+        </button>
+        <p style={{ fontSize: '0.7rem', color: 'var(--adm-muted)', marginTop: '8px' }}>
+          Icon path must be a URL or a path like <code>/images/icons/villas-icon/Bed.png</code>. Upload icons via Media Library.
+        </p>
+      </Section>
+
+      {/* ── 4. Rooms ── */}
       <Section title="Rooms" hint={`${rooms.length} room${rooms.length !== 1 ? 's' : ''} · click a room to expand`}>
         {rooms.length === 0 && (
           <p style={{ color: 'var(--adm-muted)', fontSize: '0.82rem', margin: '8px 0' }}>No rooms yet. Add one below.</p>
@@ -578,43 +611,7 @@ export default function VillaEditorPage() {
         />
       </Section>
 
-      {/* ── 6. Amenities ── */}
-      <Section title="Amenities" hint={`${amenities.length} items · icon grid shown on villa page`}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '10px' }}>
-          {amenities.map((item, i) => (
-            <div key={i} style={{ display: 'flex', gap: '8px', alignItems: 'center', padding: '8px', background: '#f9fafb', borderRadius: '8px', border: '1px solid var(--adm-border)' }}>
-              {/* Icon preview */}
-              <div style={{ width: 36, height: 36, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', borderRadius: '6px', border: '1px solid var(--adm-border)' }}>
-                {item.icon
-                  // eslint-disable-next-line @next/next/no-img-element
-                  ? <img src={item.icon} alt="" width={28} height={28} style={{ objectFit: 'contain' }} />
-                  : <span style={{ fontSize: '0.6rem', color: '#9ca3af' }}>icon</span>}
-              </div>
-              {/* Icon path */}
-              <input className="adm-input" value={item.icon} placeholder="/images/icons/villas-icon/Bed.png"
-                style={{ flex: 2 }}
-                onChange={e => setAmenity(i, 'icon', e.target.value)} />
-              {/* Label */}
-              <input className="adm-input" value={item.label} placeholder="Label"
-                style={{ flex: 1 }}
-                onChange={e => setAmenity(i, 'label', e.target.value)} />
-              <button type="button" className="adm-btn adm-btn-danger adm-btn-sm"
-                onClick={() => set('amenities', amenities.filter((_, j) => j !== i))}>
-                Remove
-              </button>
-            </div>
-          ))}
-        </div>
-        <button type="button" className="adm-btn adm-btn-ghost adm-btn-sm"
-          onClick={() => set('amenities', [...amenities, { label: 'New Amenity', icon: '' }])}>
-          + Add Amenity
-        </button>
-        <p style={{ fontSize: '0.7rem', color: 'var(--adm-muted)', marginTop: '8px' }}>
-          Icon path must be a URL or a path like <code>/images/icons/villas-icon/Bed.png</code>. Upload icons via Media Library.
-        </p>
-      </Section>
-
-      {/* ── 7. Testimonials ── */}
+      {/* ── 6. Testimonials ── */}
       <Section title="Testimonials" hint={`${testimonies.length} reviews shown in the slider`}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '10px' }}>
           {testimonies.map((t, i) => (
