@@ -6,28 +6,50 @@ import styles from './page.module.css';
 
 interface Post { slug: string; title: string; coverImage: string; category?: string; }
 
+const INITIAL  = 4;  // 1 featured + 3 in bottom row
 const PER_LOAD = 6;
+
+function PostCard({ post }: { post: Post }) {
+  return (
+    <Link href={`/journal/${post.slug}`} className={styles.card}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={post.coverImage} alt={post.title} className={styles.cardImg} />
+      <div className={styles.cardOverlay} />
+      <div className={styles.cardFooter}>
+        <h3 className={styles.cardTitle}>{post.title}</h3>
+        <span className={styles.readBtn}>Read More &nbsp;→</span>
+      </div>
+    </Link>
+  );
+}
+
+function ThatsAll() {
+  return (
+    <div className={styles.thatsAllCard}>
+      <p className={styles.thatsAllLabel}>The Journal</p>
+      <p className={styles.thatsAllText}>
+        You&rsquo;ve reached the end of our stories.<br />More coming soon.
+      </p>
+    </div>
+  );
+}
 
 export default function JournalGrid({ posts }: { posts: Post[] }) {
   const [activeCategory, setActiveCategory] = useState('All');
-  const [visible, setVisible]               = useState(3);
+  const [visible, setVisible]               = useState(INITIAL);
 
-  // Build filter tabs from actual post categories — always up to date
   const categories = ['All', ...Array.from(
     new Set(posts.map(p => p.category).filter((c): c is string => !!c))
   )];
 
-  const filtered = activeCategory === 'All'
-    ? posts
-    : posts.filter(p => p.category === activeCategory);
-
+  const filtered    = activeCategory === 'All' ? posts : posts.filter(p => p.category === activeCategory);
   const featured    = filtered[0];
-  const shown       = filtered.slice(1, visible);
-  const initialRow  = shown.slice(0, 2);   // posts[1], posts[2]
-  const extraPosts  = shown.slice(2);       // posts[3] onward after Load More
+  const shown       = filtered.slice(1, visible);        // posts shown after featured
+  const bottomRow   = shown.slice(0, 3);                 // always up to 3 in the bottom row
+  const extraPosts  = shown.slice(3);                    // revealed after Load More
   const hasMore     = visible < filtered.length;
+  const bottomFull  = bottomRow.length === 3;            // all 3 bottom slots have posts
 
-  // Group extra posts into rows of 3
   const extraRows: Post[][] = [];
   for (let i = 0; i < extraPosts.length; i += 3) {
     extraRows.push(extraPosts.slice(i, i + 3));
@@ -35,7 +57,7 @@ export default function JournalGrid({ posts }: { posts: Post[] }) {
 
   const handleCategoryChange = (cat: string) => {
     setActiveCategory(cat);
-    setVisible(3); // reset pagination when filter changes
+    setVisible(INITIAL);
   };
 
   return (
@@ -44,11 +66,8 @@ export default function JournalGrid({ posts }: { posts: Post[] }) {
       <div className={styles.filters}>
         <div className={styles.filterInner}>
           {categories.map(tab => (
-            <button
-              key={tab}
-              onClick={() => handleCategoryChange(tab)}
-              className={`${styles.filterBtn} ${activeCategory === tab ? styles.filterActive : ''}`}
-            >
+            <button key={tab} onClick={() => handleCategoryChange(tab)}
+              className={`${styles.filterBtn} ${activeCategory === tab ? styles.filterActive : ''}`}>
               {tab}
             </button>
           ))}
@@ -73,69 +92,45 @@ export default function JournalGrid({ posts }: { posts: Post[] }) {
               </div>
             </Link>
 
-            {/* Initial bottom row: up to 2 posts + Load More / That's All in 3rd slot */}
+            {/* Bottom row — always 3 columns */}
             <div className={styles.bottomRow}>
-              {initialRow.map(post => (
-                <Link key={post.slug} href={`/journal/${post.slug}`} className={styles.card}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={post.coverImage} alt={post.title} className={styles.cardImg} />
-                  <div className={styles.cardOverlay} />
-                  <div className={styles.cardFooter}>
-                    <h3 className={styles.cardTitle}>{post.title}</h3>
-                    <span className={styles.readBtn}>Read More &nbsp;→</span>
-                  </div>
-                </Link>
-              ))}
+              {bottomRow.map(post => <PostCard key={post.slug} post={post} />)}
 
-              {/* 3rd slot */}
-              {hasMore ? (
-                <div className={styles.loadMoreCard} onClick={() => setVisible(v => v + PER_LOAD)}>
-                  <button className={styles.loadMoreBtn}>Load More</button>
-                </div>
-              ) : (
-                <div className={styles.thatsAllCard}>
-                  <p className={styles.thatsAllLabel}>The Journal</p>
-                  <p className={styles.thatsAllText}>
-                    You&rsquo;ve reached the end of our stories.
-                    <br />More coming soon.
-                  </p>
-                </div>
-              )}
+              {/* 3rd slot: That's All only when row isn't full (≤ 3 posts total) */}
+              {!bottomFull && !hasMore && <ThatsAll />}
             </div>
 
-            {/* Extra rows revealed by Load More — no empty black slots */}
+            {/* Below the row: Load More button when row is full and more exist */}
+            {bottomFull && hasMore && !extraRows.length && (
+              <div className={styles.loadMoreCard} onClick={() => setVisible(v => v + PER_LOAD)}>
+                <button className={styles.loadMoreBtn}>Load More</button>
+              </div>
+            )}
+
+            {/* Below the row: That's All when row is full and nothing more */}
+            {bottomFull && !hasMore && !extraRows.length && (
+              <div className={styles.thatsAllCard} style={{ padding: '56px 24px' }}>
+                <ThatsAll />
+              </div>
+            )}
+
+            {/* Extra rows revealed by Load More */}
             {extraRows.map((row, ri) => (
               <div key={ri} className={styles.extraRow}>
-                {row.map(post => (
-                  <Link key={post.slug} href={`/journal/${post.slug}`} className={styles.card}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={post.coverImage} alt={post.title} className={styles.cardImg} />
-                    <div className={styles.cardOverlay} />
-                    <div className={styles.cardFooter}>
-                      <h3 className={styles.cardTitle}>{post.title}</h3>
-                      <span className={styles.readBtn}>Read More &nbsp;→</span>
-                    </div>
-                  </Link>
-                ))}
+                {row.map(post => <PostCard key={post.slug} post={post} />)}
               </div>
             ))}
 
-            {/* Load More at bottom when extra rows exist but still more posts */}
-            {hasMore && extraRows.length > 0 && (
+            {/* After extra rows: Load More or That's All */}
+            {extraRows.length > 0 && hasMore && (
               <div className={styles.loadMoreCard} style={{ minHeight: '100px' }}
                 onClick={() => setVisible(v => v + PER_LOAD)}>
                 <button className={styles.loadMoreBtn}>Load More</button>
               </div>
             )}
-
-            {/* That's All at bottom after extra rows when all shown */}
-            {!hasMore && extraRows.length > 0 && (
+            {extraRows.length > 0 && !hasMore && (
               <div className={styles.thatsAllCard} style={{ padding: '48px 24px' }}>
-                <p className={styles.thatsAllLabel}>The Journal</p>
-                <p className={styles.thatsAllText}>
-                  You&rsquo;ve reached the end of our stories.
-                  <br />More coming soon.
-                </p>
+                <ThatsAll />
               </div>
             )}
           </>
