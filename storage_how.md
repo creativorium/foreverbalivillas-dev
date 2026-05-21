@@ -174,11 +174,15 @@ if ($method === 'GET') {
 <?php
 require_once __DIR__ . '/auth.php';
 header('Content-Type: application/json');
+// CORS headers in PHP — more reliable than .htaccess on shared hosting
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, X-Api-Key');
 
 $upload_dir = __DIR__ . '/images/';
 $method     = $_SERVER['REQUEST_METHOD'];
 
-if ($method === 'OPTIONS') { exit; }
+if ($method === 'OPTIONS') { http_response_code(200); exit; }
 require_auth();
 
 if (!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
