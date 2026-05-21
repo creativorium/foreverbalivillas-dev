@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import ImageField from '@/components/admin/ImageField';
 import StorageBanner from '@/components/admin/StorageBanner';
+import { uploadFile } from '@/lib/upload';
 
 // ── Hero media field (video OR image, one upload button) ──────────────────────
 
@@ -31,16 +32,15 @@ function HeroMediaField({ videoUrl, imageUrl, onVideoChange, onImageChange, fold
 
   const upload = async (file: File) => {
     setUploading(true); setError('');
-    const form = new FormData();
-    form.append('file', file);
     try {
-      const res  = await fetch('/api/admin/upload', { method: 'POST', body: form });
-      const data = await res.json();
-      if (!res.ok) { setError(data.error || 'Upload failed'); return; }
+      const data = await uploadFile(file);
       if (file.type.startsWith('video/')) { onVideoChange(data.url); onImageChange(''); }
       else                                { onImageChange(data.url); onVideoChange(''); }
-    } catch { setError('Upload failed — check connection.'); }
-    finally  { setUploading(false); }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Upload failed — check connection.');
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (

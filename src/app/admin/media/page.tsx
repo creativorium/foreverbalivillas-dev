@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import StorageBanner from '@/components/admin/StorageBanner';
+import { uploadFile } from '@/lib/upload';
 
 interface FileItem { filename: string; url: string; isPdf?: boolean }
 
@@ -29,14 +30,14 @@ export default function MediaLibraryPage() {
     setUploading(true); setError('');
 
     for (const file of list) {
-      const form = new FormData();
-      form.append('file', file);
-      const res = await fetch('/api/admin/upload', { method: 'POST', body: form });
-      const data = await res.json();
-      if (!res.ok) { setError(data.error || 'Upload failed'); }
+      try {
+        await uploadFile(file);
+      } catch (e) {
+        setError(e instanceof Error ? e.message : 'Upload failed');
+      }
     }
 
-    // Reload from server so the list is always in sync with what's actually on Bluehost
+    // Reload from server so list is always in sync with Bluehost
     load();
     setUploading(false);
   };

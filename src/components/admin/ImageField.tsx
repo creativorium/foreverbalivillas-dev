@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import { uploadFile } from '@/lib/upload';
 
 interface Props {
   label:     string;
@@ -19,15 +20,11 @@ export default function ImageField({ label, value, onChange, hint, aspect = '16/
 
   const upload = async (file: File) => {
     setUploading(true); setError('');
-    const form = new FormData();
-    form.append('file', file);
     try {
-      const res  = await fetch('/api/admin/upload', { method: 'POST', body: form });
-      const data = await res.json();
-      if (!res.ok) { setError(data.error || 'Upload failed'); return; }
+      const data = await uploadFile(file);
       onChange(data.url);
-    } catch {
-      setError('Upload failed — check your connection.');
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Upload failed — check your connection.');
     } finally {
       setUploading(false);
     }
