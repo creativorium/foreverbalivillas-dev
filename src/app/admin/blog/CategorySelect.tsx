@@ -11,7 +11,8 @@ export default function CategorySelect({ value, onChange }: Props) {
   const [categories, setCategories] = useState<string[]>([]);
   const [adding, setAdding]         = useState(false);
   const [newCat, setNewCat]         = useState('');
-  const [saving, setSaving]         = useState(false);
+  const [saving,      setSaving]      = useState(false);
+  const [confirming,  setConfirming]  = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const load = () =>
@@ -38,7 +39,12 @@ export default function CategorySelect({ value, onChange }: Props) {
   };
 
   const remove = async (cat: string) => {
-    if (!confirm(`Remove category "${cat}"? Posts using it keep their current category label.`)) return;
+    if (!confirming) {
+      setConfirming(true);
+      setTimeout(() => setConfirming(false), 3000);
+      return;
+    }
+    setConfirming(false);
     const res  = await fetch('/api/admin/categories', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
@@ -92,7 +98,7 @@ export default function CategorySelect({ value, onChange }: Props) {
               onClick={() => remove(value)}
               type="button"
             >
-              Remove
+              {confirming ? 'Confirm?' : 'Remove'}
             </button>
           )}
         </div>

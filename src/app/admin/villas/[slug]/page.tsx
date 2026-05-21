@@ -267,7 +267,18 @@ function RoomCard({
   room: Room; index: number; slug: string;
   onChange: (r: Room) => void; onRemove: () => void;
 }) {
-  const [open, setOpen] = useState(index === 0);
+  const [open,       setOpen]       = useState(index === 0);
+  const [confirming, setConfirming] = useState(false);
+
+  const handleRemove = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!confirming) {
+      setConfirming(true);
+      setTimeout(() => setConfirming(false), 3000);
+      return;
+    }
+    onRemove();
+  };
 
   const setField = (k: keyof Room, v: string) => onChange({ ...room, [k]: v });
   const setImage = (i: number, v: string) => {
@@ -304,10 +315,10 @@ function RoomCard({
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <button
             type="button"
-            onClick={e => { e.stopPropagation(); if (confirm(`Remove room "${room.label}"?`)) onRemove(); }}
+            onClick={handleRemove}
             className="adm-btn adm-btn-danger adm-btn-sm"
             style={{ fontSize: '0.72rem' }}
-          >Remove</button>
+          >{confirming ? 'Confirm?' : 'Remove'}</button>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
             style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }}>
             <polyline points="6 9 12 15 18 9"/>

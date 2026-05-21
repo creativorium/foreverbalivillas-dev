@@ -5,7 +5,8 @@ import { useEffect, useState } from 'react';
 interface User { id: string; username: string; name: string; role: 'admin' | 'editor'; createdAt: string }
 
 export default function UsersPage() {
-  const [users, setUsers] = useState<User[]>([]);
+  const [users,        setUsers]        = useState<User[]>([]);
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
   const [form, setForm] = useState({ username: '', name: '', password: '', role: 'editor' as 'admin' | 'editor' });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -53,8 +54,13 @@ export default function UsersPage() {
     }
   };
 
-  const deleteUser = async (id: string, name: string) => {
-    if (!confirm(`Remove user "${name}"?`)) return;
+  const deleteUser = async (id: string) => {
+    if (confirmingId !== id) {
+      setConfirmingId(id);
+      setTimeout(() => setConfirmingId(null), 3000);
+      return;
+    }
+    setConfirmingId(null);
     await fetch('/api/admin/users', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) });
     load();
   };
@@ -131,7 +137,9 @@ export default function UsersPage() {
                   <td><span className={`adm-badge ${u.role === 'admin' ? 'adm-badge-green' : 'adm-badge-blue'}`}>{u.role}</span></td>
                   <td style={{ color: '#9ca3af' }}>{u.createdAt?.slice(0, 10)}</td>
                   <td>
-                    <button className="adm-btn adm-btn-danger adm-btn-sm" onClick={() => deleteUser(u.id, u.name)}>Remove</button>
+                    <button className="adm-btn adm-btn-danger adm-btn-sm" onClick={() => deleteUser(u.id)}>
+                      {confirmingId === u.id ? 'Confirm?' : 'Remove'}
+                    </button>
                   </td>
                 </tr>
               ))}

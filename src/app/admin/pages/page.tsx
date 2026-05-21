@@ -379,9 +379,10 @@ export default function PagesEditorPage() {
 // ── Categories panel ─────────────────────────────────────────────────────────
 
 function CategoriesPanel() {
-  const [cats, setCats]     = useState<string[]>([]);
-  const [newCat, setNewCat] = useState('');
-  const [saving, setSaving] = useState(false);
+  const [cats,        setCats]        = useState<string[]>([]);
+  const [newCat,      setNewCat]      = useState('');
+  const [saving,      setSaving]      = useState(false);
+  const [confirmingCat, setConfirmingCat] = useState<string | null>(null);
   const [error, setError]   = useState('');
 
   const load = () => fetch('/api/admin/categories').then(r => r.json()).then(setCats);
@@ -402,7 +403,12 @@ function CategoriesPanel() {
   };
 
   const remove = async (cat: string) => {
-    if (!confirm(`Remove "${cat}"? Posts keep their current category label.`)) return;
+    if (confirmingCat !== cat) {
+      setConfirmingCat(cat);
+      setTimeout(() => setConfirmingCat(null), 3000);
+      return;
+    }
+    setConfirmingCat(null);
     const res = await fetch('/api/admin/categories', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
@@ -441,7 +447,9 @@ function CategoriesPanel() {
           {cats.map(cat => (
             <div key={cat} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: '#f9fafb', borderRadius: '8px', border: '1px solid var(--adm-border)' }}>
               <span style={{ fontSize: '0.84rem', fontWeight: 500, color: 'var(--adm-text)' }}>{cat}</span>
-              <button className="adm-btn adm-btn-danger adm-btn-sm" onClick={() => remove(cat)}>Remove</button>
+              <button className="adm-btn adm-btn-danger adm-btn-sm" onClick={() => remove(cat)}>
+                {confirmingCat === cat ? 'Confirm?' : 'Remove'}
+              </button>
             </div>
           ))}
         </div>

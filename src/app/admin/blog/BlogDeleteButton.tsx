@@ -5,10 +5,16 @@ import { useState } from 'react';
 
 export default function BlogDeleteButton({ slug }: { slug: string }) {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [loading,    setLoading]    = useState(false);
+  const [confirming, setConfirming] = useState(false);
 
   const handle = async () => {
-    if (!confirm(`Delete "${slug}"? This cannot be undone.`)) return;
+    if (!confirming) {
+      setConfirming(true);
+      setTimeout(() => setConfirming(false), 3000);
+      return;
+    }
+    setConfirming(false);
     setLoading(true);
     await fetch(`/api/admin/blog/${slug}`, { method: 'DELETE' });
     router.refresh();
@@ -17,7 +23,7 @@ export default function BlogDeleteButton({ slug }: { slug: string }) {
 
   return (
     <button className="adm-btn adm-btn-danger adm-btn-sm" onClick={handle} disabled={loading}>
-      {loading ? '…' : 'Delete'}
+      {loading ? '…' : confirming ? 'Confirm?' : 'Delete'}
     </button>
   );
 }
