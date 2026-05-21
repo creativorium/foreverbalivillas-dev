@@ -22,9 +22,9 @@ export async function POST(req: NextRequest) {
     }
     const isVideo = file.type.startsWith('video/');
     const isPdf   = file.type === 'application/pdf';
-    const maxSize = isVideo ? 200 * 1024 * 1024 : isPdf ? 25 * 1024 * 1024 : 10 * 1024 * 1024;
+    const maxSize = isVideo ? 30 * 1024 * 1024 : isPdf ? 25 * 1024 * 1024 : 10 * 1024 * 1024;
     if (file.size > maxSize) {
-      return NextResponse.json({ error: `File too large. Max ${isVideo ? '200MB' : isPdf ? '25MB' : '10MB'}.` }, { status: 400 });
+      return NextResponse.json({ error: `File too large. Max ${isVideo ? '30MB' : isPdf ? '25MB' : '10MB'}.` }, { status: 400 });
     }
 
     // ── Custom shared hosting ─────────────────────────────────────────────────

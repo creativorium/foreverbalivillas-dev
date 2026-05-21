@@ -117,7 +117,7 @@ export default function MediaLibraryPage() {
                 {[
                   { label: 'JPG / PNG / WEBP / GIF / SVG', limit: '10 MB' },
                   { label: 'PDF', limit: '25 MB' },
-                  { label: 'MP4 / WebM (video)', limit: '200 MB' },
+                  { label: 'MP4 / WebM (video)', limit: '30 MB' },
                 ].map(({ label, limit }) => (
                   <span key={label} style={{
                     display: 'inline-flex', alignItems: 'center', gap: '4px',
