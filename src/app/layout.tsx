@@ -73,10 +73,10 @@ export default async function RootLayout({
         {(scripts?.head || scripts?.body) && (
           <ScriptInjector headHtml={scripts.head} bodyHtml={scripts.body} />
         )}
-        <CustomCursor />
         <Header />
         <main>{children}</main>
         <SiteOnlyShell>
+          <CustomCursor />
           <WhatsAppButton />
           <ScrollReveal />
           <CookieConsent />
