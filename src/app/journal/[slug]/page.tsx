@@ -50,13 +50,6 @@ export default async function JournalPostPage({ params }: Props) {
       <section className={styles.hero}>
         <div className={styles.heroBg} style={{ backgroundImage: `url(${post.coverImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
         <div className={styles.heroOverlay} />
-        {/* Back to Journal — top left */}
-        <Link href="/journal" className={styles.backLink}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polyline points="15 18 9 12 15 6"/>
-          </svg>
-          The Journal
-        </Link>
         <div className={`container ${styles.heroContent}`}>
           <p className={`t-label ${styles.category}`}>{post.category}</p>
           <h1 className={`t-h1 ${styles.heroTitle}`}>{post.title}</h1>
