@@ -175,7 +175,6 @@ export default function MediaLibraryPage() {
         gap: '12px',
       }}>
         {displayed.map(file => (
-          {/* Card — no overflow:hidden so the delete button isn't clipped */}
           <div key={file.url} style={{ position: 'relative', borderRadius: '10px', border: '1px solid var(--adm-border)', background: '#f9fafb' }}>
 
             {/* Delete button — top-right corner, outside image overflow context */}
