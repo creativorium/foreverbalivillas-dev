@@ -54,7 +54,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const settings = await getSettings();
-  const scripts = (settings as Record<string, unknown>)?.scripts as { head?: string; body?: string } | undefined;
+  const scripts = settings.scripts;
 
   return (
     <html lang="en">

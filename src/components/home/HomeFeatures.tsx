@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import styles from './HomeFeatures.module.css';
 
-const DEFAULT_FEATURES = [
+const DEFAULT_FEATURES: { label: string; col: string; icon?: string }[] = [
   { label: '6 Bedrooms', col: 'left' },
   { label: 'Air Conditioning', col: 'right' },
   { label: '6 Bathrooms', col: 'left' },

@@ -59,6 +59,7 @@ export interface SiteSettings {
   social: { instagram: string; facebook: string; youtube: string };
   booking: { url: string };
   hero: { scrollText: string };
+  scripts?: { head?: string; body?: string };
 }
 
 export async function getSettings(): Promise<SiteSettings> {
@@ -72,6 +73,7 @@ export async function updateSettings(data: Partial<SiteSettings>): Promise<SiteS
     social:  { ...current.social,  ...data.social  },
     booking: { ...current.booking, ...data.booking },
     hero:    { ...current.hero,    ...data.hero    },
+    scripts: { ...current.scripts, ...data.scripts },
   };
   await storageSet('fbv:site-settings', 'site-settings.json', updated);
   return updated;
