@@ -203,7 +203,7 @@ if ($method === 'GET') {
             'mtime'    => filemtime($filepath),
         ];
     }
-    usort($files, fn($a, $b) => $b['mtime'] - $a['mtime']);
+    usort($files, function($a, $b) { return $b['mtime'] - $a['mtime']; });
     echo json_encode(array_values($files));
     exit;
 }
