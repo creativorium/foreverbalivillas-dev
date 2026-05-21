@@ -17,6 +17,16 @@ export const metadata: Metadata = {
   },
   description:
     "Experience the art of slow living at Forever Bali Villas. Two exquisite private villas — Forever Santai and Forever Pandawa — nestled in the heart of Bali.",
+  icons: {
+    icon: [
+      // Light mode
+      { url: '/images/favicon/fbv-favicon-for-light-mode-16px.png', sizes: '16x16', type: 'image/png', media: '(prefers-color-scheme: light)' },
+      { url: '/images/favicon/fbv-favicon-for-light-mode-32px.png', sizes: '32x32', type: 'image/png', media: '(prefers-color-scheme: light)' },
+      // Dark mode
+      { url: '/images/favicon/fbv-favicon-for-dark-mode-16px.png',  sizes: '16x16', type: 'image/png', media: '(prefers-color-scheme: dark)' },
+      { url: '/images/favicon/fbv-favicon-for-dark-mode-32px.png',  sizes: '32x32', type: 'image/png', media: '(prefers-color-scheme: dark)' },
+    ],
+  },
   keywords: [
     "Bali villas",
     "luxury villa Bali",
