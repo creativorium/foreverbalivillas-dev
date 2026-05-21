@@ -102,19 +102,15 @@ export async function storageGet<T>(key: string, jsonFile: string): Promise<T> {
     if (USE_CUSTOM) {
       const endpoint = keyToEndpoint(key);
       const val      = await customGet<T>(endpoint);
-      if (val !== null) return val;
-      // Seed from local defaults — fire and forget, never blocks the page
-      const seed = fileGet<T>(jsonFile);
-      customPut(endpoint, seed).catch(() => {});
-      return seed;
+      // Return PHP data if available; otherwise fall back to local file.
+      // NEVER write local defaults back to PHP here — that would overwrite
+      // real data whenever there is a temporary network error on redeploy.
+      return val !== null ? val : fileGet<T>(jsonFile);
     }
 
     if (USE_KV) {
       const val = await kvGet<T>(key);
-      if (val !== null) return val;
-      const seed = fileGet<T>(jsonFile);
-      kvSet(key, seed).catch(() => {});
-      return seed;
+      return val !== null ? val : fileGet<T>(jsonFile);
     }
 
     return fileGet<T>(jsonFile);
