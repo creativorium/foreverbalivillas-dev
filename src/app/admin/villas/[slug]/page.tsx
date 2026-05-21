@@ -600,18 +600,7 @@ export default function VillaEditorPage() {
         </button>
       </Section>
 
-      {/* ── 5. Separator Image ── */}
-      <Section title="Separator Image" hint="full-width image displayed just above the footer">
-        <ImageField
-          label="Separator Image"
-          value={villa.separatorImage ?? ''}
-          onChange={v => set('separatorImage', v)}
-          folder={`villas/${slug}`}
-          aspect="21/9"
-        />
-      </Section>
-
-      {/* ── 6. Testimonials ── */}
+      {/* ── 5. Testimonials ── */}
       <Section title="Testimonials" hint={`${testimonies.length} reviews shown in the slider`}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '10px' }}>
           {testimonies.map((t, i) => (
@@ -639,6 +628,17 @@ export default function VillaEditorPage() {
           onClick={() => set('testimonies', [...testimonies, { id: Date.now(), rating: 5, text: '', author: '', age: '' }])}>
           + Add Testimonial
         </button>
+      </Section>
+
+      {/* ── 6. Separator Image ── */}
+      <Section title="Separator Image" hint="full-width image displayed just above the footer">
+        <ImageField
+          label="Separator Image"
+          value={villa.separatorImage ?? ''}
+          onChange={v => set('separatorImage', v)}
+          folder={`villas/${slug}`}
+          aspect="21/9"
+        />
       </Section>
     </>
   );
