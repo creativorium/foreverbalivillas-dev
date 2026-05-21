@@ -6,7 +6,7 @@ import Footer from '@/components/Footer';
 import { getPosts } from '@/lib/admin-data';
 import styles from './page.module.css';
 
-export const revalidate = 300;
+export const revalidate = 60;
 
 const FALLBACK_BODY = 'The full article content will appear here once added via the admin panel at /admin/blog.';
 
@@ -28,9 +28,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function JournalPostPage({ params }: Props) {
   const { slug } = await params;
   const posts = await getPosts();
-  const post = posts.find(p => p.slug === slug);
+  const published = posts.filter(p => p.published !== false);
+  const idx  = published.findIndex(p => p.slug === slug);
+  const post = published[idx];
 
   if (!post) notFound();
+
+  const prev = idx > 0                   ? published[idx - 1] : null;
+  const next = idx < published.length - 1 ? published[idx + 1] : null;
 
   const rawBody = post.body || '';
   const paragraphs = rawBody.trim()
@@ -45,9 +50,16 @@ export default async function JournalPostPage({ params }: Props) {
       <section className={styles.hero}>
         <div className={styles.heroBg} style={{ backgroundImage: `url(${post.coverImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
         <div className={styles.heroOverlay} />
+        {/* Back to Journal — top left */}
+        <Link href="/journal" className={styles.backLink}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+          The Journal
+        </Link>
         <div className={`container ${styles.heroContent}`}>
-          <h1 className={`t-h1 ${styles.heroTitle}`}>{post.title}</h1>
           <p className={`t-label ${styles.category}`}>{post.category}</p>
+          <h1 className={`t-h1 ${styles.heroTitle}`}>{post.title}</h1>
         </div>
       </section>
 
@@ -97,6 +109,58 @@ export default async function JournalPostPage({ params }: Props) {
           </div>
         </div>
       </article>
+
+      {/* More Stories — prev/next navigation */}
+      {(prev || next) && (
+        <nav className={styles.moreStories}>
+          <p className={styles.moreLabel}>More Stories</p>
+          <div className={styles.moreGrid}>
+            {prev ? (
+              <Link href={`/journal/${prev.slug}`} className={styles.moreCard}>
+                <div className={styles.moreCardBg} style={{ backgroundImage: `url(${prev.coverImage})` }} />
+                <div className={styles.moreCardOverlay} />
+                <div className={styles.moreCardBody}>
+                  <span className={styles.moreDirection}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>
+                    Previous
+                  </span>
+                  <p className={styles.moreTitle}>{prev.title}</p>
+                </div>
+              </Link>
+            ) : (
+              <div />
+            )}
+            {next ? (
+              <Link href={`/journal/${next.slug}`} className={`${styles.moreCard} ${styles.moreCardRight}`}>
+                <div className={styles.moreCardBg} style={{ backgroundImage: `url(${next.coverImage})` }} />
+                <div className={styles.moreCardOverlay} />
+                <div className={styles.moreCardBody}>
+                  <span className={styles.moreDirection}>
+                    Next
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
+                  </span>
+                  <p className={styles.moreTitle}>{next.title}</p>
+                </div>
+              </Link>
+            ) : (
+              <div />
+            )}
+          </div>
+          <div className={styles.backToJournal}>
+            <Link href="/journal" className={styles.backToJournalLink}>
+              View all stories
+            </Link>
+          </div>
+        </nav>
+      )}
+
+      {!(prev || next) && (
+        <div className={styles.backToJournal} style={{ padding: '48px 0' }}>
+          <Link href="/journal" className={styles.backToJournalLink}>
+            ← Back to The Journal
+          </Link>
+        </div>
+      )}
 
       <NewsletterStrip />
       <Footer />
