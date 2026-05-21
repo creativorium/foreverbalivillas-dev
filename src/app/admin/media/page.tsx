@@ -182,7 +182,7 @@ export default function MediaLibraryPage() {
               onClick={() => deleteFile(file)}
               title="Delete file"
               style={{
-                position: 'absolute', top: '8px', right: '8px', zIndex: 10,
+                position: 'absolute', top: '8px', right: '8px', zIndex: 60,
                 width: '28px', height: '28px', borderRadius: '50%',
                 background: 'rgba(220,38,38,0.9)', color: '#fff',
                 border: 'none', cursor: 'pointer', fontSize: '14px',
