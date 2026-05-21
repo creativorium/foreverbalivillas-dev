@@ -3,13 +3,18 @@
 import { useState } from 'react';
 
 export default function NewsletterStrip() {
-  const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [email,   setEmail]   = useState('');
+  const [status,  setStatus]  = useState<'idle' | 'success' | 'error'>('idle');
+  const [errMsg,  setErrMsg]  = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.includes('@')) { setStatus('error'); return; }
-    setStatus('idle');
+    if (!email.includes('@')) {
+      setErrMsg('Please enter a valid email address.');
+      setStatus('error');
+      return;
+    }
+    setStatus('idle'); setErrMsg('');
     try {
       const res  = await fetch('/api/subscribe', {
         method: 'POST',
@@ -17,9 +22,14 @@ export default function NewsletterStrip() {
         body: JSON.stringify({ email }),
       });
       const data = await res.json();
-      if (res.ok) { setStatus('success'); setEmail(''); }
-      else        { setStatus('error'); console.error(data.error); }
+      if (res.ok) {
+        setStatus('success'); setEmail('');
+      } else {
+        setErrMsg(data.error || 'Something went wrong. Please try again.');
+        setStatus('error');
+      }
     } catch {
+      setErrMsg('Connection error. Please try again.');
       setStatus('error');
     }
   };
@@ -42,7 +52,7 @@ export default function NewsletterStrip() {
             <input
               type="email"
               value={email}
-              onChange={e => { setEmail(e.target.value); if (status === 'error') setStatus('idle'); }}
+              onChange={e => { setEmail(e.target.value); if (status === 'error') { setStatus('idle'); setErrMsg(''); } }}
               placeholder={status === 'success' ? '✓ You\'re subscribed!' : 'Your email address'}
               aria-label="Your email address"
               required
@@ -52,9 +62,9 @@ export default function NewsletterStrip() {
             <button type="submit" disabled={status === 'success'}>
               {status === 'success' ? 'Subscribed ✓' : 'Subscribe'}
             </button>
-            {status === 'error' && (
+            {status === 'error' && errMsg && (
               <p style={{ color: '#e53e3e', fontSize: '0.75rem', marginTop: '6px', width: '100%' }}>
-                Please enter a valid email address.
+                {errMsg}
               </p>
             )}
           </form>
