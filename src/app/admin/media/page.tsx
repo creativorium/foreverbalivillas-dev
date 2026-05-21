@@ -107,15 +107,29 @@ export default function MediaLibraryPage() {
         }}
       >
         {uploading
-          ? <p style={{ color: 'var(--adm-accent)', fontWeight: 500 }}>Uploading…</p>
+          ? <p style={{ color: 'var(--adm-accent)', fontWeight: 500 }}>Uploading… this may take a moment for larger files.</p>
           : <>
               <p style={{ fontSize: '2rem', marginBottom: '8px' }}>📁</p>
               <p style={{ fontSize: '0.84rem', color: 'var(--adm-text)', fontWeight: 500 }}>
-                Drop images here or click to upload
+                Drop files here or click to upload
               </p>
-              <p style={{ fontSize: '0.75rem', color: 'var(--adm-muted)', marginTop: '4px' }}>
-                Images (JPG, PNG, WEBP, GIF, SVG) max 10MB · PDF max 25MB
-              </p>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', flexWrap: 'wrap', marginTop: '10px' }}>
+                {[
+                  { label: 'JPG / PNG / WEBP / GIF / SVG', limit: '10 MB' },
+                  { label: 'PDF', limit: '25 MB' },
+                  { label: 'MP4 / WebM (video)', limit: '200 MB' },
+                ].map(({ label, limit }) => (
+                  <span key={label} style={{
+                    display: 'inline-flex', alignItems: 'center', gap: '4px',
+                    fontSize: '0.72rem', padding: '3px 10px', borderRadius: '20px',
+                    background: 'var(--adm-bg, #f3f4f6)', border: '1px solid var(--adm-border)',
+                    color: 'var(--adm-muted)',
+                  }}>
+                    {label}
+                    <strong style={{ color: 'var(--adm-text)', marginLeft: '2px' }}>max {limit}</strong>
+                  </span>
+                ))}
+              </div>
             </>
         }
       </div>
