@@ -6,12 +6,22 @@ export default function NewsletterStrip() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.includes('@')) { setStatus('error'); return; }
-    // TODO: Wire to newsletter provider (Mailchimp, ConvertKit, etc.)
-    setStatus('success');
-    setEmail('');
+    setStatus('idle');
+    try {
+      const res  = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (res.ok) { setStatus('success'); setEmail(''); }
+      else        { setStatus('error'); console.error(data.error); }
+    } catch {
+      setStatus('error');
+    }
   };
 
   return (
@@ -32,15 +42,21 @@ export default function NewsletterStrip() {
             <input
               type="email"
               value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder={status === 'success' ? '✓ You\'re subscribed!' : 'Email'}
+              onChange={e => { setEmail(e.target.value); if (status === 'error') setStatus('idle'); }}
+              placeholder={status === 'success' ? '✓ You\'re subscribed!' : 'Your email address'}
               aria-label="Your email address"
               required
               disabled={status === 'success'}
+              style={status === 'error' ? { borderColor: '#e53e3e' } : undefined}
             />
             <button type="submit" disabled={status === 'success'}>
-              {status === 'success' ? 'Subscribed' : 'Subscribe'}
+              {status === 'success' ? 'Subscribed ✓' : 'Subscribe'}
             </button>
+            {status === 'error' && (
+              <p style={{ color: '#e53e3e', fontSize: '0.75rem', marginTop: '6px', width: '100%' }}>
+                Please enter a valid email address.
+              </p>
+            )}
           </form>
         </div>
       </div>
