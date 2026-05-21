@@ -175,26 +175,27 @@ export default function MediaLibraryPage() {
         gap: '12px',
       }}>
         {displayed.map(file => (
-          <div key={file.url} style={{ position: 'relative', borderRadius: '10px', overflow: 'hidden', border: '1px solid var(--adm-border)', background: '#f9fafb' }}>
+          {/* Card — no overflow:hidden so the delete button isn't clipped */}
+          <div key={file.url} style={{ position: 'relative', borderRadius: '10px', border: '1px solid var(--adm-border)', background: '#f9fafb' }}>
 
-            {/* Delete button — top-right corner, always accessible */}
+            {/* Delete button — top-right corner, outside image overflow context */}
             <button
               onClick={() => deleteFile(file)}
               title="Delete file"
               style={{
-                position: 'absolute', top: '8px', right: '8px', zIndex: 60,
+                position: 'absolute', top: '-10px', right: '-10px', zIndex: 60,
                 width: '28px', height: '28px', borderRadius: '50%',
                 background: 'rgba(220,38,38,0.9)', color: '#fff',
-                border: 'none', cursor: 'pointer', fontSize: '14px',
+                border: '2px solid #fff', cursor: 'pointer', fontSize: '14px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 lineHeight: 1, fontWeight: 700,
                 boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
               }}
             >×</button>
 
-            {/* Preview — click to copy */}
+            {/* Preview — click to copy, overflow:hidden only on image container */}
             <div
-              style={{ aspectRatio: '1', overflow: 'hidden', background: '#e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+              style={{ aspectRatio: '1', overflow: 'hidden', borderRadius: '9px 9px 0 0', background: '#e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
               onClick={() => copy(file.url)}
               title="Click to copy URL"
             >
