@@ -152,6 +152,7 @@ Check each of these:
 | Admin → Media Library | Upload an image, it shows correctly |
 | Admin → Villas → Save | "Saved!" with no error |
 | Villa page on site | Shows content from admin edits |
+| Newsletter form | Enter email → button shows "Subscribed ✓" |
 
 ---
 
@@ -160,6 +161,50 @@ Check each of these:
 - Log in to Bluehost → WordPress admin → put WordPress in maintenance or delete it
   (only if you no longer need it — your storage API must stay!)
 - Keep the Bluehost account active as long as you use the PHP API for storage
+
+---
+
+## Mailchimp newsletter setup (do this once, any time)
+
+The newsletter subscribe form on the site is already built. It just needs 3 environment variables in Vercel.
+
+### Step 1 — Get your Mailchimp credentials
+
+**API Key:**
+1. Log in to Mailchimp
+2. Click your account name (top right) → Account & billing → Extras → API keys
+3. Click **Create A Key**, give it a name (e.g. "Forever Bali Villas"), copy the key
+
+**Audience ID:**
+1. In Mailchimp → Audience → All contacts
+2. Click **Settings** → Audience name and defaults
+3. Scroll down to find **Audience ID** (looks like `a1b2c3d4e5`)
+
+**Server prefix:**
+1. Look at your API key — it ends with something like `-us10`
+2. The prefix is just that part: `us10` (or `us1`, `us14`, etc.)
+
+### Step 2 — Add to Vercel
+
+Vercel project → **Settings → Environment Variables** → add:
+
+| Variable | Value |
+|---|---|
+| `MAILCHIMP_API_KEY` | Your full API key (ends in `-us10` or similar) |
+| `MAILCHIMP_AUDIENCE_ID` | Your audience ID (e.g. `a1b2c3d4e5`) |
+| `MAILCHIMP_SERVER_PREFIX` | Just the prefix (e.g. `us10`) |
+
+Then **redeploy** (push any commit or click Redeploy in Vercel dashboard).
+
+### Step 3 — Test it
+
+Go to the live site → scroll to the newsletter strip → enter a test email → click Subscribe.
+
+Expected: button changes to **"Subscribed ✓"** and input shows **"✓ You're subscribed!"**
+
+Check Mailchimp → Audience → All contacts — the email should appear within a few seconds.
+
+> Note: If someone subscribes who is already on the list, the form still shows "Subscribed ✓" — no error shown to the user.
 
 ---
 
@@ -172,6 +217,9 @@ Check each of these:
 | `ADMIN_SECRET` | *(unchanged)* |
 | `ADMIN_USERNAME` | *(unchanged)* |
 | `ADMIN_PASSWORD` | *(unchanged)* |
+| `MAILCHIMP_API_KEY` | Your Mailchimp API key |
+| `MAILCHIMP_AUDIENCE_ID` | Your Mailchimp audience ID |
+| `MAILCHIMP_SERVER_PREFIX` | e.g. `us10` |
 
 ---
 
