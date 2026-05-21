@@ -20,7 +20,7 @@ const nextConfig: NextConfig = {
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https://maps.gstatic.com https://maps.googleapis.com https://*.googleapis.com https://foreverbalivillas.com https://*.mybluehost.me",
               "media-src 'self' https://foreverbalivillas.com https://*.mybluehost.me",
-              "connect-src 'self' https://maps.googleapis.com https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://www.facebook.com",
+              "connect-src 'self' https://maps.googleapis.com https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://www.facebook.com https://foreverbalivillas.com https://*.mybluehost.me",
               // Allow Google Maps iframe to embed
               "frame-src https://www.google.com",
               "frame-ancestors 'none'",
