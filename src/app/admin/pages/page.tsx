@@ -11,7 +11,8 @@ const TABS = [
   { key: 'homepage',   label: 'Homepage' },
   { key: 'faq',        label: 'FAQ' },
   { key: 'villas',     label: 'Villas' },
-  { key: 'legal',      label: 'Legal Pages' },
+  { key: 'terms',      label: 'Terms & Conditions' },
+  { key: 'privacy',    label: 'Privacy Policy' },
   { key: 'categories', label: 'Blog Categories' },
 ];
 
@@ -298,78 +299,57 @@ export default function PagesEditorPage() {
         </div>
       )}
 
-      {/* ── LEGAL ── */}
-      {activeTab === 'legal' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          {(['terms', 'privacy'] as const).map(key => {
-            const page = ((content.legal as Content)?.[key] ?? {}) as Content;
-            const label = key === 'terms' ? 'Terms & Conditions' : 'Privacy Policy';
-            const sections = (page.sections as Array<{ title: string; body: string }>) ?? [];
-            return (
-              <Section key={key} title={label}>
-                <Field label="Page Title" value={page.pageTitle as string ?? ''}
-                  onChange={v => setDeep(['legal', key, 'pageTitle'], v)} />
-                {key === 'terms' && (
-                  <Field label="Subtitle" value={page.subtitle as string ?? ''}
-                    onChange={v => setDeep(['legal', key, 'subtitle'], v)} />
-                )}
-                <Field label="Last Updated" value={page.lastUpdated as string ?? ''}
-                  onChange={v => setDeep(['legal', key, 'lastUpdated'], v)}
-                  hint="e.g. January 2025" />
-                <Field label="Introduction Paragraph" multiline rows={4}
-                  value={page.intro as string ?? ''}
-                  onChange={v => setDeep(['legal', key, 'intro'], v)} />
-                <Field label="Footer Note" multiline rows={2}
-                  value={page.footnote as string ?? ''}
-                  onChange={v => setDeep(['legal', key, 'footnote'], v)} />
+      {/* ── TERMS & CONDITIONS / PRIVACY POLICY (shared renderer) ── */}
+      {(activeTab === 'terms' || activeTab === 'privacy') && (() => {
+        const key = activeTab as 'terms' | 'privacy';
+        const page = ((content.legal as Content)?.[key] ?? {}) as Content;
+        const sections = (page.sections as Array<{ title: string; body: string }>) ?? [];
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <Section title={key === 'terms' ? 'Terms & Conditions' : 'Privacy Policy'}>
+              <Field label="Page Title" value={page.pageTitle as string ?? ''}
+                onChange={v => setDeep(['legal', key, 'pageTitle'], v)} />
+              {key === 'terms' && (
+                <Field label="Subtitle" value={page.subtitle as string ?? ''}
+                  onChange={v => setDeep(['legal', key, 'subtitle'], v)} />
+              )}
+              <Field label="Last Updated" value={page.lastUpdated as string ?? ''}
+                onChange={v => setDeep(['legal', key, 'lastUpdated'], v)}
+                hint="e.g. January 2025" />
+              <Field label="Introduction Paragraph" multiline rows={4}
+                value={page.intro as string ?? ''}
+                onChange={v => setDeep(['legal', key, 'intro'], v)} />
+              <Field label="Footer Note" multiline rows={2}
+                value={page.footnote as string ?? ''}
+                onChange={v => setDeep(['legal', key, 'footnote'], v)} />
 
-                <div className="adm-form-group">
-                  <label className="adm-label">
-                    Sections
-                    <span className="adm-label-hint">body supports HTML — use &lt;p&gt;, &lt;ul&gt;&lt;li&gt;, &lt;h3&gt;, &lt;strong&gt;</span>
-                  </label>
-                  {sections.map((sec, i) => (
-                    <div key={i} className="adm-card" style={{ padding: '14px', marginBottom: '10px', position: 'relative' }}>
-                      <button
-                        className="adm-btn adm-btn-danger adm-btn-sm"
-                        style={{ position: 'absolute', top: '10px', right: '10px' }}
-                        onClick={() => {
-                          const next = sections.filter((_, j) => j !== i);
-                          setDeep(['legal', key, 'sections'], next);
-                        }}
-                      >Remove</button>
-                      <Field
-                        label={`Section ${i + 1} Title`}
-                        value={sec.title}
-                        onChange={v => {
-                          const next = [...sections];
-                          next[i] = { ...next[i], title: v };
-                          setDeep(['legal', key, 'sections'], next);
-                        }}
-                      />
-                      <Field
-                        label="Body (HTML)"
-                        multiline
-                        rows={6}
-                        value={sec.body}
-                        onChange={v => {
-                          const next = [...sections];
-                          next[i] = { ...next[i], body: v };
-                          setDeep(['legal', key, 'sections'], next);
-                        }}
-                      />
-                    </div>
-                  ))}
-                  <button
-                    className="adm-btn adm-btn-ghost adm-btn-sm"
-                    onClick={() => setDeep(['legal', key, 'sections'], [...sections, { title: '', body: '' }])}
-                  >+ Add Section</button>
-                </div>
-              </Section>
-            );
-          })}
-        </div>
-      )}
+              <div className="adm-form-group">
+                <label className="adm-label">
+                  Sections
+                  <span className="adm-label-hint">body supports HTML — use &lt;p&gt;, &lt;ul&gt;&lt;li&gt;, &lt;h3&gt;, &lt;strong&gt;</span>
+                </label>
+                {sections.map((sec, i) => (
+                  <div key={i} className="adm-card" style={{ padding: '14px', marginBottom: '10px', position: 'relative' }}>
+                    <button
+                      className="adm-btn adm-btn-danger adm-btn-sm"
+                      style={{ position: 'absolute', top: '10px', right: '10px' }}
+                      onClick={() => setDeep(['legal', key, 'sections'], sections.filter((_, j) => j !== i))}
+                    >Remove</button>
+                    <Field label={`Section ${i + 1} Title`} value={sec.title}
+                      onChange={v => { const next = [...sections]; next[i] = { ...next[i], title: v }; setDeep(['legal', key, 'sections'], next); }} />
+                    <Field label="Body (HTML)" multiline rows={6} value={sec.body}
+                      onChange={v => { const next = [...sections]; next[i] = { ...next[i], body: v }; setDeep(['legal', key, 'sections'], next); }} />
+                  </div>
+                ))}
+                <button className="adm-btn adm-btn-ghost adm-btn-sm"
+                  onClick={() => setDeep(['legal', key, 'sections'], [...sections, { title: '', body: '' }])}>
+                  + Add Section
+                </button>
+              </div>
+            </Section>
+          </div>
+        );
+      })()}
 
       {/* ── CATEGORIES ── */}
       {activeTab === 'categories' && <CategoriesPanel />}

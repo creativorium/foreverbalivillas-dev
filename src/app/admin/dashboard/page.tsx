@@ -8,8 +8,8 @@ const PAGES = [
   { label: 'FAQ',                editHref: '/admin/pages?tab=faq',      href: '/faq',                 icon: '❓', desc: 'Questions, hero, CTA' },
   { label: 'Forever Pandawa',    editHref: '/admin/villas/forever-pandawa', href: '/forever-pandawa', icon: '🏖', desc: 'Rooms, images, gallery' },
   { label: 'Forever Santai',     editHref: '/admin/villas/forever-santai',  href: '/forever-santai',  icon: '🌴', desc: 'Rooms, images, gallery' },
-  { label: 'Terms & Conditions', editHref: '/admin/pages?tab=legal',    href: '/cancellation-policy', icon: '📋', desc: 'Policies, cancellation, check-in' },
-  { label: 'Privacy Policy',     editHref: '/admin/pages?tab=legal',    href: '/privacy-policy',      icon: '🔒', desc: 'GDPR, data handling, cookies' },
+  { label: 'Terms & Conditions', editHref: '/admin/pages?tab=terms',   href: '/cancellation-policy', icon: '📋', desc: 'Policies, cancellation, check-in' },
+  { label: 'Privacy Policy',     editHref: '/admin/pages?tab=privacy', href: '/privacy-policy',      icon: '🔒', desc: 'GDPR, data handling, cookies' },
 ];
 
 export default async function DashboardPage() {
