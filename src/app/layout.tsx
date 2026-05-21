@@ -7,6 +7,8 @@ import CustomCursor from "@/components/CustomCursor";
 import ScrollReveal from "@/components/ScrollReveal";
 import CookieConsent from "@/components/CookieConsent";
 import SiteOnlyShell from "@/components/SiteOnlyShell";
+import ScriptInjector from "@/components/ScriptInjector";
+import { getSettings } from "@/lib/admin-data";
 
 export const metadata: Metadata = {
   title: {
@@ -46,14 +48,21 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const settings = await getSettings();
+  const scripts = (settings as Record<string, unknown>)?.scripts as { head?: string; body?: string } | undefined;
+
   return (
     <html lang="en">
       <body>
+        {/* Inject custom tracking scripts (GA, Meta Pixel, etc.) set in admin Settings */}
+        {(scripts?.head || scripts?.body) && (
+          <ScriptInjector headHtml={scripts.head} bodyHtml={scripts.body} />
+        )}
         <CustomCursor />
         <Header />
         <main>{children}</main>

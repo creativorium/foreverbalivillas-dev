@@ -8,6 +8,7 @@ interface Settings {
   social: { instagram: string; facebook: string; youtube: string };
   booking: { url: string };
   hero: { scrollText: string };
+  scripts?: { head?: string; body?: string };
 }
 
 export default function SettingsPage() {
@@ -32,6 +33,8 @@ export default function SettingsPage() {
     setSettings(s => s ? { ...s, social: { ...s.social, [k]: v } } : s);
   const setBooking = (v: string) =>
     setSettings(s => s ? { ...s, booking: { url: v } } : s);
+  const setScript = (field: 'head' | 'body', v: string) =>
+    setSettings(s => s ? { ...s, scripts: { ...s.scripts, [field]: v } } : s);
 
   const save = async () => {
     setError(''); setSuccess('');
@@ -96,6 +99,49 @@ export default function SettingsPage() {
               <label className="adm-label">Booking URL <span className="adm-label-hint">Cloudbeds or other provider link</span></label>
               <input className="adm-input" type="url" value={settings.booking.url} onChange={e => setBooking(e.target.value)} />
             </div>
+          </div>
+        </div>
+
+        {/* Analytics & Tracking Scripts */}
+        <div className="adm-card">
+          <div className="adm-card-header">
+            <span className="adm-card-title">Analytics &amp; Tracking</span>
+            <span style={{ fontSize: '0.72rem', color: 'var(--adm-muted)' }}>Google Analytics, Meta Pixel, Google Ads, etc.</span>
+          </div>
+          <div className="adm-card-body">
+            <div className="adm-form-group">
+              <label className="adm-label">
+                &lt;head&gt; Scripts
+                <span className="adm-label-hint">Google Analytics, Search Console verification, Meta Pixel</span>
+              </label>
+              <textarea
+                className="adm-textarea"
+                rows={6}
+                value={settings.scripts?.head ?? ''}
+                onChange={e => setScript('head', e.target.value)}
+                placeholder={`<!-- Example: Google Analytics -->\n<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>\n<script>\n  window.dataLayer = window.dataLayer || [];\n  function gtag(){dataLayer.push(arguments);}\n  gtag('js', new Date());\n  gtag('config', 'G-XXXXXXXXXX');\n</script>`}
+                style={{ fontFamily: 'monospace', fontSize: '0.78rem' }}
+              />
+            </div>
+            <div className="adm-form-group" style={{ marginBottom: 0 }}>
+              <label className="adm-label">
+                &lt;body&gt; Scripts
+                <span className="adm-label-hint">Chat widgets, additional tracking that must load after page body</span>
+              </label>
+              <textarea
+                className="adm-textarea"
+                rows={4}
+                value={settings.scripts?.body ?? ''}
+                onChange={e => setScript('body', e.target.value)}
+                placeholder="<!-- Paste scripts here that should load after the page body -->"
+                style={{ fontFamily: 'monospace', fontSize: '0.78rem' }}
+              />
+            </div>
+            <p style={{ fontSize: '0.72rem', color: 'var(--adm-muted)', marginTop: '8px', lineHeight: 1.6 }}>
+              Paste the full <code>&lt;script&gt;</code> tags exactly as given by Google/Meta/etc.
+              Head scripts load before the page renders. Body scripts load after.
+              Changes take effect on the live site within ~60 seconds.
+            </p>
           </div>
         </div>
 
