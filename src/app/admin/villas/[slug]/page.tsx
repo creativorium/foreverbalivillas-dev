@@ -126,6 +126,9 @@ interface Room {
   images: string[];
 }
 
+interface Amenity   { label: string; icon: string; }
+interface Testimony { id: string | number; rating: number; text: string; author: string; age: string | number; }
+
 interface VillaContent {
   name?: string;
   tagline?: string;
@@ -139,6 +142,8 @@ interface VillaContent {
   separatorImage?: string;
   galleryImages?: string[];
   rooms?: Room[];
+  amenities?: Amenity[];
+  testimonies?: Testimony[];
 }
 
 // ── Default room seeds (fallback if storage has no rooms yet) ─────────────────
@@ -171,6 +176,50 @@ const DEFAULT_ROOMS: Record<string, Room[]> = {
       images: ['/images/villas/forever-santai/rooms/garden-view-studio/1.jpg','/images/villas/forever-santai/rooms/garden-view-studio/2.jpg','/images/villas/forever-santai/rooms/garden-view-studio/3.jpg','/images/villas/forever-santai/rooms/garden-view-studio/4.jpg','/images/villas/forever-santai/rooms/garden-view-studio/5.jpg','/images/villas/forever-santai/rooms/garden-view-studio/6.jpg','/images/villas/forever-santai/rooms/garden-view-studio/7.jpg','/images/villas/forever-santai/rooms/garden-view-studio/8.jpg'] },
     { id: 'santai-garden-view',   label: 'Garden View Guest',    description: 'This large and spacious suite is tucked in a cozy corner in the garden level. Perfect for the guest who relishes a little extra privacy.',
       images: ['/images/villas/forever-santai/rooms/santai-garden-view-guest/1.jpg','/images/villas/forever-santai/rooms/santai-garden-view-guest/2.jpg'] },
+  ],
+};
+
+const DEFAULT_AMENITIES: Record<string, Amenity[]> = {
+  'forever-pandawa': [
+    { label: 'À la Carte',       icon: '/images/icons/villas-icon/Breakfast.png' },
+    { label: 'Bathroom',         icon: '/images/icons/villas-icon/Bathtub.png'   },
+    { label: 'Dining Room',      icon: '/images/icons/villas-icon/Food.png'      },
+    { label: 'Air Conditioning', icon: '/images/icons/villas-icon/AC.png'        },
+    { label: 'Bedrooms',         icon: '/images/icons/villas-icon/Bed.png'       },
+    { label: 'Private Chef',     icon: '/images/icons/villas-icon/Cook.png'      },
+    { label: 'Pool',             icon: '/images/icons/villas-icon/Pool.png'      },
+    { label: 'Living Room',      icon: '/images/icons/villas-icon/Sofa.png'      },
+    { label: 'BBQ Facility',     icon: '/images/icons/villas-icon/Grill.png'     },
+    { label: '24/7 Security',    icon: '/images/icons/villas-icon/Alarm.png'     },
+  ],
+  'forever-santai': [
+    { label: 'À la Carte',       icon: '/images/icons/villas-icon/Breakfast.png' },
+    { label: 'Bathroom',         icon: '/images/icons/villas-icon/Bathtub.png'   },
+    { label: 'Dining Room',      icon: '/images/icons/villas-icon/Food.png'      },
+    { label: 'Air Conditioning', icon: '/images/icons/villas-icon/AC.png'        },
+    { label: 'Bedrooms',         icon: '/images/icons/villas-icon/Bed.png'       },
+    { label: 'Private Chef',     icon: '/images/icons/villas-icon/Cook.png'      },
+    { label: 'Pool',             icon: '/images/icons/villas-icon/Pool.png'      },
+    { label: 'Living Room',      icon: '/images/icons/villas-icon/Sofa.png'      },
+    { label: 'BBQ Facility',     icon: '/images/icons/villas-icon/Grill.png'     },
+    { label: 'Spa',              icon: '/images/icons/villas-icon/Alarm.png'     },
+  ],
+};
+
+const DEFAULT_TESTIMONIES: Record<string, Testimony[]> = {
+  'forever-pandawa': [
+    { id: 1, rating: 5, author: 'Nico B.',       age: 29, text: 'Forever Pandawa felt like our own private corner of Bali. The architecture is stunning and the team made us feel completely at home. Already planning our return.' },
+    { id: 2, rating: 5, author: 'James & Lisa',  age: 41, text: 'We celebrated our anniversary here and it exceeded every expectation. The private pool, the sunset views, the breakfast spread — everything was flawless.' },
+    { id: 3, rating: 5, author: 'Marcus T.',     age: 38, text: 'The grandeur of Pandawa is unlike anything we\'ve experienced. Six bedrooms, an infinity pool overlooking the ocean, and a team that treated us like family.' },
+    { id: 4, rating: 5, author: 'Tom & Rachel',  age: 45, text: 'From the seamless check-in to the thoughtful little touches throughout our stay — this is exactly what a luxury villa experience should feel like.' },
+    { id: 5, rating: 5, author: 'Chloe & David', age: 33, text: 'The ocean views from the top level took our breath away every single morning. Pandawa is a once-in-a-lifetime stay that we will absolutely repeat.' },
+  ],
+  'forever-santai': [
+    { id: 1, rating: 5, author: 'Sarah M.',         age: 34, text: 'Waking up to the sound of the ocean every morning was pure magic. The villa staff anticipated every need before we even asked — truly world-class hospitality.' },
+    { id: 2, rating: 5, author: 'Emma & Will',      age: 36, text: 'Santai lives up to its name — we completely relaxed from the moment we arrived. The newly renovated interiors are beautiful and the pool level is stunning.' },
+    { id: 3, rating: 5, author: 'Priya K.',         age: 37, text: 'The level of privacy and tranquility here is unmatched. After a week of exploring Bali, coming back to Santai each evening felt like a true retreat.' },
+    { id: 4, rating: 5, author: 'The Hendersons',   age: 44, text: 'Six bedrooms, a gym, a movie room, a private infinity pool — Forever Santai has thought of everything. Our family had the most unforgettable holiday.' },
+    { id: 5, rating: 5, author: 'Lena F.',          age: 41, text: 'The garden-level studio was perfect for our teenagers. Meanwhile the adults had the ocean-view master all to themselves. The layout is genius.' },
   ],
 };
 
@@ -323,10 +372,9 @@ export default function VillaEditorPage() {
       const data = res.data ?? res;
       setStorageMode(res.storage ?? 'file');
       const v = (data?.villas?.[slug] ?? {}) as VillaContent;
-      // Seed default rooms if storage has none
-      if (!v.rooms || v.rooms.length === 0) {
-        v.rooms = DEFAULT_ROOMS[slug] ?? [];
-      }
+      if (!v.rooms       || v.rooms.length === 0)       v.rooms       = DEFAULT_ROOMS[slug]      ?? [];
+      if (!v.amenities   || v.amenities.length === 0)   v.amenities   = DEFAULT_AMENITIES[slug]  ?? [];
+      if (!v.testimonies || v.testimonies.length === 0) v.testimonies = DEFAULT_TESTIMONIES[slug] ?? [];
       setVilla(v);
     });
   }, [slug]);
@@ -354,6 +402,22 @@ export default function VillaEditorPage() {
     return { ...prev, rooms: [...(prev.rooms ?? []), newRoom] };
   });
 
+  const setAmenity = useCallback((i: number, field: keyof Amenity, v: string) =>
+    setVilla(prev => {
+      if (!prev) return prev;
+      const next = [...(prev.amenities ?? [])];
+      next[i] = { ...next[i], [field]: v };
+      return { ...prev, amenities: next };
+    }), []);
+
+  const setTestimony = useCallback((i: number, field: keyof Testimony, v: string | number) =>
+    setVilla(prev => {
+      if (!prev) return prev;
+      const next = [...(prev.testimonies ?? [])];
+      next[i] = { ...next[i], [field]: v };
+      return { ...prev, testimonies: next };
+    }), []);
+
   const save = async () => {
     if (!villa) return;
     setSaving(true); setStatus('idle');
@@ -371,8 +435,10 @@ export default function VillaEditorPage() {
 
   if (!villa) return <div style={{ padding: '40px', color: 'var(--adm-muted)' }}>Loading…</div>;
 
-  const rooms = villa.rooms ?? [];
+  const rooms        = villa.rooms       ?? [];
   const galleryImages = villa.galleryImages ?? [];
+  const amenities    = villa.amenities   ?? [];
+  const testimonies  = villa.testimonies ?? [];
 
   return (
     <>
@@ -510,6 +576,72 @@ export default function VillaEditorPage() {
           folder={`villas/${slug}`}
           aspect="21/9"
         />
+      </Section>
+
+      {/* ── 6. Amenities ── */}
+      <Section title="Amenities" hint={`${amenities.length} items · icon grid shown on villa page`}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '10px' }}>
+          {amenities.map((item, i) => (
+            <div key={i} style={{ display: 'flex', gap: '8px', alignItems: 'center', padding: '8px', background: '#f9fafb', borderRadius: '8px', border: '1px solid var(--adm-border)' }}>
+              {/* Icon preview */}
+              <div style={{ width: 36, height: 36, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', borderRadius: '6px', border: '1px solid var(--adm-border)' }}>
+                {item.icon
+                  // eslint-disable-next-line @next/next/no-img-element
+                  ? <img src={item.icon} alt="" width={28} height={28} style={{ objectFit: 'contain' }} />
+                  : <span style={{ fontSize: '0.6rem', color: '#9ca3af' }}>icon</span>}
+              </div>
+              {/* Icon path */}
+              <input className="adm-input" value={item.icon} placeholder="/images/icons/villas-icon/Bed.png"
+                style={{ flex: 2 }}
+                onChange={e => setAmenity(i, 'icon', e.target.value)} />
+              {/* Label */}
+              <input className="adm-input" value={item.label} placeholder="Label"
+                style={{ flex: 1 }}
+                onChange={e => setAmenity(i, 'label', e.target.value)} />
+              <button type="button" className="adm-btn adm-btn-danger adm-btn-sm"
+                onClick={() => set('amenities', amenities.filter((_, j) => j !== i))}>
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
+        <button type="button" className="adm-btn adm-btn-ghost adm-btn-sm"
+          onClick={() => set('amenities', [...amenities, { label: 'New Amenity', icon: '' }])}>
+          + Add Amenity
+        </button>
+        <p style={{ fontSize: '0.7rem', color: 'var(--adm-muted)', marginTop: '8px' }}>
+          Icon path must be a URL or a path like <code>/images/icons/villas-icon/Bed.png</code>. Upload icons via Media Library.
+        </p>
+      </Section>
+
+      {/* ── 7. Testimonials ── */}
+      <Section title="Testimonials" hint={`${testimonies.length} reviews shown in the slider`}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '10px' }}>
+          {testimonies.map((t, i) => (
+            <div key={i} style={{ padding: '12px', background: '#f9fafb', borderRadius: '8px', border: '1px solid var(--adm-border)' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 120px auto', gap: '8px', marginBottom: '8px', alignItems: 'center' }}>
+                <input className="adm-input" value={t.author} placeholder="Author name"
+                  onChange={e => setTestimony(i, 'author', e.target.value)} />
+                <input className="adm-input" value={String(t.age)} placeholder="Age"
+                  onChange={e => setTestimony(i, 'age', e.target.value)} />
+                <select className="adm-select" value={t.rating}
+                  onChange={e => setTestimony(i, 'rating', Number(e.target.value))}>
+                  {[5, 4, 3, 2, 1].map(r => <option key={r} value={r}>{'★'.repeat(r)} ({r})</option>)}
+                </select>
+                <button type="button" className="adm-btn adm-btn-danger adm-btn-sm"
+                  onClick={() => set('testimonies', testimonies.filter((_, j) => j !== i))}>
+                  Remove
+                </button>
+              </div>
+              <textarea className="adm-textarea" rows={3} value={t.text} placeholder="Testimonial text…"
+                onChange={e => setTestimony(i, 'text', e.target.value)} />
+            </div>
+          ))}
+        </div>
+        <button type="button" className="adm-btn adm-btn-ghost adm-btn-sm"
+          onClick={() => set('testimonies', [...testimonies, { id: Date.now(), rating: 5, text: '', author: '', age: '' }])}>
+          + Add Testimonial
+        </button>
       </Section>
     </>
   );

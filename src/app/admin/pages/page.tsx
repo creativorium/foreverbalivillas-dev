@@ -175,32 +175,46 @@ export default function PagesEditorPage() {
               onChange={v => setDeep(['homepage', 'features', 'foodMenuUrl'], v)} />
 
             <div className="adm-form-group">
-              <label className="adm-label">Feature Items <span className="adm-label-hint">label and column (left/right)</span></label>
-              {((content.homepage as Content)?.features?.items as Array<{label: string; col: string}> ?? []).map((item, i) => (
-                <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 32px', gap: '8px', marginBottom: '6px', alignItems: 'center' }}>
-                  <input className="adm-input" value={item.label}
-                    onChange={e => {
-                      const items = [...((content.homepage as Content)?.features?.items as Array<{label: string; col: string}>)];
-                      items[i] = { ...items[i], label: e.target.value };
+              <label className="adm-label">Feature Items <span className="adm-label-hint">label, icon (optional), column</span></label>
+              {((content.homepage as Content)?.features?.items as Array<{label: string; col: string; icon?: string}> ?? []).map((item, i) => (
+                <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '10px', padding: '8px', background: '#f9fafb', borderRadius: '8px', border: '1px solid var(--adm-border)' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 32px', gap: '8px', alignItems: 'center' }}>
+                    <input className="adm-input" value={item.label} placeholder="Feature label"
+                      onChange={e => {
+                        const items = [...((content.homepage as Content)?.features?.items as Array<{label: string; col: string; icon?: string}>)];
+                        items[i] = { ...items[i], label: e.target.value };
+                        setDeep(['homepage', 'features', 'items'], items);
+                      }} />
+                    <select className="adm-select" value={item.col}
+                      onChange={e => {
+                        const items = [...((content.homepage as Content)?.features?.items as Array<{label: string; col: string; icon?: string}>)];
+                        items[i] = { ...items[i], col: e.target.value };
+                        setDeep(['homepage', 'features', 'items'], items);
+                      }}>
+                      <option value="left">Left col</option>
+                      <option value="right">Right col</option>
+                    </select>
+                    <button className="adm-btn adm-btn-danger adm-btn-sm" onClick={() => {
+                      const items = ((content.homepage as Content)?.features?.items as Array<unknown>).filter((_, j) => j !== i);
                       setDeep(['homepage', 'features', 'items'], items);
-                    }} />
-                  <select className="adm-select" value={item.col}
-                    onChange={e => {
-                      const items = [...((content.homepage as Content)?.features?.items as Array<{label: string; col: string}>)];
-                      items[i] = { ...items[i], col: e.target.value };
-                      setDeep(['homepage', 'features', 'items'], items);
-                    }}>
-                    <option value="left">Left</option>
-                    <option value="right">Right</option>
-                  </select>
-                  <button className="adm-btn adm-btn-danger adm-btn-sm" onClick={() => {
-                    const items = ((content.homepage as Content)?.features?.items as Array<unknown>).filter((_, j) => j !== i);
-                    setDeep(['homepage', 'features', 'items'], items);
-                  }}>✕</button>
+                    }}>✕</button>
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    {item.icon && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={item.icon} alt="" width={24} height={24} style={{ objectFit: 'contain', flexShrink: 0 }} />
+                    )}
+                    <input className="adm-input" value={item.icon ?? ''} placeholder="Icon URL (optional) e.g. /images/icons/villas-icon/Bed.png"
+                      onChange={e => {
+                        const items = [...((content.homepage as Content)?.features?.items as Array<{label: string; col: string; icon?: string}>)];
+                        items[i] = { ...items[i], icon: e.target.value };
+                        setDeep(['homepage', 'features', 'items'], items);
+                      }} />
+                  </div>
                 </div>
               ))}
               <button className="adm-btn adm-btn-ghost adm-btn-sm" style={{ marginTop: '4px' }} onClick={() => {
-                const items = [...((content.homepage as Content)?.features?.items as Array<unknown>), { label: 'New Feature', col: 'left' }];
+                const items = [...((content.homepage as Content)?.features?.items as Array<unknown>), { label: 'New Feature', col: 'left', icon: '' }];
                 setDeep(['homepage', 'features', 'items'], items);
               }}>+ Add Feature</button>
             </div>

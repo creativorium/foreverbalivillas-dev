@@ -20,7 +20,7 @@ const DEFAULT_FEATURES = [
   { label: 'Private Infinity Pool', col: 'right' },
 ];
 
-interface FeatureItem { label: string; col: string }
+interface FeatureItem { label: string; col: string; icon?: string }
 
 interface Props {
   features?: FeatureItem[];
@@ -74,12 +74,18 @@ export default function HomeFeatures({ features, spaMenuUrl, foodMenuUrl }: Prop
             {leftFeatures.map((feat, i) => (
               <div key={feat.label} className={styles.featureRow}>
                 <div className={styles.featureCell}>
-                  <span className={styles.dot} />
+                  {feat.icon
+                    // eslint-disable-next-line @next/next/no-img-element
+                    ? <img src={feat.icon} alt="" width={20} height={20} style={{ objectFit: 'contain', flexShrink: 0 }} />
+                    : <span className={styles.dot} />}
                   <span>{feat.label}</span>
                 </div>
                 {rightFeatures[i] && (
                   <div className={styles.featureCell}>
-                    <span className={styles.dot} />
+                    {rightFeatures[i].icon
+                      // eslint-disable-next-line @next/next/no-img-element
+                      ? <img src={rightFeatures[i].icon} alt="" width={20} height={20} style={{ objectFit: 'contain', flexShrink: 0 }} />
+                      : <span className={styles.dot} />}
                     <span>{rightFeatures[i].label}</span>
                   </div>
                 )}
