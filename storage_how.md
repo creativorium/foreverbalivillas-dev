@@ -208,10 +208,16 @@ if ($method === 'GET') {
     exit;
 }
 
-// ── DELETE: remove a file ─────────────────────────────────────────────────────
-if ($method === 'DELETE') {
-    $body     = json_decode(file_get_contents('php://input'), true);
-    $filename = basename($body['filename'] ?? '');
+// ── POST: delete (action=delete) OR upload ────────────────────────────────────
+if ($method !== 'POST') {
+    http_response_code(405); echo json_encode(['error' => 'Method not allowed']); exit;
+}
+
+// Check if this is a delete action (JSON body with _action=delete)
+$raw_body  = file_get_contents('php://input');
+$json_body = json_decode($raw_body, true);
+if (is_array($json_body) && ($json_body['_action'] ?? '') === 'delete') {
+    $filename = basename($json_body['filename'] ?? '');
     if (!$filename) { http_response_code(400); echo json_encode(['error' => 'No filename']); exit; }
     $path = $upload_dir . $filename;
     if (!file_exists($path)) { http_response_code(404); echo json_encode(['error' => 'Not found']); exit; }
@@ -221,8 +227,8 @@ if ($method === 'DELETE') {
     exit;
 }
 
-// ── POST: upload a file ───────────────────────────────────────────────────────
-if ($method !== 'POST' || empty($_FILES['file'])) {
+// Otherwise it's a file upload
+if (empty($_FILES['file'])) {
     http_response_code(400); echo json_encode(['error' => 'No file']); exit;
 }
 

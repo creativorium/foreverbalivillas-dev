@@ -110,12 +110,16 @@ export async function DELETE(req: NextRequest) {
     if (!filename) return NextResponse.json({ error: 'No filename' }, { status: 400 });
 
     if (CUSTOM_URL) {
+      // Use POST with _action=delete — shared hosts block HTTP DELETE method
       const res = await fetch(`${CUSTOM_URL}/media.php`, {
-        method: 'DELETE',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-Api-Key': CUSTOM_KEY },
-        body: JSON.stringify({ filename }),
+        body: JSON.stringify({ _action: 'delete', filename }),
       });
-      if (!res.ok) return NextResponse.json({ error: 'Delete failed on hosting' }, { status: 502 });
+      if (!res.ok) {
+        const err = await res.text().catch(() => res.statusText);
+        return NextResponse.json({ error: `Delete failed: ${err}` }, { status: 502 });
+      }
       return NextResponse.json({ ok: true });
     }
 
@@ -129,6 +133,3 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
-
-// Unused export kept for compatibility
-export { STORAGE_MODE };
