@@ -13,7 +13,8 @@ export default function MediaLibraryPage() {
   const [copied,    setCopied]    = useState<string | null>(null);
   const [error,     setError]     = useState('');
   const [mode,      setMode]      = useState<'custom' | 'kv' | 'file' | null>(null);
-  const [filter,    setFilter]    = useState<'all' | 'images' | 'pdfs'>('all');
+  const [filter,       setFilter]       = useState<'all' | 'images' | 'pdfs'>('all');
+  const [confirmingUrl, setConfirmingUrl] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const load = useCallback(() => {
@@ -43,7 +44,12 @@ export default function MediaLibraryPage() {
   };
 
   const deleteFile = async (file: FileItem) => {
-    if (!confirm(`Delete "${file.filename}"? This cannot be undone.`)) return;
+    if (confirmingUrl !== file.url) {
+      setConfirmingUrl(file.url);
+      setTimeout(() => setConfirmingUrl(null), 3000); // auto-cancel after 3s
+      return;
+    }
+    setConfirmingUrl(null);
     const res = await fetch('/api/admin/upload', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
@@ -177,20 +183,27 @@ export default function MediaLibraryPage() {
         {displayed.map(file => (
           <div key={file.url} style={{ position: 'relative', borderRadius: '10px', border: '1px solid var(--adm-border)', background: '#f9fafb' }}>
 
-            {/* Delete button — top-right corner, outside image overflow context */}
+            {/* Delete button — click once to arm, click again to confirm */}
             <button
               onClick={() => deleteFile(file)}
-              title="Delete file"
+              title={confirmingUrl === file.url ? 'Click again to confirm delete' : 'Delete file'}
               style={{
                 position: 'absolute', top: '-10px', right: '-10px', zIndex: 60,
-                width: '28px', height: '28px', borderRadius: '50%',
-                background: 'rgba(220,38,38,0.9)', color: '#fff',
-                border: '2px solid #fff', cursor: 'pointer', fontSize: '14px',
+                width: confirmingUrl === file.url ? 'auto' : '28px',
+                height: '28px', borderRadius: '14px',
+                padding: confirmingUrl === file.url ? '0 10px' : '0',
+                background: confirmingUrl === file.url ? '#dc2626' : 'rgba(220,38,38,0.85)',
+                color: '#fff',
+                border: '2px solid #fff', cursor: 'pointer',
+                fontSize: confirmingUrl === file.url ? '0.65rem' : '14px',
+                fontWeight: 700, whiteSpace: 'nowrap',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                lineHeight: 1, fontWeight: 700,
                 boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
+                transition: 'all 0.15s',
               }}
-            >×</button>
+            >
+              {confirmingUrl === file.url ? 'Confirm?' : '×'}
+            </button>
 
             {/* Preview — click to copy, overflow:hidden only on image container */}
             <div
