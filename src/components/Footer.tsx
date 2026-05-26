@@ -1,6 +1,10 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from './Footer.module.css';
+
+const scrollTop = () => window.scrollTo({ top: 0, behavior: 'instant' });
 
 const WA_NUMBER = '6281996488881';
 const PHONE_DISPLAY = '+62 819 9648 8881';
@@ -38,10 +42,10 @@ export default function Footer() {
         {/* Navigation */}
         <div className={styles.col}>
           <nav aria-label="Footer navigation">
-            <Link href="/forever-santai" className={styles.navLink}>FOREVER SANTAI</Link>
-            <Link href="/forever-pandawa" className={styles.navLink}>FOREVER PANDAWA</Link>
-            <Link href="/journal" className={styles.navLink}>THE JOURNAL</Link>
-            <Link href="/faq" className={styles.navLink}>FAQ&apos;s</Link>
+            <Link href="/forever-santai" className={styles.navLink} onClick={scrollTop}>FOREVER SANTAI</Link>
+            <Link href="/forever-pandawa" className={styles.navLink} onClick={scrollTop}>FOREVER PANDAWA</Link>
+            <Link href="/journal" className={styles.navLink} onClick={scrollTop}>THE JOURNAL</Link>
+            <Link href="/faq" className={styles.navLink} onClick={scrollTop}>FAQ&apos;s</Link>
           </nav>
         </div>
 
@@ -124,8 +128,8 @@ export default function Footer() {
       <div className={styles.bottom}>
         <span>{new Date().getFullYear()} © Forever Bali Villas All Rights Reserved.</span>
         <div className={styles.bottomLinks}>
-          <Link href="/cancellation-policy">Terms & Conditions</Link>
-          <Link href="/privacy-policy">Policy</Link>
+          <Link href="/cancellation-policy" onClick={scrollTop}>Terms & Conditions</Link>
+          <Link href="/privacy-policy" onClick={scrollTop}>Policy</Link>
         </div>
       </div>
     </footer>

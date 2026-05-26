@@ -4,6 +4,65 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import styles from './VillaGalleryTestimonies.module.css';
 
+function GalleryLightbox({ images, startIdx, onClose }: { images: string[]; startIdx: number; onClose: () => void }) {
+  const [idx, setIdx] = useState(startIdx);
+  const touchStartX = useRef(0);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowLeft') setIdx(i => Math.max(0, i - 1));
+      if (e.key === 'ArrowRight') setIdx(i => Math.min(images.length - 1, i + 1));
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [images.length, onClose]);
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+
+  return (
+    <div className={styles.lightbox} onClick={onClose} role="dialog" aria-modal="true">
+      <button className={styles.lightboxClose} onClick={onClose} aria-label="Close">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+
+      <div
+        className={styles.lightboxContent}
+        onClick={e => e.stopPropagation()}
+        onTouchStart={e => { touchStartX.current = e.touches[0].clientX; }}
+        onTouchEnd={e => {
+          const dx = e.changedTouches[0].clientX - touchStartX.current;
+          if (Math.abs(dx) > 50) {
+            if (dx > 0) setIdx(i => Math.max(0, i - 1));
+            else setIdx(i => Math.min(images.length - 1, i + 1));
+          }
+        }}
+      >
+        <Image key={idx} src={images[idx]} alt={`Gallery image ${idx + 1}`} fill className={styles.lightboxImg} sizes="100vw" />
+      </div>
+
+      {idx > 0 && (
+        <button className={`${styles.lightboxNav} ${styles.lightboxNavPrev}`} onClick={e => { e.stopPropagation(); setIdx(i => i - 1); }} aria-label="Previous">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
+        </button>
+      )}
+      {idx < images.length - 1 && (
+        <button className={`${styles.lightboxNav} ${styles.lightboxNavNext}`} onClick={e => { e.stopPropagation(); setIdx(i => i + 1); }} aria-label="Next">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
+        </button>
+      )}
+      {images.length > 1 && (
+        <div className={styles.lightboxCounter} onClick={e => e.stopPropagation()}>{idx + 1} / {images.length}</div>
+      )}
+    </div>
+  );
+}
+
 export interface TestimonyData {
   id: number | string;
   rating: number;
@@ -114,8 +173,9 @@ export default function VillaGalleryTestimonies({ images = [], testimonies = DEF
 
   // rawIdx = index (in extended array) of the leftmost fully-visible card
   const [rawIdx, setRawIdx] = useState(n);
-  const [lightboxImg, setLightboxImg] = useState<string | null>(null);
+  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const lbTouchStartX = useRef(0);
 
   // Mouse-only drag state for testimonies
   const testDragging = useRef(false);
@@ -267,7 +327,7 @@ export default function VillaGalleryTestimonies({ images = [], testimonies = DEF
             style={{ cursor: 'grab', userSelect: 'none' }}
           >
             {extendedImages.map((src, idx) => (
-              <div key={idx} className={styles.slide} onClick={() => setLightboxImg(src)}>
+              <div key={idx} className={styles.slide} onClick={() => setLightboxIdx(idx % images.length)}>
                 <Image
                   src={src}
                   alt={`Gallery Image ${(idx % images.length) + 1}`}
@@ -352,18 +412,12 @@ export default function VillaGalleryTestimonies({ images = [], testimonies = DEF
       </div>
 
       {/* ── LIGHTBOX ── */}
-      {lightboxImg && (
-        <div className={styles.lightbox} onClick={() => setLightboxImg(null)}>
-          <button className={styles.lightboxClose} onClick={() => setLightboxImg(null)} aria-label="Close image">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-          <div className={styles.lightboxContent}>
-            <Image src={lightboxImg} alt="Enlarged gallery image" fill className={styles.lightboxImg} sizes="100vw" />
-          </div>
-        </div>
+      {lightboxIdx !== null && (
+        <GalleryLightbox
+          images={images}
+          startIdx={lightboxIdx}
+          onClose={() => setLightboxIdx(null)}
+        />
       )}
     </section>
   );

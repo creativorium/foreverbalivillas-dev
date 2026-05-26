@@ -159,22 +159,21 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
     prevX.current = e.clientX;
   }, []);
 
-  const onPointerUp = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+  const onPointerUp = useCallback(() => {
     if (!dragging.current) return;
     dragging.current = false;
     setCursorPressed(false);
-    const wasTap = dragDist.current < 8;
     snap(vel.current);
-    if (wasTap) {
-      // Use the image index at the time of tap (from current scroll position)
-      const t = trackRef.current;
-      const sw = wrapRef.current?.clientWidth ?? window.innerWidth;
-      const idx = t ? Math.round(t.scrollLeft / sw) : activeImageIdx;
-      setLightboxIdx(Math.max(0, Math.min(idx, images.length - 1)));
+  }, [snap]);
+
+  // onClick fires reliably on both desktop (mouse) and mobile (tap).
+  // dragDist is reset on every pointerdown, so < 8 means it was a tap not a drag.
+  const handleGalleryClick = useCallback(() => {
+    if (dragDist.current < 8) {
+      setLightboxIdx(activeImageIdx);
       setLightboxOpen(true);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [snap, activeImageIdx, images.length]);
+  }, [activeImageIdx]);
 
   // Lightbox keyboard navigation
   useEffect(() => {
@@ -243,6 +242,7 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
+        onClick={handleGalleryClick}
       >
         <div ref={trackRef} className={styles.track}>
           {images.map((src, idx) => (
@@ -282,7 +282,7 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
         {activeImageIdx > 0 && images.length > 1 && (
           <button
             className={`${styles.arrow} ${styles.arrowLeft}`}
-            onClick={() => goToImage(activeImageIdx - 1)}
+            onClick={e => { e.stopPropagation(); goToImage(activeImageIdx - 1); }}
             onPointerDown={e => e.stopPropagation()}
             aria-label="Previous"
           >
@@ -295,7 +295,7 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
         {activeImageIdx < images.length - 1 && images.length > 1 && (
           <button
             className={`${styles.arrow} ${styles.arrowRight}`}
-            onClick={() => goToImage(activeImageIdx + 1)}
+            onClick={e => { e.stopPropagation(); goToImage(activeImageIdx + 1); }}
             onPointerDown={e => e.stopPropagation()}
             aria-label="Next"
           >
@@ -310,7 +310,7 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
       {mounted && createPortal(
         <div
           ref={cursorRef}
-          className={`${styles.dragCursor} ${cursorVisible ? styles.cursorVisible : ''} ${cursorPressed ? styles.cursorPress : ''}`}
+          className={`${styles.dragCursor} ${cursorVisible && !lightboxOpen ? styles.cursorVisible : ''} ${cursorPressed ? styles.cursorPress : ''}`}
           aria-hidden="true"
         >
           <span>DRAG</span>
