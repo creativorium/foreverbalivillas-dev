@@ -15,7 +15,7 @@
 .banner {
   position: fixed;
   bottom: 28px;
-  right: 28px;
+  left: 28px;
   z-index: 9000;
   width: clamp(280px, 90vw, 360px);
   background: rgba(44, 95, 90, 0.97);
@@ -143,7 +143,7 @@
 .miniBtn {
   position: fixed;
   bottom: 28px;
-  right: 28px;
+  left: 28px;
   z-index: 9000;
   width: 40px;
   height: 40px;
@@ -177,12 +177,12 @@
 @media (max-width: 480px) {
   .banner {
     bottom: 16px;
-    right: 16px;
     left: 16px;
+    right: 16px;
     width: auto;
   }
   .miniBtn {
     bottom: 16px;
-    right: 16px;
+    left: 16px;
   }
 }
