@@ -332,17 +332,32 @@
   .slide {
     flex: 0 0 100%;
   }
+
+  /* On mobile: drop the fixed-height "grow upward" effect — show full text instead */
+  .testimoniesTrackWrapper {
+    height: auto;
+    overflow: visible;
+  }
+  .testimoniesTrack {
+    align-items: stretch;
+    padding: 16px 20px 24px;
+    height: auto;
+  }
   .testimonyCard {
     flex: 0 0 85%;
-    height: 300px;
+    height: auto;
+    min-height: 220px;
   }
   .testimonyCardActive {
-    height: 344px;
-    padding-top: 80px;
+    height: auto;
+    padding-top: 36px; /* reset — no grow effect on mobile */
   }
-  .testimoniesTrackWrapper {
-    height: 420px;
+  .testimonyText {
+    display: block;       /* override -webkit-box */
+    -webkit-line-clamp: unset;
+    overflow: visible;
   }
+
   .testimoniesHeader {
     flex-direction: column;
     gap: 16px;
