@@ -33,20 +33,24 @@ export default function CustomCursor() {
       raf = requestAnimationFrame(tick);
     };
 
-    const onEnterLink = () => ring.classList.add(styles.expand);
-    const onLeaveLink = () => ring.classList.remove(styles.expand);
+    // Event delegation — catches all a/button including ones added dynamically
+    const onOver = (e: MouseEvent) => {
+      if ((e.target as Element).closest('a, button')) ring.classList.add(styles.expand);
+    };
+    const onOut = (e: MouseEvent) => {
+      if (!(e.relatedTarget as Element | null)?.closest('a, button')) ring.classList.remove(styles.expand);
+    };
 
     window.addEventListener('mousemove', onMove);
     raf = requestAnimationFrame(tick);
-
-    document.querySelectorAll('a, button').forEach(el => {
-      el.addEventListener('mouseenter', onEnterLink);
-      el.addEventListener('mouseleave', onLeaveLink);
-    });
+    document.addEventListener('mouseover', onOver);
+    document.addEventListener('mouseout', onOut);
 
     return () => {
       window.removeEventListener('mousemove', onMove);
       cancelAnimationFrame(raf);
+      document.removeEventListener('mouseover', onOver);
+      document.removeEventListener('mouseout', onOut);
       document.body.classList.remove('has-custom-cursor');
     };
   }, []);

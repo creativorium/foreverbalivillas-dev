@@ -7,8 +7,6 @@ import styles from './CookieConsent.module.css';
 const STORAGE_KEY = 'fbv_cookie_consent';
 type Phase = 'idle' | 'banner' | 'closing' | 'mini';
 
-const suppressCursor  = () => document.body.classList.add('cursor-suppressed');
-const restoreCursor   = () => document.body.classList.remove('cursor-suppressed');
 
 export default function CookieConsent() {
   const [phase, setPhase] = useState<Phase>('idle');
@@ -51,8 +49,6 @@ export default function CookieConsent() {
       className={`${styles.banner} ${phase === 'closing' ? styles.bannerClosing : ''}`}
       role="dialog"
       aria-label="Cookie consent"
-      onMouseEnter={suppressCursor}
-      onMouseLeave={restoreCursor}
     >
       <div className={styles.dot} aria-hidden="true" />
       <div className={styles.text}>

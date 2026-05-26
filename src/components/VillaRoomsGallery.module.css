@@ -322,10 +322,10 @@
   }
 }
 
-/* ── Restore cursor inside lightbox (overrides site-wide cursor:none) ── */
+/* ── Restore cursor inside lightbox — needs !important to beat cursor:none !important ── */
 :global(body.has-custom-cursor) .lightbox,
 :global(body.has-custom-cursor) .lightbox * {
-  cursor: auto;
+  cursor: auto !important;
 }
 :global(body.has-custom-cursor) .lightboxClose,
 :global(body.has-custom-cursor) .lightboxArrow {

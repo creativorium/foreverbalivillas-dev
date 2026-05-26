@@ -1,7 +1,7 @@
 /* ── Restore cursor inside cookie UI (overrides site-wide cursor:none) ── */
 :global(body.has-custom-cursor) .banner,
 :global(body.has-custom-cursor) .banner * {
-  cursor: auto;
+  cursor: auto !important;
 }
 :global(body.has-custom-cursor) .banner a,
 :global(body.has-custom-cursor) .banner button {

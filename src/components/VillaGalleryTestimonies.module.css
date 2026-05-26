@@ -257,7 +257,7 @@
 /* ── Restore cursor inside lightbox (overrides site-wide cursor:none) ── */
 :global(body.has-custom-cursor) .lightbox,
 :global(body.has-custom-cursor) .lightbox * {
-  cursor: auto;
+  cursor: auto !important;
 }
 :global(body.has-custom-cursor) .lightboxClose,
 :global(body.has-custom-cursor) .lightboxNav {

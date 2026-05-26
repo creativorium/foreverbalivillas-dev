@@ -126,6 +126,7 @@ function useDrag(trackRef: React.RefObject<HTMLDivElement>) {
   const prevX = useRef(0);
   const vel = useRef(0);
   const raf = useRef(0);
+  const dragDist = useRef(0);
 
   const fling = useCallback(() => {
     const el = trackRef.current;
@@ -146,7 +147,8 @@ function useDrag(trackRef: React.RefObject<HTMLDivElement>) {
     startScroll.current = el.scrollLeft;
     prevX.current = e.clientX;
     vel.current = 0;
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    dragDist.current = 0;
+    // No setPointerCapture — keeping it allows click events to fire on child slides
   }, [trackRef]);
 
   const onPointerMove = useCallback((e: React.PointerEvent) => {
@@ -154,6 +156,7 @@ function useDrag(trackRef: React.RefObject<HTMLDivElement>) {
     const dx = e.clientX - startX.current;
     trackRef.current.scrollLeft = startScroll.current - dx;
     vel.current = prevX.current - e.clientX;
+    dragDist.current = Math.abs(dx);
     prevX.current = e.clientX;
   }, [trackRef]);
 
@@ -163,7 +166,7 @@ function useDrag(trackRef: React.RefObject<HTMLDivElement>) {
     raf.current = requestAnimationFrame(fling);
   }, [fling]);
 
-  return { onPointerDown, onPointerMove, onPointerUp };
+  return { onPointerDown, onPointerMove, onPointerUp, dragDist };
 }
 
 export default function VillaGalleryTestimonies({ images = [], testimonies = DEFAULT_TESTIMONIES }: Props) {
@@ -194,7 +197,7 @@ export default function VillaGalleryTestimonies({ images = [], testimonies = DEF
   }, []);
 
   // Gallery drag
-  const galleryDrag = useDrag(trackRef);
+  const { dragDist: galleryDragDist, ...galleryDrag } = useDrag(trackRef);
 
   // Gallery: init to middle copy + infinite loop on scroll
   useEffect(() => {
@@ -331,7 +334,7 @@ export default function VillaGalleryTestimonies({ images = [], testimonies = DEF
             style={{ cursor: 'grab', userSelect: 'none' }}
           >
             {extendedImages.map((src, idx) => (
-              <div key={idx} className={styles.slide} onClick={() => setLightboxIdx(idx % images.length)}>
+              <div key={idx} className={styles.slide} onClick={() => { if (galleryDragDist.current < 8) setLightboxIdx(idx % images.length); }}>
                 <Image
                   src={src}
                   alt={`Gallery Image ${(idx % images.length) + 1}`}
