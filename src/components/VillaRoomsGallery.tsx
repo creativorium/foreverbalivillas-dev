@@ -8,7 +8,7 @@ import type { RoomTab } from './VillaPage';
 
 export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
   const wrapRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null!);
   const cursorRef = useRef<HTMLDivElement>(null);
 
   const [activeRoomIdx, setActiveRoomIdx] = useState(0);
@@ -16,16 +16,22 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
   const [cursorVisible, setCursorVisible] = useState(false);
   const [cursorPressed, setCursorPressed] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIdx, setLightboxIdx] = useState(0);
 
   useEffect(() => { setMounted(true); }, []);
 
-  // Drag state — single source of truth, no double-handling
+  // Drag state
   const dragging = useRef(false);
   const startX = useRef(0);
   const startScroll = useRef(0);
   const prevX = useRef(0);
   const vel = useRef(0);
   const animRaf = useRef(0);
+  const dragDist = useRef(0);
+
+  // Lightbox swipe state
+  const lbTouchStartX = useRef(0);
 
   const currentRoom = rooms[activeRoomIdx];
   const images = currentRoom?.images || [];
@@ -97,6 +103,7 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
   const handleRoomChange = (idx: number) => {
     setActiveRoomIdx(idx);
     setActiveImageIdx(0);
+    setLightboxOpen(false);
     if (trackRef.current) {
       cancelAnimationFrame(animRaf.current);
       trackRef.current.scrollLeft = 0;
@@ -114,8 +121,7 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
     return () => window.removeEventListener('resize', handleResize);
   }, [activeImageIdx]);
 
-  // Touch: ONLY prevent vertical page scroll during horizontal swipe.
-  // Pointer events (below) handle the actual scrollLeft update — no double handling.
+  // Touch: prevent vertical scroll during horizontal swipe
   useEffect(() => {
     const el = wrapRef.current;
     if (!el) return;
@@ -126,7 +132,7 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
     return () => el.removeEventListener('touchmove', onTouchMove);
   }, []);
 
-  // Pointer events handle BOTH mouse and touch (touch-action: none ensures this)
+  // Pointer events for gallery drag
   const onPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     const t = trackRef.current;
     if (!t) return;
@@ -136,6 +142,7 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
     startScroll.current = t.scrollLeft;
     prevX.current = e.clientX;
     vel.current = 0;
+    dragDist.current = 0;
     e.currentTarget.setPointerCapture(e.pointerId);
     setCursorPressed(true);
   }, []);
@@ -148,15 +155,48 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
     const dx = e.clientX - startX.current;
     trackRef.current.scrollLeft = startScroll.current - dx;
     vel.current = prevX.current - e.clientX;
+    dragDist.current = Math.abs(dx);
     prevX.current = e.clientX;
   }, []);
 
-  const onPointerUp = useCallback(() => {
+  const onPointerUp = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (!dragging.current) return;
     dragging.current = false;
     setCursorPressed(false);
+    const wasTap = dragDist.current < 8;
     snap(vel.current);
-  }, [snap]);
+    if (wasTap) {
+      // Use the image index at the time of tap (from current scroll position)
+      const t = trackRef.current;
+      const sw = wrapRef.current?.clientWidth ?? window.innerWidth;
+      const idx = t ? Math.round(t.scrollLeft / sw) : activeImageIdx;
+      setLightboxIdx(Math.max(0, Math.min(idx, images.length - 1)));
+      setLightboxOpen(true);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [snap, activeImageIdx, images.length]);
+
+  // Lightbox keyboard navigation
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLightboxOpen(false);
+      if (e.key === 'ArrowLeft') setLightboxIdx(i => Math.max(0, i - 1));
+      if (e.key === 'ArrowRight') setLightboxIdx(i => Math.min(images.length - 1, i + 1));
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [lightboxOpen, images.length]);
+
+  // Lock body scroll when lightbox open
+  useEffect(() => {
+    if (lightboxOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [lightboxOpen]);
 
   if (!rooms || rooms.length === 0 || images.length === 0) return null;
 
@@ -177,7 +217,6 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
             </button>
           ))}
         </div>
-        {/* Mobile swipe hint — horizontal swipe indicator */}
         <div className={styles.swipeHint} aria-hidden="true">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.4">
             <polyline points="15 18 9 12 15 6" />
@@ -267,8 +306,7 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
         )}
       </div>
 
-      {/* Drag cursor rendered in document.body via portal so position:fixed
-          is always relative to the viewport, never a GSAP-transformed ancestor */}
+      {/* Drag cursor portal */}
       {mounted && createPortal(
         <div
           ref={cursorRef}
@@ -276,6 +314,81 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
           aria-hidden="true"
         >
           <span>DRAG</span>
+        </div>,
+        document.body
+      )}
+
+      {/* Lightbox portal */}
+      {mounted && lightboxOpen && createPortal(
+        <div
+          className={styles.lightbox}
+          onClick={() => setLightboxOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Image enlarged view"
+        >
+          {/* Close */}
+          <button
+            className={styles.lightboxClose}
+            onClick={() => setLightboxOpen(false)}
+            aria-label="Close"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+
+          {/* Image — stop click propagation so clicking image doesn't close */}
+          <img
+            key={lightboxIdx}
+            src={images[lightboxIdx]}
+            alt={`${currentRoom.label} - Image ${lightboxIdx + 1}`}
+            className={styles.lightboxImg}
+            draggable={false}
+            onClick={e => e.stopPropagation()}
+            onTouchStart={e => { lbTouchStartX.current = e.touches[0].clientX; }}
+            onTouchEnd={e => {
+              const dx = e.changedTouches[0].clientX - lbTouchStartX.current;
+              if (Math.abs(dx) > 50) {
+                if (dx > 0) setLightboxIdx(i => Math.max(0, i - 1));
+                else setLightboxIdx(i => Math.min(images.length - 1, i + 1));
+              }
+            }}
+          />
+
+          {/* Prev arrow */}
+          {lightboxIdx > 0 && (
+            <button
+              className={`${styles.lightboxArrow} ${styles.lightboxPrev}`}
+              onClick={e => { e.stopPropagation(); setLightboxIdx(i => i - 1); }}
+              aria-label="Previous image"
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+          )}
+
+          {/* Next arrow */}
+          {lightboxIdx < images.length - 1 && (
+            <button
+              className={`${styles.lightboxArrow} ${styles.lightboxNext}`}
+              onClick={e => { e.stopPropagation(); setLightboxIdx(i => i + 1); }}
+              aria-label="Next image"
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </button>
+          )}
+
+          {/* Counter */}
+          {images.length > 1 && (
+            <div className={styles.lightboxCounter} onClick={e => e.stopPropagation()}>
+              {lightboxIdx + 1} / {images.length}
+            </div>
+          )}
         </div>,
         document.body
       )}
