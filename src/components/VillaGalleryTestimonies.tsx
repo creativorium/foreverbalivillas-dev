@@ -20,7 +20,11 @@ function GalleryLightbox({ images, startIdx, onClose }: { images: string[]; star
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = ''; };
+    document.body.classList.add('cursor-suppressed');
+    return () => {
+      document.body.style.overflow = '';
+      document.body.classList.remove('cursor-suppressed');
+    };
   }, []);
 
   return (

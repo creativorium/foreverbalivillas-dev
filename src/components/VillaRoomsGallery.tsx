@@ -187,14 +187,19 @@ export default function VillaRoomsGallery({ rooms }: { rooms: RoomTab[] }) {
     return () => window.removeEventListener('keydown', handler);
   }, [lightboxOpen, images.length]);
 
-  // Lock body scroll when lightbox open
+  // Lock body scroll + suppress custom cursor when lightbox open
   useEffect(() => {
     if (lightboxOpen) {
       document.body.style.overflow = 'hidden';
+      document.body.classList.add('cursor-suppressed');
     } else {
       document.body.style.overflow = '';
+      document.body.classList.remove('cursor-suppressed');
     }
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = '';
+      document.body.classList.remove('cursor-suppressed');
+    };
   }, [lightboxOpen]);
 
   if (!rooms || rooms.length === 0 || images.length === 0) return null;

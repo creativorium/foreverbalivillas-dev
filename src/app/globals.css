@@ -76,6 +76,13 @@ body.has-custom-cursor * {
   cursor: none !important;
 }
 
+/* Suppress custom cursor elements when over overlays (lightbox, cookie banner) */
+body.cursor-suppressed #cursor-dot,
+body.cursor-suppressed #cursor-ring {
+  opacity: 0 !important;
+  transition: opacity 0.12s;
+}
+
 img, video {
   display: block;
   max-width: 100%;
