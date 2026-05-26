@@ -333,27 +333,25 @@
     flex: 0 0 100%;
   }
 
-  /* On mobile: drop the fixed-height "grow upward" effect — show full text instead */
+  /* On mobile: all cards same fixed height, no grow effect */
   .testimoniesTrackWrapper {
-    height: auto;
-    overflow: visible;
+    height: 430px;
   }
   .testimoniesTrack {
-    align-items: stretch;
+    align-items: center;
     padding: 16px 20px 24px;
-    height: auto;
+    height: 100%;
   }
   .testimonyCard {
     flex: 0 0 85%;
-    height: auto;
-    min-height: 220px;
+    height: 370px;
   }
   .testimonyCardActive {
-    height: auto;
+    height: 370px;
     padding-top: 36px; /* reset — no grow effect on mobile */
   }
   .testimonyText {
-    display: block;       /* override -webkit-box */
+    display: block;
     -webkit-line-clamp: unset;
     overflow: visible;
   }
