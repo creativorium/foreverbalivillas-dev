@@ -5,34 +5,50 @@ import Link from 'next/link';
 import styles from './CookieConsent.module.css';
 
 const STORAGE_KEY = 'fbv_cookie_consent';
+type Phase = 'idle' | 'banner' | 'closing' | 'mini';
 
 export default function CookieConsent() {
-  const [visible, setVisible] = useState(false);
+  const [phase, setPhase] = useState<Phase>('idle');
 
   useEffect(() => {
-    // Only show if no previous choice
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) {
-      // Small delay so it slides in after page load
-      const t = setTimeout(() => setVisible(true), 1200);
+    if (stored) {
+      setPhase('mini');
+    } else {
+      const t = setTimeout(() => setPhase('banner'), 1200);
       return () => clearTimeout(t);
     }
   }, []);
 
-  const accept = () => {
-    localStorage.setItem(STORAGE_KEY, 'accepted');
-    setVisible(false);
+  const choose = (value: 'accepted' | 'declined') => {
+    localStorage.setItem(STORAGE_KEY, value);
+    setPhase('closing');
+    setTimeout(() => setPhase('mini'), 420);
   };
 
-  const decline = () => {
-    localStorage.setItem(STORAGE_KEY, 'declined');
-    setVisible(false);
-  };
+  if (phase === 'idle') return null;
 
-  if (!visible) return null;
+  if (phase === 'mini') {
+    return (
+      <button
+        className={styles.miniBtn}
+        onClick={() => setPhase('banner')}
+        aria-label="Cookie preferences"
+        title="Cookie preferences"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        </svg>
+      </button>
+    );
+  }
 
   return (
-    <div className={styles.banner} role="dialog" aria-label="Cookie consent">
+    <div
+      className={`${styles.banner} ${phase === 'closing' ? styles.bannerClosing : ''}`}
+      role="dialog"
+      aria-label="Cookie consent"
+    >
       <div className={styles.dot} aria-hidden="true" />
       <div className={styles.text}>
         <p className={styles.title}>Cookies &amp; Privacy</p>
@@ -42,8 +58,8 @@ export default function CookieConsent() {
         </p>
       </div>
       <div className={styles.actions}>
-        <button className={styles.btnDecline} onClick={decline}>Decline</button>
-        <button className={styles.btnAccept} onClick={accept}>Accept</button>
+        <button className={styles.btnDecline} onClick={() => choose('declined')}>Decline</button>
+        <button className={styles.btnAccept} onClick={() => choose('accepted')}>Accept</button>
       </div>
     </div>
   );
