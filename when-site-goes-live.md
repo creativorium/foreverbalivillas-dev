@@ -1,4 +1,4 @@
-# When the Site Goes Live — Domain Migration Checklist
+  # When the Site Goes Live — Domain Migration Checklist
 
 This document covers how to safely move `foreverbalivillas.com` from Bluehost/WordPress to Vercel
 without losing the PHP storage backend. Read this fully before doing anything.
@@ -69,12 +69,15 @@ go back to cPanel and fix it before continuing.
 
 ## Step 4 — Update the Content Security Policy in next.config.ts
 
-Open `next.config.ts` and find the `img-src` and `media-src` lines. Add `api.foreverbalivillas.com`:
+Open `next.config.ts` and find the `img-src`, `media-src`, and `connect-src` lines. Add `api.foreverbalivillas.com` to all three:
 
 ```ts
 "img-src 'self' data: blob: https://maps.gstatic.com https://maps.googleapis.com https://*.googleapis.com https://foreverbalivillas.com https://api.foreverbalivillas.com https://*.mybluehost.me",
 "media-src 'self' https://foreverbalivillas.com https://api.foreverbalivillas.com https://*.mybluehost.me",
+"connect-src 'self' https://maps.googleapis.com https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://www.facebook.com https://foreverbalivillas.com https://api.foreverbalivillas.com https://*.mybluehost.me",
 ```
+
+*(`connect-src` is needed so browser-to-API uploads work after the subdomain switch)*
 
 Also add the old-URL redirect so existing saved image URLs still work after the domain moves.
 In `next.config.ts`, add a `redirects` section:
@@ -232,6 +235,26 @@ If the site goes wrong after DNS change:
 
 DNS rollback takes the same 15–60 minutes to propagate.
 Your data is always safe on Bluehost — nothing gets deleted in this process.
+
+---
+
+## Adding new analytics or tracking scripts (after go-live)
+
+The site has a built-in script injection system. Go to **Admin → Settings → Analytics & Tracking** and paste any `<script>` tags into the head or body fields.
+
+**Supported out of the box (CSP already configured):**
+- Google Analytics 4 / Google Tag Manager
+- Meta Pixel (Facebook)
+- LinkedIn Insight Tag
+
+**If you add a provider NOT in that list** (e.g. Hotjar, TikTok Pixel, Intercom, Clarity, etc.), their scripts will be silently blocked by the Content Security Policy. You need to add their domain to `next.config.ts`:
+
+1. Open `next.config.ts`
+2. Find the `script-src` line — add the provider's script domain (e.g. `https://static.hotjar.com`)
+3. Find the `connect-src` line — add the provider's data/beacon domain (e.g. `https://vc.hotjar.io`)
+4. Commit and push — Vercel redeploys automatically
+
+Each provider's docs will list the domains their scripts use. When in doubt, open DevTools → Console after pasting the script — CSP violations show as red errors naming the blocked domain.
 
 ---
 

@@ -200,6 +200,7 @@ export default async function ForeverPandawaPage() {
     ...(vc.description     ? { description:      vc.description     as string   } : {}),
     ...(vc.longDescription ? { longDescription:  vc.longDescription as string   } : {}),
     ...(vc.heroImage       ? { heroImage:        vc.heroImage       as string   } : {}),
+    ...(vc.heroVideo       ? { heroVideo:        vc.heroVideo       as string   } : {}),
     ...(vc.separatorImage  ? { separatorImage:   vc.separatorImage  as string   } : {}),
     ...((vc.galleryImages  as string[])?.length      ? { galleryImages: vc.galleryImages as string[]             } : {}),
     ...((vc.rooms          as VillaData['rooms'])?.length  ? { rooms:       vc.rooms       as VillaData['rooms']       } : {}),
