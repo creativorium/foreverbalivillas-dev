@@ -7,8 +7,6 @@ import Image from 'next/image';
 import NavOverlay from './NavOverlay';
 import styles from './Header.module.css';
 
-const BOOKING_URL = 'https://hotels.cloudbeds.com/en/reservation/UJe0hq/';
-
 // Pages with no dark hero at the top — header starts with dark elements immediately.
 // FAQ and journal detail pages have dark hero images, so they are NOT here;
 // they rely on the scrolled state to transition the header to dark.
@@ -20,7 +18,13 @@ const LIGHT_BG_PATHS = [
 const isLightBgPath = (path: string) =>
   LIGHT_BG_PATHS.some(p => path === p || path.startsWith(p + '/'));
 
-export default function Header() {
+interface HeaderProps {
+  contact: { email: string; phone: string; whatsapp: string };
+  social: { instagram: string; facebook: string; youtube: string };
+  booking: { url: string };
+}
+
+export default function Header({ contact, social, booking }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
@@ -84,7 +88,7 @@ export default function Header() {
           {/* Right: BOOK NOW */}
           <div className={styles.right}>
             <a
-              href={BOOKING_URL}
+              href={booking.url}
               target="_blank"
               rel="noopener noreferrer"
               className={styles.bookBtn}
@@ -95,7 +99,7 @@ export default function Header() {
         </div>
       </header>
 
-      <NavOverlay isOpen={navOpen} onClose={() => setNavOpen(false)} />
+      <NavOverlay isOpen={navOpen} onClose={() => setNavOpen(false)} contact={contact} social={social} />
     </>
   );
 }

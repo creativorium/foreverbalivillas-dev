@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import NewsletterStrip from '@/components/NewsletterStrip';
-import Footer from '@/components/Footer';
 import { getPosts } from '@/lib/admin-data';
 import JournalGrid from './JournalGrid';
 import styles from './page.module.css';
@@ -37,7 +36,6 @@ export default async function JournalPage() {
       <JournalGrid posts={published} />
 
       <NewsletterStrip />
-      <Footer />
     </>
   );
 }

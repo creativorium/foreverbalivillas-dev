@@ -2,8 +2,8 @@
 
 import styles from './WhatsAppButton.module.css';
 
-export default function WhatsAppButton() {
-  const href = 'https://wa.me/6281996488881';
+export default function WhatsAppButton({ waNumber }: { waNumber: string }) {
+  const href = `https://wa.me/${waNumber}`;
 
   return (
     <a

@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import NewsletterStrip from '@/components/NewsletterStrip';
-import Footer from '@/components/Footer';
 import { getPosts } from '@/lib/admin-data';
 import styles from './page.module.css';
 
@@ -156,7 +155,6 @@ export default async function JournalPostPage({ params }: Props) {
       )}
 
       <NewsletterStrip />
-      <Footer />
     </>
   );
 }

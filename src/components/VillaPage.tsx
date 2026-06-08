@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import Footer from '@/components/Footer';
 import VillaRoomsGallery from './VillaRoomsGallery';
 import VillaGalleryTestimonies, { TestimonyData } from './VillaGalleryTestimonies';
 import styles from './VillaPage.module.css';
@@ -123,7 +122,6 @@ export default function VillaPage({ villa }: VillaPageProps) {
       </section>
 
 
-      <Footer />
     </>
   );
 }

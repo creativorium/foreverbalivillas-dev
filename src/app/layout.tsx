@@ -64,7 +64,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const settings = await getSettings();
-  const scripts = settings.scripts;
+  const { scripts, contact, social, booking } = settings;
 
   return (
     <html lang="en">
@@ -73,11 +73,12 @@ export default async function RootLayout({
         {(scripts?.head || scripts?.body) && (
           <ScriptInjector headHtml={scripts.head} bodyHtml={scripts.body} />
         )}
-        <Header />
+        <Header contact={contact} social={social} booking={booking} />
         <main>{children}</main>
         <SiteOnlyShell>
+          <Footer contact={contact} social={social} />
           <CustomCursor />
-          <WhatsAppButton />
+          <WhatsAppButton waNumber={contact.whatsapp} />
           <ScrollReveal />
           <CookieConsent />
         </SiteOnlyShell>

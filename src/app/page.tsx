@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Footer from '@/components/Footer';
 import HomeHero from '@/components/home/HomeHero';
 import HomeAmenities from '@/components/home/HomeAmenities';
 import HomeFeatures from '@/components/home/HomeFeatures';
@@ -49,8 +48,6 @@ export default async function HomePage() {
       {/* 5. The Journal — banner + Art of Slowing Down + Blog #1/#2 */}
       <HomeJournal posts={journalPosts} />
 
-      {/* 7. Footer */}
-      <Footer />
     </>
   );
 }

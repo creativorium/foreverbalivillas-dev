@@ -1,4 +1,3 @@
-import Footer from '@/components/Footer';
 import type { Metadata } from 'next';
 import { storageGet } from '@/lib/storage';
 
@@ -67,7 +66,6 @@ export default async function TermsAndConditionsPage() {
 
         </div>
       </section>
-      <Footer />
     </>
   );
 }

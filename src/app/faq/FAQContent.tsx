@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import Footer from '@/components/Footer';
 import styles from './page.module.css';
 
 export interface FaqItem { question: string; answer: string }
@@ -97,7 +96,6 @@ export default function FAQContent({ heroTitle, heroSubtitle, ctaTitle, ctaDesc,
         </section>
       </div>
 
-      <Footer />
     </>
   );
 }

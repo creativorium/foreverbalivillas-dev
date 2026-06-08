@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Footer from '@/components/Footer';
 import { storageGet } from '@/lib/storage';
 
 export const revalidate = 60;
@@ -63,7 +62,6 @@ export default async function PrivacyPolicyPage() {
 
         </div>
       </section>
-      <Footer />
     </>
   );
 }
