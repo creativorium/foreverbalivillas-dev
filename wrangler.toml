@@ -7,4 +7,3 @@ main = ".open-next/worker.js"
 [assets]
 directory = ".open-next/assets"
 binding = "ASSETS"
-exclude = ["videos/**"]
