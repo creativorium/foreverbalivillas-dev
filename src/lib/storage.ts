@@ -31,7 +31,8 @@ async function customGet<T>(endpoint: string): Promise<T | null> {
   try {
     const res = await fetch(`${getCustomUrl()}/${endpoint}`, {
       headers: { 'X-Api-Key': getCustomKey() },
-      cache: 'no-store',
+      next: { revalidate: 30, tags: ['storage'] },
+      signal: AbortSignal.timeout(8000),
     });
     if (!res.ok) return null;
     return await res.json() as T;

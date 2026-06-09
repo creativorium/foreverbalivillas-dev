@@ -1,4 +1,4 @@
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 import { getPost, updatePost, deletePost } from '@/lib/admin-data';
 
@@ -14,6 +14,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ slug
     const { slug } = await params;
     const data = await req.json();
     const post = await updatePost(slug, data);
+    revalidateTag('storage');
     revalidatePath('/journal');
     revalidatePath(`/journal/${slug}`);
     return NextResponse.json(post);
@@ -27,6 +28,7 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ slu
   try {
     const { slug } = await params;
     await deletePost(slug);
+    revalidateTag('storage');
     revalidatePath('/journal');
     revalidatePath(`/journal/${slug}`);
     return NextResponse.json({ ok: true });
