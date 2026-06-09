@@ -2,8 +2,6 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
 
-export const runtime = 'edge';
-
 const SESSION_COOKIE = 'fbv_admin_session';
 const PUBLIC_PATHS   = ['/admin/login', '/api/admin/auth/login', '/api/admin/auth/logout'];
 
