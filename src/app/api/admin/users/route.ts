@@ -4,8 +4,15 @@ import { hashPassword, verifyToken, SESSION_COOKIE } from '@/lib/admin-auth';
 import crypto from 'crypto';
 
 export async function GET() {
-  const users = (await getUsers()).map(({ passwordHash: _h, passwordSalt: _s, ...u }) => u);
-  return NextResponse.json(users);
+  const dbUsers = (await getUsers()).map(({ passwordHash: _h, passwordSalt: _s, ...u }) => u);
+  const envAdmin = {
+    id: 'env-admin',
+    username: process.env.ADMIN_USERNAME || 'admin',
+    name: 'Administrator',
+    role: 'admin' as const,
+    createdAt: 'env variable',
+  };
+  return NextResponse.json([envAdmin, ...dbUsers]);
 }
 
 export async function POST(req: NextRequest) {

@@ -122,24 +122,18 @@ export default function UsersPage() {
               <tr><th>Name</th><th>Username</th><th>Role</th><th>Created</th><th>Actions</th></tr>
             </thead>
             <tbody>
-              {/* Env admin always shown */}
-              <tr>
-                <td style={{ fontWeight: 500 }}>Administrator</td>
-                <td style={{ fontFamily: 'monospace', fontSize: '0.78rem' }}>{process.env.NEXT_PUBLIC_ADMIN_USERNAME || 'admin'}</td>
-                <td><span className="adm-badge adm-badge-green">admin</span></td>
-                <td style={{ color: '#9ca3af' }}>env variable</td>
-                <td><span style={{ fontSize: '0.72rem', color: '#9ca3af' }}>Set in .env</span></td>
-              </tr>
               {users.map(u => (
                 <tr key={u.id}>
                   <td style={{ fontWeight: 500 }}>{u.name}</td>
                   <td style={{ fontFamily: 'monospace', fontSize: '0.78rem' }}>{u.username}</td>
                   <td><span className={`adm-badge ${u.role === 'admin' ? 'adm-badge-green' : 'adm-badge-blue'}`}>{u.role}</span></td>
-                  <td style={{ color: '#9ca3af' }}>{u.createdAt?.slice(0, 10)}</td>
+                  <td style={{ color: '#9ca3af' }}>{u.id === 'env-admin' ? 'env variable' : u.createdAt?.slice(0, 10)}</td>
                   <td>
-                    <button className="adm-btn adm-btn-danger adm-btn-sm" onClick={() => deleteUser(u.id)}>
-                      {confirmingId === u.id ? 'Confirm?' : 'Remove'}
-                    </button>
+                    {u.id === 'env-admin'
+                      ? <span style={{ fontSize: '0.72rem', color: '#9ca3af' }}>Set in .env</span>
+                      : <button className="adm-btn adm-btn-danger adm-btn-sm" onClick={() => deleteUser(u.id)}>
+                          {confirmingId === u.id ? 'Confirm?' : 'Remove'}
+                        </button>}
                   </td>
                 </tr>
               ))}
