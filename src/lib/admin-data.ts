@@ -1,4 +1,5 @@
 import { storageGet, storageSet } from './storage';
+import defaultSettings from '../data/site-settings.json';
 
 // ── Blog posts ────────────────────────────────────────────────────────────────
 
@@ -58,8 +59,17 @@ export interface SiteSettings {
   scripts?: { head?: string; body?: string };
 }
 
+const SETTINGS_DEFAULTS = defaultSettings as unknown as SiteSettings;
+
 export async function getSettings(): Promise<SiteSettings> {
-  return storageGet<SiteSettings>('fbv:site-settings', 'site-settings.json');
+  const data = await storageGet<Partial<SiteSettings>>('fbv:site-settings', 'site-settings.json');
+  return {
+    contact: { ...SETTINGS_DEFAULTS.contact, ...(data?.contact ?? {}) },
+    social:  { ...SETTINGS_DEFAULTS.social,  ...(data?.social  ?? {}) },
+    booking: { ...SETTINGS_DEFAULTS.booking, ...(data?.booking ?? {}) },
+    hero:    { ...SETTINGS_DEFAULTS.hero,    ...(data?.hero    ?? {}) },
+    scripts: { ...SETTINGS_DEFAULTS.scripts, ...(data?.scripts ?? {}) },
+  };
 }
 
 export async function updateSettings(data: Partial<SiteSettings>): Promise<SiteSettings> {
