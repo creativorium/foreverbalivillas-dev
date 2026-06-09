@@ -55,17 +55,24 @@ export default function VillaPage({ villa }: VillaPageProps) {
       <section className={styles.hero} aria-label={`${villa.name} hero`}>
         <div className={styles.heroImg}>
           {villa.heroVideo ? (
-            <video 
-              autoPlay 
-              muted 
-              loop 
-              playsInline 
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
               className={styles.heroVideo}
             >
-              <source 
-                src={villa.heroVideo} 
-                type={villa.heroVideo.endsWith('.webm') ? 'video/webm' : 'video/mp4'} 
-              />
+              {villa.heroVideo.endsWith('.webm') ? (
+                <>
+                  <source src={villa.heroVideo} type="video/webm" />
+                  <source src={villa.heroVideo.replace(/\.webm$/, '.mp4')} type="video/mp4" />
+                </>
+              ) : (
+                <>
+                  <source src={villa.heroVideo.replace(/\.mp4$/, '.webm')} type="video/webm" />
+                  <source src={villa.heroVideo} type="video/mp4" />
+                </>
+              )}
             </video>
           ) : villa.heroImage ? (
             <img src={villa.heroImage} alt={villa.name} className={styles.heroVideo} />
