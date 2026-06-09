@@ -5,9 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "build:cf": "npx @opennextjs/cloudflare build",
-    "start": "next start",
-    "preview": "npx @opennextjs/cloudflare dev"
+    "start": "next start"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
@@ -18,11 +16,9 @@
     "react-dom": "19.1.0"
   },
   "devDependencies": {
-    "@opennextjs/cloudflare": "latest",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "typescript": "^5",
-    "wrangler": "latest"
+    "typescript": "^5"
   }
 }
