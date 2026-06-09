@@ -62,7 +62,7 @@ const pandawaData: VillaData = {
   longDescription:
     'Guests can enjoy a private swimming pool, sun loungers, a fully equipped kitchen, air-conditioned bedrooms, and high-speed Wi-Fi, all supported by attentive in-villa staff for a smooth, comfortable stay.',
   heroImage: '/images/villas/forever-pandawa/hero/hero.jpg',
-  heroVideo: 'https://api.foreverbalivillas.com/images/forever-pandawa-video.mp4',
+  heroVideo: 'https://api.foreverbalivillas.com/images/forever-pandawa-video.webm',
   amenities: [
     { label: 'À la Carte', icon: '/images/icons/villas-icon/Breakfast.png' },
     { label: 'Bathroom', icon: '/images/icons/villas-icon/Bathtub.png' },

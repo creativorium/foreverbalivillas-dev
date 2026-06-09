@@ -62,7 +62,7 @@ const santaiData: VillaData = {
   longDescription:
     'Amenities include a fully equipped kitchen, indoor dining area, gym infinity pool with sun deck, private spa room, movie room, ping-pong table, and high-speed Wi-Fi throughout. The villa is fully staffed and includes a private chef for seamless in-villa dining.',
   heroImage: '/images/villas/forever-santai/hero/hero.jpg',
-  heroVideo: 'https://api.foreverbalivillas.com/images/forever-santai-video.mp4',
+  heroVideo: 'https://api.foreverbalivillas.com/images/forever-santai-video.webm',
   amenities: [
     { label: 'À la Carte', icon: '/images/icons/villas-icon/Breakfast.png' },
     { label: 'Spa', icon: '/images/icons/villas-icon/Alarm.png' }, // or something else, but we don't have Spa icon. I will use Alarm for now or omit. Wait, we have AC, Alarm, Bathtub, Bed, Breakfast, Cook, Food, Grill, Pool, Sofa.
