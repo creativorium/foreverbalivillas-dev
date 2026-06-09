@@ -63,20 +63,14 @@ export async function uploadImage(file: File): Promise<string> {
   return url;
 }
 
-// ── Vercel KV ─────────────────────────────────────────────────────────────────
+// ── Vercel KV (stub — never runs when CUSTOM_STORAGE_URL is set) ─────────────
 
-async function kvGet<T>(key: string): Promise<T | null> {
-  try {
-    const { kv } = await import('@vercel/kv');
-    return kv.get<T>(key);
-  } catch {
-    return null;
-  }
+async function kvGet<T>(_key: string): Promise<T | null> {
+  return null;
 }
 
-async function kvSet(key: string, value: unknown): Promise<void> {
-  const { kv } = await import('@vercel/kv');
-  await kv.set(key, value);
+async function kvSet(_key: string, _value: unknown): Promise<void> {
+  throw new Error('KV storage not configured');
 }
 
 // ── Local JSON files (dev fallback only — not used when CUSTOM_STORAGE_URL set) ──
