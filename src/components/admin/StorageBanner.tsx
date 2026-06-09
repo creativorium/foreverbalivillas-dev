@@ -24,7 +24,7 @@ export default function StorageBanner({ mode }: { mode: Mode }) {
   return (
     <div className="adm-alert adm-alert-warn" style={{ marginBottom: '20px' }}>
       <strong>⚠ Database not connected</strong> — changes save locally and will be lost on next deployment.
-      Set <code>CUSTOM_STORAGE_URL</code> in your Vercel environment variables to connect your hosting.
+      Set <code>CUSTOM_STORAGE_URL</code> in your environment variables to connect your hosting.
     </div>
   );
 }

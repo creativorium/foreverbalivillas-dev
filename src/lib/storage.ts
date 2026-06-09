@@ -3,41 +3,47 @@
  *
  * Priority order:
  *  1. CUSTOM_STORAGE_URL  → Your shared hosting PHP API  (free, you own it)
- *  2. KV_REST_API_URL     → Vercel KV / Upstash Redis    (free tier on Vercel)
- *  3. fallback            → Local JSON files              (dev only)
+ *  2. fallback            → Bundled JSON defaults         (edge / no storage configured)
+ *
+ * All env vars are read inside functions (not at module init) so that
+ * Cloudflare Workers runtime bindings are picked up correctly on every request.
  */
 import fs from 'fs';
 import path from 'path';
 
-const DATA_DIR      = path.join(process.cwd(), 'src', 'data');
-const CUSTOM_URL    = process.env.CUSTOM_STORAGE_URL;
-const CUSTOM_KEY    = process.env.CUSTOM_STORAGE_KEY ?? '';
-const USE_KV        = !CUSTOM_URL && !!process.env.KV_REST_API_URL;
-const USE_CUSTOM    = !!CUSTOM_URL;
+const DATA_DIR = path.join(process.cwd(), 'src', 'data');
 
-export const STORAGE_MODE: 'custom' | 'kv' | 'file' =
-  USE_CUSTOM ? 'custom' : USE_KV ? 'kv' : 'file';
+function getCustomUrl()  { return process.env.CUSTOM_STORAGE_URL; }
+function getCustomKey()  { return process.env.CUSTOM_STORAGE_KEY ?? ''; }
+
+export function getStorageMode(): 'custom' | 'kv' | 'file' {
+  return process.env.CUSTOM_STORAGE_URL ? 'custom' : 'file';
+}
+
+// Kept for backwards-compat — always use getStorageMode() for runtime checks
+export const STORAGE_MODE: 'custom' | 'kv' | 'file' = 'file';
+export const IS_CUSTOM = false;
+export const IS_KV     = false;
 
 // ── Custom shared-hosting PHP API ─────────────────────────────────────────────
 
 async function customGet<T>(endpoint: string): Promise<T | null> {
   try {
-    const res = await fetch(`${CUSTOM_URL}/${endpoint}`, {
-      headers: { 'X-Api-Key': CUSTOM_KEY },
+    const res = await fetch(`${getCustomUrl()}/${endpoint}`, {
+      headers: { 'X-Api-Key': getCustomKey() },
       cache: 'no-store',
     });
     if (!res.ok) return null;
     return await res.json() as T;
   } catch {
-    // Network error, timeout, or invalid JSON — treat as missing
     return null;
   }
 }
 
 async function customPut(endpoint: string, data: unknown): Promise<void> {
-  const res = await fetch(`${CUSTOM_URL}/${endpoint}`, {
+  const res = await fetch(`${getCustomUrl()}/${endpoint}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json', 'X-Api-Key': CUSTOM_KEY },
+    headers: { 'Content-Type': 'application/json', 'X-Api-Key': getCustomKey() },
     body: JSON.stringify(data),
   });
   if (!res.ok) {
@@ -47,12 +53,12 @@ async function customPut(endpoint: string, data: unknown): Promise<void> {
 }
 
 export async function uploadImage(file: File): Promise<string> {
-  if (!USE_CUSTOM) throw new Error('Image upload requires CUSTOM_STORAGE_URL');
+  if (!getCustomUrl()) throw new Error('Image upload requires CUSTOM_STORAGE_URL');
   const form = new FormData();
   form.append('file', file);
-  const res = await fetch(`${CUSTOM_URL}/media.php`, {
+  const res = await fetch(`${getCustomUrl()}/media.php`, {
     method: 'POST',
-    headers: { 'X-Api-Key': CUSTOM_KEY },
+    headers: { 'X-Api-Key': getCustomKey() },
     body: form,
   });
   if (!res.ok) {
@@ -63,17 +69,7 @@ export async function uploadImage(file: File): Promise<string> {
   return url;
 }
 
-// ── Vercel KV (stub — never runs when CUSTOM_STORAGE_URL is set) ─────────────
-
-async function kvGet<T>(_key: string): Promise<T | null> {
-  return null;
-}
-
-async function kvSet(_key: string, _value: unknown): Promise<void> {
-  throw new Error('KV storage not configured');
-}
-
-// ── Local JSON files (dev fallback only — not used when CUSTOM_STORAGE_URL set) ──
+// ── Local JSON files (dev fallback) ──────────────────────────────────────────
 
 function fileGet<T>(file: string): T {
   try {
@@ -88,7 +84,7 @@ function fileSet(file: string, data: unknown): void {
   try {
     fs.writeFileSync(path.join(DATA_DIR, file), JSON.stringify(data, null, 2), 'utf8');
   } catch {
-    // No writable filesystem (edge runtime) — silently skip; CUSTOM_STORAGE_URL handles writes
+    // No writable filesystem on edge — silently skip
   }
 }
 
@@ -96,20 +92,10 @@ function fileSet(file: string, data: unknown): void {
 
 export async function storageGet<T>(key: string, jsonFile: string): Promise<T> {
   try {
-    if (USE_CUSTOM) {
-      const endpoint = keyToEndpoint(key);
-      const val      = await customGet<T>(endpoint);
-      // Return PHP data if available; otherwise fall back to local file.
-      // NEVER write local defaults back to PHP here — that would overwrite
-      // real data whenever there is a temporary network error on redeploy.
+    if (getCustomUrl()) {
+      const val = await customGet<T>(keyToEndpoint(key));
       return val !== null ? val : fileGet<T>(jsonFile);
     }
-
-    if (USE_KV) {
-      const val = await kvGet<T>(key);
-      return val !== null ? val : fileGet<T>(jsonFile);
-    }
-
     return fileGet<T>(jsonFile);
   } catch {
     try { return fileGet<T>(jsonFile); } catch { /* no fs on edge */ }
@@ -118,8 +104,7 @@ export async function storageGet<T>(key: string, jsonFile: string): Promise<T> {
 }
 
 export async function storageSet(key: string, jsonFile: string, data: unknown): Promise<void> {
-  if (USE_CUSTOM) { await customPut(keyToEndpoint(key), data); return; }
-  if (USE_KV)     { await kvSet(key, data); return; }
+  if (getCustomUrl()) { await customPut(keyToEndpoint(key), data); return; }
   fileSet(jsonFile, data);
 }
 
@@ -127,6 +112,3 @@ function keyToEndpoint(key: string): string {
   const slug = key.replace('fbv:', '').replace('site-', '');
   return `${slug}.php`;
 }
-
-export const IS_KV     = USE_KV;
-export const IS_CUSTOM = USE_CUSTOM;

@@ -1,13 +1,13 @@
 import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
-import { storageGet, storageSet, STORAGE_MODE } from '@/lib/storage';
+import { storageGet, storageSet, getStorageMode } from '@/lib/storage';
 
 const KEY  = 'fbv:site-content';
 const FILE = 'site-content.json';
 
 export async function GET() {
   const data = await storageGet(KEY, FILE);
-  return NextResponse.json({ data, storage: STORAGE_MODE });
+  return NextResponse.json({ data, storage: getStorageMode() });
 }
 
 export async function PUT(req: NextRequest) {
@@ -21,7 +21,7 @@ export async function PUT(req: NextRequest) {
     for (const p of ['/', '/forever-pandawa', '/forever-santai', '/faq', '/cancellation-policy', '/privacy-policy']) {
       revalidatePath(p);
     }
-    return NextResponse.json({ data: merged, storage: STORAGE_MODE });
+    return NextResponse.json({ data: merged, storage: getStorageMode() });
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Unknown error';
     return NextResponse.json({ error: msg }, { status: 400 });

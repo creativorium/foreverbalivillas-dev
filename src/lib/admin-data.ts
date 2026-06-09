@@ -1,5 +1,6 @@
 import { storageGet, storageSet } from './storage';
 import defaultSettings from '../data/site-settings.json';
+import defaultPosts    from '../data/posts.json';
 
 // ── Blog posts ────────────────────────────────────────────────────────────────
 
@@ -16,7 +17,8 @@ export interface Post {
 }
 
 export async function getPosts(): Promise<Post[]> {
-  return storageGet<Post[]>('fbv:posts', 'posts.json');
+  const data = await storageGet<Post[] | null>('fbv:posts', 'posts.json');
+  return Array.isArray(data) && data.length > 0 ? data : (defaultPosts as Post[]);
 }
 
 export async function getPost(slug: string): Promise<Post | undefined> {
