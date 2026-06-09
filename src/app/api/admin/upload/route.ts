@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { STORAGE_MODE } from '@/lib/storage';
 import path from 'path';
 import fs from 'fs';
 
@@ -43,15 +42,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(await res.json());
     }
 
-    // ── Vercel Blob ───────────────────────────────────────────────────────────
-    if (process.env.BLOB_READ_WRITE_TOKEN) {
-      const { put } = await import('@vercel/blob');
-      const ext      = path.extname(file.name);
-      const name     = path.basename(file.name, ext).replace(/[^a-z0-9-]/gi, '-').toLowerCase();
-      const filename = `${name}-${Date.now()}${ext}`;
-      const blob     = await put(`uploads/${filename}`, file, { access: 'public' });
-      return NextResponse.json({ url: blob.url, filename });
-    }
+    // Vercel Blob removed — not available on Cloudflare
 
     // ── Local fallback (dev only) ─────────────────────────────────────────────
     const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
@@ -85,10 +76,6 @@ export async function GET() {
       }
     } catch {}
     return NextResponse.json({ files: [], mode: 'custom' });
-  }
-
-  if (process.env.BLOB_READ_WRITE_TOKEN) {
-    return NextResponse.json({ files: [], mode: 'kv' });
   }
 
   // Local fallback
