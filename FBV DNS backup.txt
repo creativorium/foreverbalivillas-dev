@@ -1,0 +1,11 @@
+FBV DNS backup
+
+
+A @ 162.241.216.59
+hosting
+
+CNAME
+www
+foreverbalivillas.com
+hosting
+4 Hours

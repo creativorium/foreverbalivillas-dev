@@ -55,7 +55,7 @@ export default function HomeFeatures({ features, spaMenuUrl, foodMenuUrl }: Prop
 
             <div className={styles.menuBtns}>
               <Link href={spaHref} className={styles.menuBtn} target={spaMenuUrl ? '_blank' : undefined} rel={spaMenuUrl ? 'noopener noreferrer' : undefined}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <svg width="14" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M12 22c6-4 10-8.5 10-13a10 10 0 0 0-20 0c0 4.5 4 9 10 13z"/>
                 </svg>
                 Spa Menu
