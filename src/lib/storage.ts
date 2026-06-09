@@ -79,20 +79,23 @@ async function kvSet(key: string, value: unknown): Promise<void> {
   await kv.set(key, value);
 }
 
-// ── Local JSON files ──────────────────────────────────────────────────────────
+// ── Local JSON files (dev fallback only — not used when CUSTOM_STORAGE_URL set) ──
 
 function fileGet<T>(file: string): T {
   try {
     const raw = fs.readFileSync(path.join(DATA_DIR, file), 'utf8');
     return JSON.parse(raw) as T;
   } catch {
-    // Return sensible defaults if file missing
-    return (file.endsWith('.json') && file.includes('posts') ? [] : {}) as T;
+    return (file.includes('posts') ? [] : {}) as T;
   }
 }
 
 function fileSet(file: string, data: unknown): void {
-  fs.writeFileSync(path.join(DATA_DIR, file), JSON.stringify(data, null, 2), 'utf8');
+  try {
+    fs.writeFileSync(path.join(DATA_DIR, file), JSON.stringify(data, null, 2), 'utf8');
+  } catch {
+    // No writable filesystem (edge runtime) — silently skip; CUSTOM_STORAGE_URL handles writes
+  }
 }
 
 // ── Public API ────────────────────────────────────────────────────────────────
@@ -115,8 +118,8 @@ export async function storageGet<T>(key: string, jsonFile: string): Promise<T> {
 
     return fileGet<T>(jsonFile);
   } catch {
-    // Absolute last resort — never crash a page over storage
-    return fileGet<T>(jsonFile);
+    try { return fileGet<T>(jsonFile); } catch { /* no fs on edge */ }
+    return (jsonFile.includes('posts') ? [] : {}) as T;
   }
 }
 

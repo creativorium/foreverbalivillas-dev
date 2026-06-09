@@ -1,8 +1,4 @@
-import fs from 'fs';
-import path from 'path';
 import { storageGet, storageSet } from './storage';
-
-const DATA_DIR = path.join(process.cwd(), 'src', 'data');
 
 // ── Blog posts ────────────────────────────────────────────────────────────────
 
@@ -83,11 +79,6 @@ export async function updateSettings(data: Partial<SiteSettings>): Promise<SiteS
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type SiteContent = Record<string, any>;
-
-export function getSiteContent(): SiteContent {
-  const raw = fs.readFileSync(path.join(DATA_DIR, 'site-content.json'), 'utf8');
-  return JSON.parse(raw) as SiteContent;
-}
 
 // ── Admin users ───────────────────────────────────────────────────────────────
 

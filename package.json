@@ -5,16 +5,12 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "next start"
-  },
-  "engines": {
-    "node": "24.x"
+    "build:cf": "npx @opennextjs/cloudflare build",
+    "start": "next start",
+    "preview": "npx @opennextjs/cloudflare dev"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
-    "@vercel/analytics": "^2.0.1",
-    "@vercel/blob": "^2.4.0",
-    "@vercel/kv": "^3.0.0",
     "gsap": "^3.15.0",
     "jose": "^6.2.3",
     "next": "^16.2.6",
@@ -22,9 +18,11 @@
     "react-dom": "19.1.0"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "latest",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "latest"
   }
 }
