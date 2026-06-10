@@ -33,6 +33,9 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# internal handover doc — contains architecture/security info, don't commit
+HANDOVER.md
+
 # vercel
 .vercel
 
